@@ -1,7 +1,9 @@
 // Получаем элемент поля ввода
 let display = document.getElementById('display');
-// Получаем элемент калькулятора (для стилей не используется, но оставим для совместимости)
+// Получаем элемент калькулятора
 let calculator = document.querySelector('.calculator');
+// Получаем кнопку переключения темы
+let themeToggle = document.getElementById('themeToggle');
 
 function append(value) {
     // Разрешаем ввод функций, чисел, операций и специальных символов
@@ -30,7 +32,7 @@ function calculate(operation) {
         if (operation === '=') {
             // Обрабатываем выражение, заменяя π и i на значения
             expression = expression.replace(/π/g, Math.PI).replace(/i/g, 'i').replace(/\^2/g, '**2'); // Поддержка x² как **2
-            // Проверяем, начинается ли выражение с функции
+            // Проверяем, содержит ли выражение функцию
             if (['sin(', 'cos(', 'tan(', 'cot(', 'sqrt(', 'arcsin(', 'arccos('].some(func => expression.includes(func))) {
                 let funcMatch = expression.match(/([a-z]+)\(([\d+\-*.]+)\)/i); // Ищем функцию и число в скобках
                 if (funcMatch) {
@@ -63,6 +65,31 @@ function calculate(operation) {
         display.value = isNaN(result) || !isFinite(result) ? 'Ошибка' : result;
     } catch (error) {
         display.value = 'Ошибка';
+    }
+}
+
+// Функция переключения темы с изменением иконки
+function toggleTheme() {
+    // Получаем тело документа
+    let body = document.body;
+    // Получаем калькулятор
+    let calc = document.querySelector('.calculator');
+    // Получаем поле ввода
+    let displayInput = document.getElementById('display');
+    // Получаем все кнопки
+    let buttons = document.querySelectorAll('button');
+
+    // Переключаем классы для смены темы
+    body.classList.toggle('light');
+    calc.classList.toggle('light');
+    displayInput.classList.toggle('light');
+    buttons.forEach(button => button.classList.toggle('light'));
+
+    // Меняем иконку кнопки темы
+    if (body.classList.contains('light')) {
+        themeToggle.textContent = '🌞'; // Солнце для светлой темы
+    } else {
+        themeToggle.textContent = '🌙'; // Полумесяц для темной темы
     }
 }
 

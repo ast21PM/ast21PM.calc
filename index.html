@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Кнопка переключения темы в верхнем правом углу страницы -->
+    <button onclick="toggleTheme()" class="theme-toggle" id="themeToggle">🌙</button>
     <!-- Основной контейнер калькулятора -->
     <div class="calculator">
         <!-- Поле ввода для чисел и выражений -->
@@ -77,6 +79,10 @@
                 <button onclick="append('arcsin(')">arcsin</button>
                 <!-- Кнопка арккосинуса -->
                 <button onclick="append('arccos(')">arccos</button>
+                <!-- Кнопка открывающей скобки -->
+                <button onclick="append('(')">(</button>
+                <!-- Кнопка закрывающей скобки -->
+                <button onclick="append(')')">)</button>
             </div>
         </div>
     </div>

@@ -7,6 +7,55 @@ body {
     background: linear-gradient(135deg, #1a1a2e, #2d2d44); /* Градиент, как в Desmos */
     font-family: 'Arial', sans-serif;
     margin: 0;
+    position: relative; /* Для позиционирования кнопки темы */
+    transition: background 0.3s ease; /* Анимация смены темы */
+}
+
+/* Стили для тела в светлой теме */
+body.light {
+    background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
+}
+
+/* Стили для кнопки переключения темы в верхнем правом углу */
+.theme-toggle {
+    position: absolute;
+    top: 20px; /* Отступ сверху */
+    right: 20px; /* Отступ справа */
+    background: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1000; /* Чтобы была над калькулятором */
+}
+
+/* Стили для кнопки переключения темы в светлой теме */
+.theme-toggle.light {
+    background: #007bff;
+    color: #ffffff;
+}
+
+/* Стили при наведении на кнопку темы */
+.theme-toggle:hover {
+    background: #0056b3;
+}
+
+/* Стили при наведении на кнопку темы в светлой теме */
+.theme-toggle.light:hover {
+    background: #0056b3;
+}
+
+/* Стили при нажатии на кнопку темы */
+.theme-toggle:active {
+    background: #003d7a;
+}
+
+/* Стили при нажатии на кнопку темы в светлой теме */
+.theme-toggle.light:active {
+    background: #003d7a;
 }
 
 /* Стили для основного контейнера калькулятора */
@@ -15,18 +64,25 @@ body {
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    width: 400px; /* Уменьшил ширину для компактности, как в Desmos */
+    width: 400px; /* Базовая ширина, как в скриншоте */
     display: flex;
     flex-direction: column;
+    transition: background 0.3s ease, box-shadow 0.3s ease; /* Анимация смены темы */
+}
+
+/* Стили для калькулятора в светлой теме */
+.calculator.light {
+    background: #ffffff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Стили для поля ввода */
 #display {
     width: 100%;
-    height: 50px; /* Уменьшил высоту для соответствия Desmos */
+    height: 70px; /* Сохраняем увеличенную высоту */
     background: #1f1f2e;
     color: #ffffff;
-    font-size: 20px; /* Уменьшил размер шрифта */
+    font-size: 24px; /* Сохраняем увеличенный размер шрифта */
     text-align: right;
     padding: 10px;
     border: 1px solid #3b3b50;
@@ -35,12 +91,20 @@ body {
     box-sizing: border-box;
     font-family: 'Courier New', monospace;
     outline: none; /* Убрал обводку при фокусе */
+    transition: background 0.3s ease, color 0.3s ease, border 0.3s ease; /* Анимация смены темы */
+}
+
+/* Стили для поля ввода в светлой теме */
+#display.light {
+    background: #f0f0f5;
+    color: #000000;
+    border: 1px solid #ccc;
 }
 
 /* Стили для контейнера панелей */
 .calculator-panels {
     display: flex;
-    gap: 10px;
+    gap: 5px; /* Уменьшил отступ для компактности */
 }
 
 /* Стили для панели цифр */
@@ -78,10 +142,22 @@ button {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Легкая тень, как в Desmos */
 }
 
+/* Стили для кнопок в светлой теме */
+button.light {
+    background: #e0e0ea;
+    color: #000000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 /* Стили при наведении на кнопки */
 button:hover {
     background: #4a4a66;
     transform: scale(1.02);
+}
+
+/* Стили при наведении на кнопки в светлой теме */
+button.light:hover {
+    background: #d0d0d8;
 }
 
 /* Стили при нажатии на кнопки */
@@ -90,8 +166,19 @@ button:active {
     transform: scale(0.98);
 }
 
+/* Стили при нажатии на кнопки в светлой теме */
+button.light:active {
+    background: #c0c0c8;
+}
+
 /* Стили для кнопки равенства */
 button[onclick*="="] {
+    background: #007bff;
+    color: #ffffff;
+}
+
+/* Стили для кнопки равенства в светлой теме */
+button[onclick*="="].light {
     background: #007bff;
     color: #ffffff;
 }
@@ -101,7 +188,17 @@ button[onclick*="="]:hover {
     background: #0056b3;
 }
 
+/* Стили при наведении на кнопку равенства в светлой теме */
+button[onclick*="="].light:hover {
+    background: #0056b3;
+}
+
 /* Стили при нажатии на кнопку равенства */
 button[onclick*="="]:active {
+    background: #003d7a;
+}
+
+/* Стили при нажатии на кнопку равенства в светлой теме */
+button[onclick*="="].light:active {
     background: #003d7a;
 }
