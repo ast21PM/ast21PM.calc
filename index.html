@@ -1,56 +1,86 @@
+<!-- Определение типа документа и языка HTML -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- Установка кодировки символов -->
     <meta charset="UTF-8">
+    <!-- Настройка viewport для адаптивности на мобильных устройствах -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Заголовок страницы -->
     <title>Научный Калькулятор</title>
+    <!-- Подключение файла стилей -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Основной контейнер калькулятора -->
     <div class="calculator">
-        <input type="text" id="display" placeholder="0" autocomplete="off">
+        <!-- Поле ввода для чисел и выражений -->
+        <input type="text" id="display" autocomplete="off" placeholder="Введите выражение">
+        <!-- Контейнер для панелей кнопок -->
         <div class="calculator-panels">
+            <!-- Панель для цифр и базовых операций -->
             <div class="number-panel">
-                <!-- Цифры и операции -->
+                <!-- Кнопка цифры 7 -->
                 <button onclick="append('7')">7</button>
+                <!-- Кнопка цифры 8 -->
                 <button onclick="append('8')">8</button>
+                <!-- Кнопка цифры 9 -->
                 <button onclick="append('9')">9</button>
+                <!-- Кнопка деления -->
                 <button onclick="append('/')">/</button>
+                <!-- Кнопка цифры 4 -->
                 <button onclick="append('4')">4</button>
+                <!-- Кнопка цифры 5 -->
                 <button onclick="append('5')">5</button>
+                <!-- Кнопка цифры 6 -->
                 <button onclick="append('6')">6</button>
+                <!-- Кнопка умножения -->
                 <button onclick="append('*')">×</button>
+                <!-- Кнопка цифры 1 -->
                 <button onclick="append('1')">1</button>
+                <!-- Кнопка цифры 2 -->
                 <button onclick="append('2')">2</button>
+                <!-- Кнопка цифры 3 -->
                 <button onclick="append('3')">3</button>
+                <!-- Кнопка вычитания -->
                 <button onclick="append('-')">-</button>
+                <!-- Кнопка цифры 0 -->
                 <button onclick="append('0')">0</button>
+                <!-- Кнопка точки -->
                 <button onclick="append('.')">.</button>
+                <!-- Кнопка равенства -->
                 <button onclick="calculate('=')">=</button>
+                <!-- Кнопка сложения -->
                 <button onclick="append('+')">+</button>
             </div>
+            <!-- Панель для функций -->
             <div class="function-panel">
-                <!-- Основные функции -->
-                <button onclick="calculate('sin')">sin</button>
-                <button onclick="calculate('cos')">cos</button>
-                <button onclick="calculate('tan')">tan</button>
-                <button onclick="calculate('square')">x²</button>
-                <button onclick="toggleAdvanced()">Доп. функции</button>
-            </div>
-            <div class="advanced-panel" style="display: none;">
-                <!-- Дополнительные функции -->
-                <button onclick="clearDisplay()">C</button>
+                <!-- Кнопка очистки -->
+                <button onclick="clearDisplay()">AC</button>
+                <!-- Кнопка корня -->
+                <button onclick="append('sqrt(')">√</button>
+                <!-- Кнопка возведения в квадрат -->
+                <button onclick="append('^2')">x²</button>
+                <!-- Кнопка синуса -->
+                <button onclick="append('sin(')">sin</button>
+                <!-- Кнопка косинуса -->
+                <button onclick="append('cos(')">cos</button>
+                <!-- Кнопка тангенса -->
+                <button onclick="append('tan(')">tan</button>
+                <!-- Кнопка числа пи -->
                 <button onclick="append('π')">π</button>
+                <!-- Кнопка мнимой единицы -->
                 <button onclick="append('i')">i</button>
-                <button onclick="calculate('sqrt')">√</button>
-                <button onclick="calculate('nthRoot')">�根</button>
-                <button onclick="calculate('cot')">cot</button>
-                <button onclick="calculate('asin')">arcsin</button>
-                <button onclick="calculate('acos')">arccos</button>
-                <button onclick="toggleAdvanced()">Скрыть</button>
+                <!-- Кнопка котангенса -->
+                <button onclick="append('cot(')">cot</button>
+                <!-- Кнопка арксинуса -->
+                <button onclick="append('arcsin(')">arcsin</button>
+                <!-- Кнопка арккосинуса -->
+                <button onclick="append('arccos(')">arccos</button>
             </div>
         </div>
     </div>
+    <!-- Подключение скрипта JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
