@@ -64,7 +64,7 @@ body.light {
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    width: 400px; /* Базовая ширина, как в скриншоте */
+    width: 500px; /* Увеличил ширину для дополнительной панели */
     display: flex;
     flex-direction: column;
     transition: background 0.3s ease, box-shadow 0.3s ease; /* Анимация смены темы */
@@ -108,24 +108,98 @@ body.light {
 }
 
 /* Стили для панели цифр */
-.number-panel, .function-panel {
+.number-panel {
     display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 5px; /* Уменьшил отступы для компактности */
+    flex: 1;
+    background: transparent; /* Убрал фон для минимализма */
+    padding: 5px;
+}
+
+/* Стили для панели функций с вкладками */
+.function-panels {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Стили для вкладок панелей */
+.panel-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+/* Стили для кнопок вкладок */
+.tab-button {
+    background: #3b3b50;
+    color: #ffffff;
+    border: none;
+    padding: 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
     flex: 1;
 }
 
-/* Стили для панели цифр */
-.number-panel {
-    grid-template-columns: repeat(4, 1fr);
+/* Стили для активной кнопки вкладки */
+.tab-button.active {
+    background: #007bff;
+    color: #ffffff;
+}
+
+/* Стили для кнопок вкладок в светлой теме */
+.tab-button.light {
+    background: #e0e0ea;
+    color: #000000;
+}
+
+/* Стили для активной кнопки вкладки в светлой теме */
+.tab-button.active.light {
+    background: #007bff;
+    color: #ffffff;
+}
+
+/* Стили при наведении на кнопки вкладок */
+.tab-button:hover {
+    background: #4a4a66;
+}
+
+/* Стили при наведении на кнопки вкладок в светлой теме */
+.tab-button.light:hover {
+    background: #d0d0d8;
+}
+
+/* Стили для панелей (базовые операции, функции, алфавит) */
+.panel {
+    display: grid;
+    gap: 5px;
     background: transparent; /* Убрал фон для минимализма */
     padding: 5px;
+    transition: all 0.3s ease; /* Анимация появления */
+}
+
+/* Стили для панели базовых операций */
+.basic-panel {
+    grid-template-columns: repeat(4, 1fr); /* 4 колонки для базовых операций */
 }
 
 /* Стили для панели функций */
-.function-panel {
-    grid-template-columns: repeat(4, 1fr); /* 4 колонки для функций */
-    background: transparent; /* Убрал фон для минимализма */
-    padding: 5px;
+.functions-panel {
+    grid-template-columns: repeat(3, 1fr); /* 3 колонки для функций, как на скриншоте */
+}
+
+/* Стили для панели алфавита (3 строки по 9 кнопок) */
+.alpha-panel {
+    grid-template-columns: repeat(9, 1fr); /* 9 колонок для каждой строки */
+    grid-template-rows: repeat(3, 1fr); /* 3 строки для алфавита */
+}
+
+/* Стили для панелей в светлой теме */
+.panel.light {
+    background: transparent;
 }
 
 /* Стили для кнопок */
