@@ -1,9 +1,15 @@
 // Получаем элемент поля ввода
 let display = document.getElementById('display');
 // Получаем элемент калькулятора
-let calculator = document.querySelector('.calculator');
+let calculator = document.getElementById('calculator');
 // Получаем кнопку переключения темы
 let themeToggle = document.getElementById('themeToggle');
+// Получаем ручку для изменения размера
+let resizeHandle = document.getElementById('resizeHandle');
+
+// Дефолтные размеры калькулятора (увеличиваем до 550px × 450px)
+const DEFAULT_WIDTH = 550;
+const DEFAULT_HEIGHT = 450;
 
 function append(value) {
     // Разрешаем ввод функций, чисел, операций, букв и специальных символов
@@ -136,15 +142,131 @@ function showPanel(panel) {
 // Инициализация: показываем базовую панель по умолчанию
 window.onload = function() {
     showPanel('basic');
+    // Устанавливаем дефолтный размер при загрузке
+    calculator.style.width = `${DEFAULT_WIDTH}px`;
+    calculator.style.height = `${DEFAULT_HEIGHT}px`;
 };
+
+// Функция для перемещения курсора в поле ввода
+function moveCursor(direction) {
+    const input = display;
+    const cursorPos = input.selectionStart || 0;
+
+    if (direction === 'left' && cursorPos > 0) {
+        input.setSelectionRange(cursorPos - 1, cursorPos - 1); // Перемещаем курсор влево
+    } else if (direction === 'right' && cursorPos < input.value.length) {
+        input.setSelectionRange(cursorPos + 1, cursorPos + 1); // Перемещаем курсор вправо
+    }
+    input.focus(); // Убеждаемся, что поле ввода в фокусе после перемещения
+}
+
+// Функция для перетаскивания калькулятора
+let isDragging = false;
+let currentX;
+let currentY;
+let xOffset = 0;
+let yOffset = 0;
+
+calculator.querySelector('.calculator-header').addEventListener('mousedown', startDragging);
+calculator.querySelector('.calculator-header').addEventListener('dblclick', resetSize); // Двойной клик на заголовок
+document.addEventListener('mousemove', drag);
+document.addEventListener('mouseup', stopDragging);
+
+function startDragging(e) {
+    initialX = e.clientX - xOffset;
+    initialY = e.clientY - yOffset;
+
+    isDragging = true; // Разрешаем перетаскивание при клике на любой элемент в .calculator-header
+}
+
+function drag(e) {
+    if (isDragging) {
+        e.preventDefault();
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+
+        xOffset = currentX;
+        yOffset = currentY;
+
+        setTranslate(currentX, currentY, calculator);
+    }
+}
+
+function setTranslate(xPos, yPos, el) {
+    el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+}
+
+function stopDragging() {
+    if (isDragging) {
+        isDragging = false;
+    }
+}
+
+// Функция для изменения размера калькулятора
+let isResizing = false;
+let initialXResize;
+let initialYResize;
+let initialWidth = DEFAULT_WIDTH; // Используем новый дефолтный размер
+let initialHeight = DEFAULT_HEIGHT; // Используем новый дефолтный размер
+
+resizeHandle.addEventListener('mousedown', startResizing);
+resizeHandle.addEventListener('dblclick', resetSize); // Двойной клик на ручку изменения размера
+document.addEventListener('mousemove', resize);
+document.addEventListener('mouseup', stopResizing);
+
+function startResizing(e) {
+    initialXResize = e.clientX;
+    initialYResize = e.clientY;
+    isResizing = true;
+}
+
+function resize(e) {
+    if (isResizing) {
+        let dx = e.clientX - initialXResize;
+        let dy = e.clientY - initialYResize;
+
+        let newWidth = Math.max(initialWidth + dx, 300); // Минимальная ширина 300px
+        let newHeight = Math.max(initialHeight + dy, 200); // Минимальная высота 200px
+
+        calculator.style.width = `${newWidth}px`;
+        calculator.style.height = `${newHeight}px`;
+    }
+}
+
+function stopResizing() {
+    if (isResizing) {
+        isResizing = false;
+        initialWidth = parseInt(calculator.style.width, 10);
+        initialHeight = parseInt(calculator.style.height, 10);
+    }
+}
+
+// Функция возврата к дефолтному размеру
+function resetSize() {
+    calculator.style.width = `${DEFAULT_WIDTH}px`;
+    calculator.style.height = `${DEFAULT_HEIGHT}px`;
+    initialWidth = DEFAULT_WIDTH;
+    initialHeight = DEFAULT_HEIGHT;
+    xOffset = 0; // Сбрасываем положение
+    yOffset = 0;
+    setTranslate(0, 0, calculator); // Возвращаем в центр
+}
 
 // Фикс дублирования цифр и работы Backspace
 display.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         event.preventDefault();
         calculate('=');
-    } else if (event.key === 'Backspace' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-        return; // Позволяем стандартное поведение
+    } else if (event.key === 'Backspace') {
+        // Если в поле ввода только "Ошибка", очищаем полностью
+        if (display.value === 'Ошибка') {
+            display.value = '';
+            event.preventDefault();
+        }
+        // Иначе разрешаем стандартное поведение (стирание по букве)
+        return;
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        return; // Позволяем стандартное поведение для стрелок
     } else if (!/[0-9+\-*/.()πie]/.test(event.key)) {
         event.preventDefault(); // Блокируем ненужные символы
     }

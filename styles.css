@@ -8,6 +8,7 @@ body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     position: relative; /* Для позиционирования кнопки темы */
+    overflow: hidden; /* Предотвращаем прокрутку при перетаскивании */
     transition: background 0.3s ease; /* Анимация смены темы */
 }
 
@@ -64,16 +65,50 @@ body.light {
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    width: 500px; /* Увеличил ширину для дополнительной панели */
+    width: 550px; /* Базовая ширина */
+    height: 450px; /* Базовая высота */
     display: flex;
     flex-direction: column;
+    position: absolute; /* Для перетаскивания */
     transition: background 0.3s ease, box-shadow 0.3s ease; /* Анимация смены темы */
+    z-index: 900; /* Под калькулятором, но над фоном */
+    min-width: 300px; /* Минимальная ширина */
+    min-height: 200px; /* Минимальная высота */
 }
 
 /* Стили для калькулятора в светлой теме */
 .calculator.light {
     background: #ffffff;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для заголовка калькулятора (для перетаскивания) */
+.calculator-header {
+    width: 100%;
+    height: 20px;
+    border-radius: 8px 8px 0 0;
+    cursor: move; /* Курсор для перетаскивания */
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Центрируем текст */
+    padding: 5px;
+    user-select: none; /* Отключаем выделение текста */
+    transition: background 0.3s ease, color 0.3s ease; /* Анимация смены темы */
+}
+
+/* Стили для заголовка в темной теме */
+.calculator-header {
+    background: linear-gradient(135deg, #3b3b50, #2d2d44); /* Тонированный градиент для темной темы */
+    color: #ffffff;
+    opacity: 0.8; /* Полупрозрачность для тонирования */
+}
+
+/* Стили для заголовка в светлой теме */
+.calculator-header.light {
+    background: transparent; /* Прозрачный фон */
+    color: #000000; /* Черный текст для светлой темы */
+    box-shadow: none; /* Убираем тень */
 }
 
 /* Стили для поля ввода */
@@ -105,16 +140,31 @@ body.light {
 .calculator-panels {
     display: flex;
     gap: 5px; /* Уменьшил отступ для компактности */
+    flex: 1;
+    overflow: hidden; /* Скрываем прокрутку по умолчанию */
+    max-height: calc(100% - 110px); /* Ограничиваем высоту, чтобы учесть заголовок (20px) и поле ввода (70px + 10px + 10px отступов) */
 }
 
 /* Стили для панели цифр */
 .number-panel {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(6, 1fr); /* Увеличиваем количество строк для стрелок */
     gap: 5px; /* Уменьшил отступы для компактности */
     flex: 1;
     background: transparent; /* Убрал фон для минимализма */
     padding: 5px;
+    width: 50%; /* Устанавливаем фиксированную ширину 50% для каждой панели */
+    height: 100%; /* Фиксируем высоту для стабильности */
+}
+
+/* Стили для кнопок курсора (центрирование) */
+.cursor-buttons {
+    grid-column: span 4; /* Занимает всю ширину панели */
+    display: flex;
+    justify-content: center; /* Центрируем кнопки по горизонтали */
+    align-items: center; /* Центрируем кнопки по вертикали */
+    gap: 5px; /* Отступ между стрелками */
 }
 
 /* Стили для панели функций с вкладками */
@@ -122,6 +172,9 @@ body.light {
     flex: 1;
     display: flex;
     flex-direction: column;
+    max-height: 100%; /* Ограничиваем высоту для стабильности */
+    height: 100%; /* Фиксируем высоту для стабильности при дефолтном размере */
+    width: 50%; /* Устанавливаем фиксированную ширину 50% для каждой панели */
 }
 
 /* Стили для вкладок панелей */
@@ -179,6 +232,16 @@ body.light {
     background: transparent; /* Убрал фон для минимализма */
     padding: 5px;
     transition: all 0.3s ease; /* Анимация появления */
+    flex: 1;
+    overflow: hidden; /* Скрываем прокрутку по умолчанию */
+    max-height: 100%; /* Ограничиваем высоту для стабильности */
+    height: 100%; /* Фиксируем высоту для стабильности при дефолтном размере */
+}
+
+/* Показываем прокрутку только при уменьшенном размере (меньше дефолтного) */
+.calculator:not([style*="width: 550px"]):not([style*="height: 450px"]) .panel,
+.calculator:not([style*="width: 550px"]):not([style*="height: 450px"]) .calculator-panels {
+    overflow: auto; /* Прокрутка только при уменьшенном размере */
 }
 
 /* Стили для панели базовых операций */
@@ -275,4 +338,22 @@ button[onclick*="="]:active {
 /* Стили при нажатии на кнопку равенства в светлой теме */
 button[onclick*="="].light:active {
     background: #003d7a;
+}
+
+/* Стили для ручки изменения размера */
+.resize-handle {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 15px;
+    height: 15px;
+    background: #3b3b50;
+    border-radius: 50%;
+    cursor: nwse-resize; /* Курсор для изменения размера */
+    z-index: 950; /* Над калькулятором, но под панелями */
+}
+
+/* Стили для ручки изменения размера в светлой теме */
+.resize-handle.light {
+    background: #e0e0ea;
 }
