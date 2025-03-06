@@ -65,15 +65,15 @@ body.light {
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    width: 550px; /* Базовая ширина */
-    height: 450px; /* Базовая высота */
+    width: 650px; /* Увеличиваем ширину */
+    height: 550px; /* Увеличиваем высоту */
     display: flex;
     flex-direction: column;
     position: absolute; /* Для перетаскивания */
     transition: background 0.3s ease, box-shadow 0.3s ease; /* Анимация смены темы */
     z-index: 900; /* Под калькулятором, но над фоном */
-    min-width: 300px; /* Минимальная ширина */
-    min-height: 200px; /* Минимальная высота */
+    min-width: 350px; /* Увеличиваем минимальную ширину */
+    min-height: 250px; /* Увеличиваем минимальную высоту */
 }
 
 /* Стили для калькулятора в светлой теме */
@@ -114,15 +114,15 @@ body.light {
 /* Стили для поля ввода */
 #display {
     width: 100%;
-    height: 70px; /* Сохраняем увеличенную высоту */
+    height: 90px; /* Увеличиваем высоту поля ввода */
     background: #1f1f2e;
     color: #ffffff;
-    font-size: 24px; /* Сохраняем увеличенный размер шрифта */
+    font-size: 28px; /* Увеличиваем размер шрифта */
     text-align: right;
-    padding: 10px;
+    padding: 15px; /* Увеличиваем отступы */
     border: 1px solid #3b3b50;
     border-radius: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 15px; /* Увеличиваем отступ снизу */
     box-sizing: border-box;
     font-family: 'Courier New', monospace;
     outline: none; /* Убрал обводку при фокусе */
@@ -142,14 +142,14 @@ body.light {
     gap: 5px; /* Уменьшил отступ для компактности */
     flex: 1;
     overflow: hidden; /* Скрываем прокрутку по умолчанию */
-    max-height: calc(100% - 110px); /* Ограничиваем высоту, чтобы учесть заголовок (20px) и поле ввода (70px + 10px + 10px отступов) */
+    max-height: calc(100% - 135px); /* Учитываем увеличенное поле ввода (90px + 15px + 15px отступов) и кнопку AC */
 }
 
 /* Стили для панели цифр */
 .number-panel {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(6, 1fr); /* Увеличиваем количество строк для стрелок */
+    grid-template-rows: repeat(6, 1fr); /* Увеличиваем количество строк для стрелок и AC */
     gap: 5px; /* Уменьшил отступы для компактности */
     flex: 1;
     background: transparent; /* Убрал фон для минимализма */
@@ -164,7 +164,7 @@ body.light {
     display: flex;
     justify-content: center; /* Центрируем кнопки по горизонтали */
     align-items: center; /* Центрируем кнопки по вертикали */
-    gap: 5px; /* Отступ между стрелками */
+    gap: 10px; /* Увеличиваем отступ между кнопками для удобства */
 }
 
 /* Стили для панели функций с вкладками */
@@ -195,6 +195,8 @@ body.light {
     cursor: pointer;
     transition: all 0.2s ease;
     flex: 1;
+    text-align: center; /* Центрируем текст */
+    font-weight: bold; /* Делаем текст жирным, как на Desmos */
 }
 
 /* Стили для активной кнопки вкладки */
@@ -239,8 +241,8 @@ body.light {
 }
 
 /* Показываем прокрутку только при уменьшенном размере (меньше дефолтного) */
-.calculator:not([style*="width: 550px"]):not([style*="height: 450px"]) .panel,
-.calculator:not([style*="width: 550px"]):not([style*="height: 450px"]) .calculator-panels {
+.calculator:not([style*="width: 650px"]):not([style*="height: 550px"]) .panel,
+.calculator:not([style*="width: 650px"]):not([style*="height: 550px"]) .calculator-panels {
     overflow: auto; /* Прокрутка только при уменьшенном размере */
 }
 
@@ -270,20 +272,31 @@ button {
     background: #3b3b50;
     color: #ffffff;
     border: none;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 6px;
+    padding: 10px; /* Увеличиваем для большего пространства */
+    font-size: 16px; /* Увеличиваем размер шрифта */
+    border-radius: 4px; /* Уменьшил радиус для острых углов, как на Desmos */
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: 'Arial', sans-serif;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Легкая тень, как в Desmos */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Легкая тень, как в Desmos */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Центрируем содержимое кнопки */
+    min-width: 0; /* Убираем минимальную ширину для компактности */
 }
 
 /* Стили для кнопок в светлой теме */
 button.light {
     background: #e0e0ea;
     color: #000000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для специальных кнопок (например, e^x, a^n) */
+button.special {
+    font-size: 14px; /* Чуть меньше для верхнего индекса */
+    padding: 8px; /* Чуть меньше для компактности */
+    line-height: 1; /* Корректируем высоту строки для верхнего индекса */
 }
 
 /* Стили при наведении на кнопки */
@@ -340,6 +353,45 @@ button[onclick*="="].light:active {
     background: #003d7a;
 }
 
+/* Стили для кнопки очистки */
+.clear-btn {
+    background: #ff4d4d; /* Красный цвет для выделения */
+    color: #ffffff;
+    border: none;
+    padding: 8px 20px; /* Увеличиваем ширину кнопки */
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили для кнопки очистки в светлой теме */
+.clear-btn.light {
+    background: #ff6666;
+    color: #ffffff;
+}
+
+/* Стили при наведении на кнопку очистки */
+.clear-btn:hover {
+    background: #e60000;
+}
+
+/* Стили при наведении на кнопку очистки в светлой теме */
+.clear-btn.light:hover {
+    background: #ff3333;
+}
+
+/* Стили при нажатии на кнопку очистки */
+.clear-btn:active {
+    background: #cc0000;
+}
+
+/* Стили при нажатии на кнопку очистки в светлой теме */
+.clear-btn.light:active {
+    background: #cc3333;
+}
+
 /* Стили для ручки изменения размера */
 .resize-handle {
     position: absolute;
@@ -356,4 +408,10 @@ button[onclick*="="].light:active {
 /* Стили для ручки изменения размера в светлой теме */
 .resize-handle.light {
     background: #e0e0ea;
+}
+
+/* Добавляем класс для специальных кнопок (e^x, a^n) */
+button[onclick*="e^x"],
+button[onclick*="a^n"] {
+    class: special;
 }

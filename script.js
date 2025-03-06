@@ -7,13 +7,13 @@ let themeToggle = document.getElementById('themeToggle');
 // Получаем ручку для изменения размера
 let resizeHandle = document.getElementById('resizeHandle');
 
-// Дефолтные размеры калькулятора (увеличиваем до 550px × 450px)
-const DEFAULT_WIDTH = 550;
-const DEFAULT_HEIGHT = 450;
+// Дефолтные размеры калькулятора (увеличиваем до 650px × 550px)
+const DEFAULT_WIDTH = 650;
+const DEFAULT_HEIGHT = 550;
 
 function append(value) {
     // Разрешаем ввод функций, чисел, операций, букв и специальных символов
-    if (/[\d+\-*/.()πi]/.test(value) || ['sin', 'cos', 'tan', 'cot', 'sqrt', 'square', 'arcsin', 'arccos', 'ln', 'log', 'abs', 'e'].includes(value) || /^[a-z]$/i.test(value)) {
+    if (/[\d+\-*/.()πi]/.test(value) || ['sin', 'cos', 'tan', 'cot', 'sqrt', 'square', 'arcsin', 'arccos', 'ln', 'log', 'abs', 'e', 'e^x', 'a^n'].includes(value) || /^[a-z]$/i.test(value)) {
         if (['sin', 'cos', 'tan', 'cot', 'sqrt', 'arcsin', 'arccos', 'ln', 'log', 'abs'].includes(value)) {
             display.value += value + '('; // Добавляем функцию с открывающей скобкой
         } else if (value === 'square') {
@@ -21,7 +21,7 @@ function append(value) {
         } else if (value === 'e^x') {
             display.value += 'Math.exp('; // Добавляем экспоненту e^x
         } else if (value === 'a^n') {
-            display.value += '^'; // Добавляем степень a^n
+            display.value += '^'; // Добавляем степень a^n (требуется два аргумента: основание и показатель)
         } else {
             display.value += value;
         }
@@ -31,6 +31,16 @@ function append(value) {
 // Очищаем поле ввода
 function clearDisplay() {
     display.value = '';
+}
+
+// Форматирование числа: обрезаем до 5 знаков после запятой и убираем лишние нули
+function formatNumber(number) {
+    // Обрезаем до 5 знаков после запятой
+    let fixed = number.toFixed(5);
+    // Преобразуем в число и убираем лишние нули
+    let parsed = parseFloat(fixed);
+    // Если число целое, возвращаем его без десятичной части
+    return Number.isInteger(parsed) ? parsed.toString() : parsed.toFixed(5);
 }
 
 // Выполняем вычисление
@@ -67,13 +77,28 @@ function calculate(operation) {
                         let expNumber = parseFloat(expMatch[1]) || 0;
                         result = Math.exp(expNumber); // Вычисляем e^x
                     } else {
-                        result = eval(expression); // Если нет явной экспоненты, пробуем вычислить как есть
+                        // Если нет скобок и числа, считаем e^x как e в степени последнего числа
+                        let lastNumberMatch = expression.match(/(\d+\.?\d*)$/);
+                        if (lastNumberMatch) {
+                            let lastNumber = parseFloat(lastNumberMatch[0]);
+                            result = Math.exp(lastNumber);
+                        } else {
+                            result = Math.E; // По умолчанию e, если нет числа
+                        }
                     }
                 } else {
                     result = eval(expression); // Если нет явной функции, пробуем вычислить как есть
                 }
             } else {
-                result = eval(expression); // Обычное вычисление
+                // Обработка степеней (a^n)
+                let powerMatch = expression.match(/(\d+\.?\d*)\*\*(\d+\.?\d*)/); // Ищем a**n
+                if (powerMatch) {
+                    let base = parseFloat(powerMatch[1]);
+                    let exponent = parseFloat(powerMatch[2]);
+                    result = Math.pow(base, exponent);
+                } else {
+                    result = eval(expression); // Обычное вычисление
+                }
             }
         } else {
             let input = parseFloat(expression.replace(/π/g, Math.PI).replace(/e/g, 'Math.E').replace(/\^2/g, '**2').replace(/\^/g, '**')) || 0;
@@ -83,7 +108,7 @@ function calculate(operation) {
                 default: result = 'Ошибка';
             }
         }
-        display.value = isNaN(result) || !isFinite(result) ? 'Ошибка' : result.toFixed(10); // Ограничиваем до 10 знаков после запятой, как в Desmos
+        display.value = isNaN(result) || !isFinite(result) ? 'Ошибка' : formatNumber(result);
     } catch (error) {
         display.value = 'Ошибка';
     }

@@ -26,8 +26,9 @@
         <div class="calculator-panels">
             <!-- Панель для цифр и базовых операций -->
             <div class="number-panel">
-                <!-- Кнопки для перемещения курсора (центрированы в отдельной строке) -->
+                <!-- Кнопки для перемещения курсора и очистки (центрированы в отдельной строке) -->
                 <div class="cursor-buttons">
+                    <button onclick="clearDisplay()" class="clear-btn">AC</button>
                     <button onclick="moveCursor('left')">←</button>
                     <button onclick="moveCursor('right')">→</button>
                 </div>
@@ -76,13 +77,11 @@
                     <button onclick="showPanel('alpha')" class="tab-button">abc</button>
                 </div>
                 <!-- Панель базовых операций -->
-                <div class="panel basic-panel" style="display: block;">
-                    <!-- Кнопка очистки -->
-                    <button onclick="clearDisplay()">AC</button>
+                <div class="panel basic-panel" style="display: grid;">
                     <!-- Кнопка корня -->
                     <button onclick="append('sqrt(')">√</button>
                     <!-- Кнопка возведения в квадрат -->
-                    <button onclick="append('^2')">x²</button>
+                    <button onclick="append('square')">x²</button>
                     <!-- Кнопка синуса -->
                     <button onclick="append('sin(')">sin</button>
                     <!-- Кнопка косинуса -->
@@ -95,8 +94,6 @@
                     <button onclick="append('i')">i</button>
                     <!-- Кнопка котангенса -->
                     <button onclick="append('cot(')">cot</button>
-                    <!-- Кнопка арксинуса -->
-                    <button onclick="append('arcsin(')">arcsin</button>
                     <!-- Кнопка открывающей скобки -->
                     <button onclick="append('(')">(</button>
                     <!-- Кнопка закрывающей скобки -->
@@ -113,13 +110,13 @@
                     <!-- Кнопка числа e -->
                     <button onclick="append('e')">e</button>
                     <!-- Кнопка экспоненты e^x -->
-                    <button onclick="append('e^')">e^x</button>
+                    <button onclick="append('e^x')">e⁽ˣ⁾</button>
                     <!-- Кнопка арксинуса -->
                     <button onclick="append('arcsin(')">arcsin</button>
                     <!-- Кнопка арккосинуса -->
                     <button onclick="append('arccos(')">arccos</button>
                     <!-- Кнопка степени a^n -->
-                    <button onclick="append('^')">a^n</button>
+                    <button onclick="append('a^n')">a⁽ⁿ⁾</button>
                 </div>
                 <!-- Панель английского алфавита -->
                 <div class="panel alpha-panel" style="display: none;">
