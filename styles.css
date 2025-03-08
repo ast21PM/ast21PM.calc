@@ -248,12 +248,12 @@ body.light {
 
 /* Стили для панели базовых операций */
 .basic-panel {
-    grid-template-columns: repeat(4, 1fr); /* 4 колонки для базовых операций */
+    grid-template-columns: repeat(3, 1fr); /* 3 колонки для базовых операций */
 }
 
 /* Стили для панели функций */
 .functions-panel {
-    grid-template-columns: repeat(3, 1fr); /* 3 колонки для функций, как на скриншоте */
+    grid-template-columns: repeat(3, 1fr); /* 3 колонки для функций */
 }
 
 /* Стили для панели алфавита (3 строки по 9 кнопок) */
@@ -408,10 +408,4 @@ button[onclick*="="].light:active {
 /* Стили для ручки изменения размера в светлой теме */
 .resize-handle.light {
     background: #e0e0ea;
-}
-
-/* Добавляем класс для специальных кнопок (e^x, a^n) */
-button[onclick*="e^x"],
-button[onclick*="a^n"] {
-    class: special;
 }

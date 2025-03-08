@@ -13,7 +13,7 @@ const DEFAULT_HEIGHT = 550;
 
 function append(value) {
     // Разрешаем ввод функций, чисел, операций, букв и специальных символов
-    if (/[\d+\-*/.()πi]/.test(value) || ['sin', 'cos', 'tan', 'cot', 'sqrt', 'square', 'arcsin', 'arccos', 'ln', 'log', 'abs', 'e', 'e^x', 'a^n'].includes(value) || /^[a-z]$/i.test(value)) {
+    if (/[\d+\-*/.()πi]/.test(value) || ['sin', 'cos', 'tan', 'cot', 'sqrt', 'arcsin', 'arccos', 'ln', 'log', 'abs', 'e', 'e^x', 'a^n'].includes(value) || /^[a-z]$/i.test(value)) {
         if (['sin', 'cos', 'tan', 'cot', 'sqrt', 'arcsin', 'arccos', 'ln', 'log', 'abs'].includes(value)) {
             display.value += value + '('; // Добавляем функцию с открывающей скобкой
         } else if (value === 'square') {
@@ -62,7 +62,11 @@ function calculate(operation) {
                         case 'sin': result = Math.sin(toRadians(number)); break;
                         case 'cos': result = Math.cos(toRadians(number)); break;
                         case 'tan': result = Math.tan(toRadians(number)); break;
-                        case 'cot': result = 1 / Math.tan(toRadians(number)) || 0; break;
+                        case 'cot': {
+                            let tanValue = Math.tan(toRadians(number));
+                            result = tanValue === 0 ? 'Не определено' : 1 / tanValue; // Проверяем деление на ноль
+                            break;
+                        }
                         case 'sqrt': result = Math.sqrt(number); break;
                         case 'arcsin': result = toDegrees(Math.asin(number)); break;
                         case 'arccos': result = toDegrees(Math.acos(number)); break;
@@ -76,6 +80,8 @@ function calculate(operation) {
                     if (expMatch) {
                         let expNumber = parseFloat(expMatch[1]) || 0;
                         result = Math.exp(expNumber); // Вычисляем e^x
+                    } else if (expression === 'Math.exp(') {
+                        result = Math.E; // Если нет числа, возвращаем просто e
                     } else {
                         // Если нет скобок и числа, считаем e^x как e в степени последнего числа
                         let lastNumberMatch = expression.match(/(\d+\.?\d*)$/);
@@ -108,7 +114,7 @@ function calculate(operation) {
                 default: result = 'Ошибка';
             }
         }
-        display.value = isNaN(result) || !isFinite(result) ? 'Ошибка' : formatNumber(result);
+        display.value = isNaN(result) || !isFinite(result) ? 'Ошибка' : (typeof result === 'string' ? result : formatNumber(result));
     } catch (error) {
         display.value = 'Ошибка';
     }
