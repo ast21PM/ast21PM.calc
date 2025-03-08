@@ -120,7 +120,7 @@ function calculate(operation) {
     }
 }
 
-// Функция переключения темы
+// Функция переключения темы с изменением иконки
 function toggleTheme() {
     // Получаем тело документа
     let body = document.body;
@@ -136,6 +136,13 @@ function toggleTheme() {
     calc.classList.toggle('light');
     displayInput.classList.toggle('light');
     buttons.forEach(button => button.classList.toggle('light'));
+
+    // Меняем иконку кнопки темы
+    if (body.classList.contains('light')) {
+        themeToggle.textContent = '🌞'; // Солнце для светлой темы
+    } else {
+        themeToggle.textContent = '🌙'; // Полумесяц для темной темы
+    }
 }
 
 // Функция переключения панелей
