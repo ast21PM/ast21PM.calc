@@ -124,6 +124,10 @@
                     <button onclick="append('arccos(')">arccos</button>
                     <!-- Кнопка степени a^n -->
                     <button onclick="append('a^n')" class="special">a⁽ⁿ⁾</button>
+                    <!-- Кнопка арктангенса -->
+                    <button onclick="append('arctan(')">arctan</button>
+                    <!-- Кнопка факториала -->
+                    <button onclick="append('factorial(')">n!</button>
                 </div>
                 <!-- Панель английского алфавита -->
                 <div class="panel alpha-panel" style="display: none;">
@@ -159,6 +163,8 @@
                 </div>
             </div>
         </div>
+        <!-- Блок для истории вычислений -->
+        <div class="history" id="history"></div>
         <!-- Ручки для изменения размера (внизу справа) -->
         <div class="resize-handle" id="resizeHandle"></div>
     </div>

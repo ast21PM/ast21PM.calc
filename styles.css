@@ -429,3 +429,22 @@ button[onclick*="="].light:active {
 .resize-handle.light {
     background: #e0e0ea;
 }
+
+/* Стили для блока истории вычислений */
+.history {
+    max-height: 100px;
+    overflow-y: auto;
+    background: #1f1f2e;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 14px;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Стили для блока истории в светлой теме */
+.history.light {
+    background: #f0f0f5;
+    color: #000000;
+}
