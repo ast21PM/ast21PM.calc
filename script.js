@@ -16,7 +16,7 @@ let history = [];
 
 function append(value) {
     // Разрешаем ввод функций, чисел, операций, букв и специальных символов
-    if (/[\d+\-*/.()πi]/.test(value) || ['sin', 'cos', 'tan', 'cot', 'sqrt', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs', 'e', 'e^x', 'a^n', 'factorial'].includes(value) || /^[a-z]$/i.test(value)) {
+    if (/[\d+\-*/.()πi]/.test(value) || ['sin', 'cos', 'tan', 'cot', 'sqrt', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs', 'e', 'e^x', 'a^n', 'factorial', 'square'].includes(value) || /^[a-z]$/i.test(value)) {
         if (['sin', 'cos', 'tan', 'cot', 'sqrt', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs', 'factorial'].includes(value)) {
             display.value += value + '('; // Добавляем функцию с открывающей скобкой
         } else if (value === 'square') {
