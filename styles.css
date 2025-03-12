@@ -443,8 +443,47 @@ button[onclick*="="].light:active {
     transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* Стили для элемента истории */
+.history div {
+    display: flex; /* Используем flexbox для выравнивания */
+    align-items: center; /* Выравниваем по вертикали */
+    padding: 2px 0; /* Небольшой отступ для читаемости */
+}
+
+/* Стили для выражения */
+.expression {
+    color: #00ccff; /* Голубой для выражения */
+    font-weight: bold;
+    flex: 1; /* Занимает доступное пространство слева */
+    text-align: right; /* Выравнивание текста вправо */
+    margin-right: 10px; /* Отступ справа */
+}
+
+/* Стили для знака равенства */
+.equals {
+    color: #ffffff; /* Цвет знака = */
+    font-weight: bold; /* Жирный шрифт для единообразия */
+    width: 20px; /* Фиксированная ширина для стабильности */
+    text-align: center; /* Центрируем знак = */
+    flex-shrink: 0; /* Предотвращаем сжатие */
+}
+
+/* Стили для результата */
+.result {
+    color: #00ff00; /* Зеленый для результата */
+    font-weight: bold;
+    flex: 1; /* Занимает доступное пространство справа */
+    text-align: left; /* Выравнивание текста влево */
+    margin-left: 10px; /* Отступ слева */
+}
+
 /* Стили для блока истории в светлой теме */
 .history.light {
     background: #f0f0f5;
+    color: #000000;
+}
+
+/* Стили для знака = в светлой теме */
+.history.light .equals {
     color: #000000;
 }

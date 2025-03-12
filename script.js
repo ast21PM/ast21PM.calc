@@ -60,7 +60,7 @@ function calculate(operation) {
     try {
         if (operation === '=') {
             // Обрабатываем выражение, заменяя π, i, e на значения
-            expression = expression
+            let evalExpression = expression
                 .replace(/π/g, Math.PI)
                 .replace(/e/g, 'Math.E')
                 .replace(/i/g, 'i')
@@ -68,8 +68,8 @@ function calculate(operation) {
                 .replace(/\^/g, '**');  // Поддержка произвольных степеней
 
             // Заменяем наши функции на их значения
-            while (expression.match(/([a-z]+)\(([^()]+)\)/i)) {
-                expression = expression.replace(/([a-z]+)\(([^()]+)\)/gi, (match, func, arg) => {
+            while (evalExpression.match(/([a-z]+)\(([^()]+)\)/i)) {
+                evalExpression = evalExpression.replace(/([a-z]+)\(([^()]+)\)/gi, (match, func, arg) => {
                     let number = parseFloat(arg) || 0;
                     func = func.toLowerCase();
                     switch (func) {
@@ -94,28 +94,31 @@ function calculate(operation) {
             }
 
             // Обрабатываем Math.exp отдельно
-            if (expression.includes('Math.exp(')) {
-                let expMatch = expression.match(/Math\.exp\(([\d+\-*.]+)\)/);
+            if (evalExpression.includes('Math.exp(')) {
+                let expMatch = evalExpression.match(/Math\.exp\(([\d+\-*.]+)\)/);
                 if (expMatch) {
-                    expression = expression.replace(/Math\.exp\(([\d+\-*.]+)\)/, Math.exp(parseFloat(expMatch[1]) || 0));
+                    evalExpression = evalExpression.replace(/Math\.exp\(([\d+\-*.]+)\)/, Math.exp(parseFloat(expMatch[1]) || 0));
                 }
             }
 
             // Вычисляем итоговое выражение
-            result = eval(expression);
+            result = eval(evalExpression);
             display.value = isNaN(result) || !isFinite(result) ? 'Ошибка' : formatNumber(result);
-            updateHistory(expression, display.value); // Обновляем историю
+            updateHistory(expression, display.value); // Передаем исходное выражение и результат
         }
     } catch (error) {
         display.value = 'Ошибка';
+        updateHistory(expression, 'Ошибка'); // Передаем исходное выражение и ошибку
     }
 }
 
 // Обновляем историю вычислений
 function updateHistory(expression, result) {
     const historyDiv = document.getElementById('history');
-    history.push(`${expression} = ${result}`);
-    historyDiv.innerHTML = history.map(item => `<div>${item}</div>`).join('');
+    // Сохраняем исходное выражение без замены символов (π, e и т.д.)
+    const originalExpression = expression; // Уже получили исходное выражение из display.value.trim()
+    history.push({ expr: originalExpression, res: result });
+    historyDiv.innerHTML = history.map(item => `<div><span class="expression">${item.expr}</span><span class="equals">=</span><span class="result">${item.res}</span></div>`).join('');
 }
 
 // Функция переключения темы
