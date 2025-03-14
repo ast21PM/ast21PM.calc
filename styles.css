@@ -94,6 +94,7 @@ body.light {
     z-index: 900; /* Под калькулятором, но над фоном */
     min-width: 350px; /* Увеличиваем минимальную ширину */
     min-height: 250px; /* Увеличиваем минимальную высоту */
+    margin-top: 70px; /* Отступ сверху для навигации */
 }
 
 /* Стили для калькулятора в светлой теме */
@@ -486,4 +487,50 @@ button[onclick*="="].light:active {
 /* Стили для знака = в светлой теме */
 .history.light .equals {
     color: #000000;
+}
+
+/* Стили для блока навигации */
+.navigation-tabs {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.navigation-tabs .nav-link {
+    background: #3b3b50;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-weight: bold;
+    text-align: center;
+}
+
+.navigation-tabs .nav-link.active {
+    background: #007bff;
+    color: #ffffff;
+}
+
+.navigation-tabs .nav-link.light {
+    background: #e0e0ea;
+    color: #000000;
+}
+
+.navigation-tabs .nav-link.active.light {
+    background: #007bff;
+    color: #ffffff;
+}
+
+.navigation-tabs .nav-link:hover {
+    background: #4a4a66;
+}
+
+.navigation-tabs .nav-link.light:hover {
+    background: #d0d0d8;
 }

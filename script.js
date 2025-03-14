@@ -131,12 +131,19 @@ function toggleTheme() {
     let displayInput = document.getElementById('display');
     // Получаем все кнопки
     let buttons = document.querySelectorAll('button');
+    // Получаем навигационные ссылки
+    let navLinks = document.querySelectorAll('.nav-link');
 
     // Переключаем классы для смены темы
     body.classList.toggle('light');
     calc.classList.toggle('light');
     displayInput.classList.toggle('light');
     buttons.forEach(button => button.classList.toggle('light'));
+    navLinks.forEach(link => link.classList.toggle('light'));
+
+    // Сохраняем текущую тему в localStorage
+    const isLightTheme = body.classList.contains('light');
+    localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
 }
 
 // Функция переключения панелей
@@ -170,6 +177,13 @@ window.onload = function() {
     // Устанавливаем дефолтный размер при загрузке
     calculator.style.width = `${DEFAULT_WIDTH}px`;
     calculator.style.height = `${DEFAULT_HEIGHT}px`;
+
+    // Применяем сохранённую тему
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        toggleTheme();
+        document.querySelector('.switch input').checked = true;
+    }
 };
 
 // Функция для перемещения курсора в поле ввода
