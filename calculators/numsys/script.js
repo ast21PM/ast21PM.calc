@@ -1,36 +1,27 @@
 // Получаем элементы
-let display = document.getElementById('display');
 let calculator = document.getElementById('calculator');
 let themeToggle = document.getElementById('themeToggle');
 let resizeHandle = document.getElementById('resizeHandle');
 let inputValue = document.getElementById('inputValue');
-let resultValue = document.getElementById('resultValue');
 let fromBase = document.getElementById('fromBase');
 let toBase = document.getElementById('toBase');
+let resultValue = document.getElementById('resultValue');
+let explanation = document.getElementById('explanation');
+let stepTableBody = document.getElementById('stepTableBody');
 
 // Дефолтные размеры
 const DEFAULT_WIDTH = 650;
-const DEFAULT_HEIGHT = 550;
+const DEFAULT_HEIGHT = 600; // Оставляем увеличенную высоту
 
-// Массив для истории
-let history = [];
-
-// Дебаунсинг для updateConversion
-function debounce(func, wait) {
-    let timeout;
-    return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-}
-
-function updateConversion() {
-    let value = inputValue.value.trim();
+function convertNumber() {
+    let value = inputValue.value.trim().toUpperCase();
     let from = parseInt(fromBase.value);
     let to = parseInt(toBase.value);
 
     if (value === '') {
-        resultValue.value = '';
+        resultValue.textContent = 'Ошибка: введите число';
+        explanation.textContent = '';
+        stepTableBody.innerHTML = '';
         return;
     }
 
@@ -38,54 +29,149 @@ function updateConversion() {
         // Преобразуем в десятичную систему
         let decimal = parseInt(value, from);
         if (isNaN(decimal)) {
-            resultValue.value = 'Ошибка';
+            resultValue.textContent = 'Ошибка: некорректное число';
+            explanation.textContent = '';
+            stepTableBody.innerHTML = '';
             return;
         }
 
-        // Проверка на корректность результата
+        // Проверка на отрицательные числа
         if (decimal < 0) {
-            resultValue.value = 'Ошибка: отрицательные числа не поддерживаются';
+            resultValue.textContent = 'Ошибка: отрицательные числа не поддерживаются';
+            explanation.textContent = '';
+            stepTableBody.innerHTML = '';
             return;
         }
 
         // Преобразуем в целевую систему
         let result = decimal.toString(to).toUpperCase();
-        resultValue.value = result;
-        updateHistory(`${value} (base ${from})`, result);
+        resultValue.textContent = `${value} (base ${from}) = ${result} (base ${to})`;
+
+        // Показываем шаги
+        stepTableBody.innerHTML = '';
+
+        // Шаг 1: Перевод в десятичную систему (если исходная система не 10)
+        if (from !== 10) {
+            explanation.textContent = `Сначала переводим число ${value} из системы с основанием ${from} в десятичную систему.\nКаждый разряд числа умножаем на основание ${from} в степени n, где n — номер разряда (0 — младший разряд). Суммируем результаты.`;
+            showStepsToDecimal(value, from);
+        } else {
+            explanation.textContent = `Число ${value} уже в десятичной системе.`;
+        }
+
+        // Шаг 2: Перевод из десятичной в целевую систему (если целевая система не 10)
+        if (to !== 10) {
+            let explanationText = from !== 10 
+                ? `Теперь переводим полученное десятичное число ${decimal} в систему с основанием ${to}.\nДелим число на ${to}, записываем остатки, пока частное не станет 0. Остатки в обратном порядке дают результат.`
+                : `Переводим число ${decimal} из десятичной системы в систему с основанием ${to}.\nДелим число на ${to}, записываем остатки, пока частное не станет 0. Остатки в обратном порядке дают результат.`;
+            explanation.textContent += `\n${explanationText}`;
+            showStepsFromDecimal(decimal, to);
+        }
     } catch (e) {
-        resultValue.value = 'Ошибка';
-        updateHistory(`${value} (base ${from})`, 'Ошибка');
+        resultValue.textContent = 'Ошибка';
+        explanation.textContent = '';
+        stepTableBody.innerHTML = '';
     }
 }
 
-function clearDisplay() {
-    inputValue.value = '';
-    resultValue.value = '';
-    display.value = '';
+// Функция для перевода из системы с основанием from в десятичную
+function showStepsToDecimal(value, fromBase) {
+    let digits = value.split('').reverse(); // Разбиваем число на разряды и переворачиваем (младший разряд справа)
+    let decimal = 0;
+    let steps = [];
+
+    digits.forEach((digit, index) => {
+        let digitValue = parseInt(digit, fromBase); // Преобразуем символ в число (например, A в 10 для base 16)
+        let power = index;
+        let contribution = digitValue * Math.pow(fromBase, power);
+        decimal += contribution;
+        steps.push({ digit: digit, power: power, contribution: contribution });
+    });
+
+    // Отображаем шаги в таблице
+    stepTableBody.innerHTML = '<tr><th>Разряд</th><th>Значение</th><th>Степень</th><th>Результат</th></tr>';
+    steps.forEach(step => {
+        let row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${step.digit}</td>
+            <td>${step.digit} × ${fromBase}^${step.power}</td>
+            <td>${fromBase}^${step.power}</td>
+            <td>${step.contribution}</td>
+        `;
+        stepTableBody.appendChild(row);
+    });
+
+    // Добавляем итоговую строку
+    let resultRow = document.createElement('tr');
+    resultRow.innerHTML = `<td colspan="4">Сумма: ${decimal} (base 10)</td>`;
+    stepTableBody.appendChild(resultRow);
 }
 
-function updateHistory(expression, result) {
-    const historyDiv = document.getElementById('history');
-    history.push({ expr: expression, res: result });
-    historyDiv.innerHTML = history.map(item => `<div><span class="expression">${item.expr}</span><span class="equals">=</span><span class="result">${item.res}</span></div>`).join('');
+// Функция для перевода из десятичной системы в систему с основанием to
+function showStepsFromDecimal(decimal, targetBase) {
+    let steps = [];
+    let quotient = decimal;
+    
+    // Делим на основание, пока частное не станет 0
+    while (quotient > 0) {
+        let remainder = quotient % targetBase;
+        steps.push({ quotient: quotient, newQuotient: Math.floor(quotient / targetBase), remainder: remainder.toString(targetBase).toUpperCase() });
+        quotient = Math.floor(quotient / targetBase);
+    }
+
+    // Добавляем заголовок для второй таблицы
+    let headerRow = document.createElement('tr');
+    headerRow.innerHTML = '<th>Деление</th><th>Целое частное</th><th>Остаток</th>';
+    stepTableBody.appendChild(headerRow);
+
+    // Отображаем шаги в таблице
+    steps.forEach(step => {
+        let row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${step.quotient} / ${targetBase}</td>
+            <td>${step.newQuotient}</td>
+            <td>${step.remainder}</td>
+        `;
+        stepTableBody.appendChild(row);
+    });
+
+    // Добавляем итоговую строку
+    let resultRow = document.createElement('tr');
+    resultRow.innerHTML = `
+        <td colspan="3">${decimal} (base 10) = ${decimal.toString(targetBase).toUpperCase()} (base ${targetBase})</td>
+    `;
+    stepTableBody.appendChild(resultRow);
+}
+
+// Новая функция для смены систем счисления местами
+function swapBases() {
+    let fromValue = fromBase.value;
+    let toValue = toBase.value;
+    fromBase.value = toValue;
+    toBase.value = fromValue;
 }
 
 function toggleTheme() {
     let body = document.body;
     let calc = document.querySelector('.calculator');
-    let displayInput = document.getElementById('display');
     let buttons = document.querySelectorAll('button');
     let navLinks = document.querySelectorAll('.nav-link');
     let inputs = document.querySelectorAll('input');
     let selects = document.querySelectorAll('select');
+    let resultSection = document.querySelector('.result-section');
+    let table = document.querySelector('table');
+    let th = document.querySelectorAll('th');
+    let td = document.querySelectorAll('td');
 
     body.classList.toggle('light');
     calc.classList.toggle('light');
-    displayInput.classList.toggle('light');
     buttons.forEach(button => button.classList.toggle('light'));
     navLinks.forEach(link => link.classList.toggle('light'));
     inputs.forEach(input => input.classList.toggle('light'));
     selects.forEach(select => select.classList.toggle('light'));
+    if (resultSection) resultSection.classList.toggle('light');
+    if (table) table.classList.toggle('light');
+    th.forEach(header => header.classList.toggle('light'));
+    td.forEach(cell => cell.classList.toggle('light'));
 
     const isLightTheme = body.classList.contains('light');
     localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
@@ -100,14 +186,9 @@ window.onload = function() {
         toggleTheme();
         document.querySelector('.switch input').checked = true;
     }
-
-    // Применяем дебаунсинг к updateConversion
-    const debouncedUpdateConversion = debounce(updateConversion, 500);
-    inputValue.addEventListener('input', debouncedUpdateConversion);
-    fromBase.addEventListener('change', updateConversion);
-    toBase.addEventListener('change', updateConversion);
 };
 
+// Перетаскивание
 let isDragging = false;
 let currentX;
 let currentY;
@@ -146,6 +227,7 @@ function stopDragging() {
     }
 }
 
+// Изменение размера
 let isResizing = false;
 let initialXResize;
 let initialYResize;

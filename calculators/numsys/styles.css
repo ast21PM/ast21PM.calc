@@ -86,15 +86,16 @@ body.light {
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     width: 650px; /* Увеличиваем ширину */
-    height: 550px; /* Увеличиваем высоту */
+    height: 600px; /* Увеличиваем высоту для лучшего отображения инструкции */
     display: flex;
     flex-direction: column;
     position: absolute; /* Для перетаскивания */
     transition: background 0.3s ease, box-shadow 0.3s ease; /* Анимация смены темы */
     z-index: 900; /* Под калькулятором, но над фоном */
     min-width: 350px; /* Увеличиваем минимальную ширину */
-    min-height: 250px; /* Увеличиваем минимальную высоту */
-    margin-top: 70px; /* Отступ сверху для навигации */
+    min-height: 300px; /* Увеличиваем минимальную высоту */
+    margin-top: 50px; /* Уменьшаем отступ сверху */
+    overflow: hidden; /* Предотвращаем прокрутку внутри калькулятора */
 }
 
 /* Стили для калькулятора в светлой теме */
@@ -132,40 +133,14 @@ body.light {
     box-shadow: none; /* Убираем тень */
 }
 
-/* Стили для поля ввода */
-#display {
-    width: 100%;
-    height: 90px; /* Увеличиваем высоту поля ввода */
-    background: #1f1f2e;
-    color: #ffffff;
-    font-size: 28px; /* Увеличиваем размер шрифта */
-    text-align: right;
-    padding: 15px; /* Увеличиваем отступы */
-    border: 1px solid #3b3b50;
-    border-radius: 8px;
-    margin-bottom: 15px; /* Увеличиваем отступ снизу */
-    box-sizing: border-box;
-    font-family: 'Courier New', monospace;
-    outline: none; /* Убрал обводку при фокусе */
-    transition: background 0.3s ease, color 0.3s ease, border 0.3s ease; /* Анимация смены темы */
-}
-
-/* Стили для поля ввода в светлой теме */
-#display.light {
-    background: #f0f0f5;
-    color: #000000;
-    border: 1px solid #ccc;
-}
-
 /* Стили для контейнера панелей */
 .calculator-panels {
     display: flex;
-    flex-direction: column; /* Вертикальное расположение */
+    flex-direction: column;
     gap: 10px;
-    flex: 1;
-    overflow: hidden; /* Скрываем прокрутку */
-    max-height: calc(100% - 135px); /* Учитываем поле ввода и отступы */
-    padding-bottom: 10px; /* Добавляем отступ снизу */
+    flex: 1; /* Занимает оставшееся пространство после заголовка */
+    padding-bottom: 0; /* Убираем нижний отступ */
+    overflow: hidden; /* Предотвращаем прокрутку внутри .calculator-panels */
 }
 
 /* Стили для панели цифр */
@@ -178,12 +153,22 @@ body.light {
     flex: 0 0 auto; /* Панель не растягивается, занимает только необходимое место */
 }
 
-/* Стили для групп ввода и результата */
-.input-group, .result-group {
+/* Стили для групп ввода */
+.input-group {
     display: flex;
     flex-direction: column;
     gap: 10px;
     width: 100%;
+}
+
+/* Стили для меток */
+.input-group label {
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.input-group label.light {
+    color: #000000;
 }
 
 /* Стили для выпадающих списков */
@@ -214,7 +199,7 @@ select.light {
     background: #f0f0f5;
     color: #000000;
     border: 1px solid #ccc;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); /* Кастомная стрелка для светлой темы */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); /* Исправленная кастомная стрелка для светлой темы */
 }
 
 /* Стили при наведении на выпадающие списки */
@@ -228,7 +213,7 @@ select.light:hover {
 }
 
 /* Стили для полей ввода в группах */
-.input-group input, .result-group input {
+.input-group input {
     width: 100%;
     background: #1f1f2e;
     color: #ffffff;
@@ -244,15 +229,15 @@ select.light:hover {
 }
 
 /* Стили для полей ввода в светлой теме */
-.input-group input.light, .result-group input.light {
+.input-group input.light {
     background: #f0f0f5;
     color: #000000;
     border: 1px solid #ccc;
 }
 
-/* Стили для кнопки очистки */
-.clear-btn {
-    background: #ff4d4d; /* Красный цвет */
+/* Стили для кнопки конвертации */
+.convert-btn {
+    background: #007bff;
     color: #ffffff;
     border: none;
     padding: 10px 20px;
@@ -261,97 +246,141 @@ select.light:hover {
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100%; /* Растягиваем на всю ширину */
-    box-sizing: border-box;
-    margin-bottom: 15px; /* Увеличиваем отступ снизу, чтобы кнопка не обрезалась */
-}
-
-/* Стили для кнопки очистки в светлой теме */
-.clear-btn.light {
-    background: #ff6666;
-    color: #ffffff;
-}
-
-/* Стили при наведении на кнопку очистки */
-.clear-btn:hover {
-    background: #e60000;
-}
-
-/* Стили при наведении на кнопку очистки в светлой теме */
-.clear-btn.light:hover {
-    background: #ff3333;
-}
-
-/* Стили при нажатии на кнопку очистки */
-.clear-btn:active {
-    background: #cc0000;
-}
-
-/* Стили при нажатии на кнопку очистки в светлой теме */
-.clear-btn.light:active {
-    background: #cc3333;
-}
-
-/* Стили для блока истории вычислений */
-.history {
-    flex: 1; /* Растягиваем историю на всё оставшееся пространство */
-    overflow-y: auto;
-    background: #1f1f2e;
-    color: #ffffff;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 15px; /* Увеличиваем промежуток между кнопкой AC и историей */
-    font-size: 14px;
-    transition: background 0.3s ease, color 0.3s ease;
     width: 100%;
     box-sizing: border-box;
+}
+
+.convert-btn.light {
+    background: #0056b3;
+}
+
+.convert-btn:hover {
+    background: #0056b3;
+}
+
+.convert-btn.light:hover {
+    background: #003d80;
+}
+
+.convert-btn:active {
+    background: #003d80;
+}
+
+.convert-btn.light:active {
+    background: #002f5d;
+}
+
+/* Стили для контейнера кнопки смены систем */
+.swap-button-container {
     display: flex;
-    flex-direction: column;
-    max-height: 150px; /* Ограничиваем высоту истории */
+    justify-content: center;
+    margin: 5px 0;
 }
 
-/* Стили для элемента истории */
-.history div {
-    display: flex; /* Используем flexbox для выравнивания */
-    align-items: center; /* Выравниваем по вертикали */
-    padding: 2px 0; /* Небольшой отступ */
+/* Стили для кнопки смены систем */
+.swap-btn {
+    background: #3b3b50;
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
 }
 
-/* Стили для выражения */
-.expression {
-    color: #00ccff; /* Голубой для выражения */
-    font-weight: bold;
-    flex: 1; /* Занимает доступное пространство */
-    text-align: right; /* Выравнивание текста вправо */
-    margin-right: 10px; /* Отступ справа */
+.swap-btn.light {
+    background: #e0e0ea;
 }
 
-/* Стили для знака равенства */
-.equals {
-    color: #ffffff; /* Цвет знака = */
-    font-weight: bold; /* Жирный шрифт */
-    width: 20px; /* Фиксированная ширина */
-    text-align: center; /* Центрируем знак = */
-    flex-shrink: 0; /* Предотвращаем сжатие */
+.swap-btn:hover {
+    background: #4a4a66;
 }
 
-/* Стили для результата */
-.result {
-    color: #00ff00; /* Зеленый для результата */
-    font-weight: bold;
-    flex: 1; /* Занимает доступное пространство */
-    text-align: left; /* Выравнивание текста влево */
-    margin-left: 10px; /* Отступ слева */
+.swap-btn.light:hover {
+    background: #d0d0d8;
 }
 
-/* Стили для блока истории в светлой теме */
-.history.light {
+.swap-btn svg {
+    stroke: #ffffff;
+    width: 24px;
+    height: 24px;
+}
+
+.swap-btn.light svg {
+    stroke: #000000;
+}
+
+/* Новая секция результата */
+.result-section {
+    margin-top: 10px; /* Уменьшаем верхний отступ */
+    padding: 10px;
+    background: #1f1f2e;
+    border-radius: 8px;
+    color: #ffffff;
+    flex: 1; /* Занимает оставшееся пространство */
+    overflow-y: auto; /* Включаем прокрутку */
+    max-height: 300px; /* Ограничиваем максимальную высоту, чтобы прокрутка сработала */
+}
+
+.result-section.light {
     background: #f0f0f5;
     color: #000000;
 }
 
-/* Стили для знака = в светлой теме */
-.history.light .equals {
+.result-section h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+.result-section #resultValue {
+    font-weight: bold;
+    color: #00ff00;
+}
+
+.result-section p {
+    margin: 0 0 5px 0; /* Уменьшаем нижний отступ текста */
+    font-size: 14px;
+    white-space: pre-wrap; /* Поддержка многострочного текста */
+}
+
+/* Стили для таблицы */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table.light {
+    background: #ffffff;
+}
+
+th, td {
+    border: 1px solid #3b3b50;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background: #3b3b50;
+    color: #ffffff;
+}
+
+th.light {
+    background: #e0e0ea;
+    color: #000000;
+}
+
+td {
+    background: #2d2d44;
+    color: #ffffff;
+}
+
+td.light {
+    background: #f0f0f5;
     color: #000000;
 }
 
