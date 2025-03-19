@@ -12,8 +12,8 @@ let resultSection = document.getElementById('resultSection');
 let loadingSpinner = document.getElementById('loadingSpinner');
 
 // Дефолтные размеры
-const DEFAULT_WIDTH = 650;
-const DEFAULT_HEIGHT = 600;
+const DEFAULT_WIDTH = 750;
+const DEFAULT_HEIGHT = 650;
 
 // Функция конвертации числа
 function convertNumber() {
