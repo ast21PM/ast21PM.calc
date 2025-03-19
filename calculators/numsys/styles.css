@@ -136,21 +136,72 @@ body.light {
 /* Стили для контейнера панелей */
 .calculator-panels {
     display: flex;
-    flex-direction: column;
+    flex-direction: row; /* Панели располагаются горизонтально */
     gap: 10px;
     flex: 1; /* Занимает оставшееся пространство после заголовка */
-    padding-bottom: 0; /* Убираем нижний отступ */
-    overflow: hidden; /* Предотвращаем прокрутку внутри .calculator-panels */
+    padding-bottom: 0;
+    overflow: hidden;
 }
 
-/* Стили для панели цифр */
+/* Стили для основного содержимого (ввод и результат) */
+.main-content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    gap: 10px;
+}
+
+/* Стили для панели ввода */
 .number-panel {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Увеличиваем отступ между элементами */
+    gap: 15px;
     padding: 10px;
-    width: 100%; /* Растягиваем на всю ширину */
-    flex: 0 0 auto; /* Панель не растягивается, занимает только необходимое место */
+    width: 60%; /* Увеличиваем до 60% (примерно в 1.5 раза больше, чем было) */
+    align-items: center; /* Центрируем содержимое по горизонтали */
+    overflow-y: auto; /* Добавляем вертикальную прокрутку */
+    height: 100%; /* Ограничиваем высоту, чтобы прокрутка работала */
+}
+
+/* Стили для полосы прокрутки в .number-panel (для WebKit-браузеров) */
+.number-panel::-webkit-scrollbar {
+    width: 8px; /* Ширина полосы прокрутки */
+}
+
+.number-panel::-webkit-scrollbar-track {
+    background: #2d2d44; /* Фон полосы прокрутки (темная тема) */
+    border-radius: 4px;
+}
+
+.number-panel::-webkit-scrollbar-track.light {
+    background: #f0f0f5; /* Фон полосы прокрутки (светлая тема) */
+}
+
+.number-panel::-webkit-scrollbar-thumb {
+    background: #555; /* Цвет бегунка (темная тема) */
+    border-radius: 4px;
+}
+
+.number-panel::-webkit-scrollbar-thumb.light {
+    background: #bbb; /* Цвет бегунка (светлая тема) */
+}
+
+.number-panel::-webkit-scrollbar-thumb:hover {
+    background: #666; /* Цвет бегунка при наведении (темная тема) */
+}
+
+.number-panel::-webkit-scrollbar-thumb:hover.light {
+    background: #aaa; /* Цвет бегунка при наведении (светлая тема) */
+}
+
+/* Стили для панели результата */
+.result-panel {
+    width: 40%; /* Уменьшаем до 40% */
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    position: relative; /* Для позиционирования спиннера */
 }
 
 /* Стили для групп ввода */
@@ -158,7 +209,8 @@ body.light {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 100%;
+    width: 90%; /* Увеличиваем ширину для заполнения пространства */
+    max-width: 350px; /* Увеличиваем максимальную ширину для гармонии */
 }
 
 /* Стили для меток */
@@ -182,7 +234,7 @@ select {
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: 'Arial', sans-serif;
-    width: 100%; /* Растягиваем на всю ширину */
+    width: 100%; /* Растягиваем на всю ширину группы */
     box-sizing: border-box;
     -webkit-appearance: none; /* Убираем стандартную стрелку в WebKit */
     -moz-appearance: none; /* Убираем стандартную стрелку в Firefox */
@@ -246,7 +298,8 @@ select.light:hover {
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100%;
+    width: 90%; /* Увеличиваем ширину для заполнения пространства */
+    max-width: 350px; /* Увеличиваем максимальную ширину для гармонии */
     box-sizing: border-box;
 }
 
@@ -279,51 +332,60 @@ select.light:hover {
 
 /* Стили для кнопки смены систем */
 .swap-btn {
-    background: #3b3b50;
+    background: #444; /* Темно-серый фон */
     border: none;
-    padding: 8px;
+    padding: 0; /* Убираем padding, так как размер задается через width/height */
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 36px; /* Диаметр 36px */
+    height: 36px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Легкая тень */
 }
 
 .swap-btn.light {
-    background: #e0e0ea;
+    background: #ccc; /* Светло-серый фон для светлой темы */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Тень чуть светлее */
 }
 
 .swap-btn:hover {
-    background: #4a4a66;
+    background: #555; /* Чуть светлее при наведении */
 }
 
 .swap-btn.light:hover {
-    background: #d0d0d8;
+    background: #bbb; /* Чуть темнее при наведении в светлой теме */
 }
 
 .swap-btn svg {
-    stroke: #ffffff;
-    width: 24px;
+    stroke: #ffffff; /* Белая иконка */
+    width: 24px; /* Размер иконки */
     height: 24px;
 }
 
 .swap-btn.light svg {
-    stroke: #000000;
+    stroke: #000000; /* Черная иконка в светлой теме */
 }
 
-/* Новая секция результата */
+/* Стили для секции результата */
 .result-section {
-    margin-top: 10px; /* Уменьшаем верхний отступ */
+    margin-top: 0;
     padding: 10px;
     background: #1f1f2e;
     border-radius: 8px;
     color: #ffffff;
-    flex: 1; /* Занимает оставшееся пространство */
-    overflow-y: auto; /* Включаем прокрутку */
-    max-height: 300px; /* Ограничиваем максимальную высоту, чтобы прокрутка сработала */
+    flex: 1;
+    overflow-y: auto;
+    opacity: 0; /* Изначально скрыто для анимации */
+    transform: translateX(20px); /* Сдвиг вправо для анимации */
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Плавный переход */
+}
+
+.result-section.visible {
+    opacity: 1;
+    transform: translateX(0); /* Появление с анимацией */
 }
 
 .result-section.light {
@@ -342,7 +404,7 @@ select.light:hover {
 }
 
 .result-section p {
-    margin: 0 0 5px 0; /* Уменьшаем нижний отступ текста */
+    margin: 0 0 5px 0;
     font-size: 14px;
     white-space: pre-wrap; /* Поддержка многострочного текста */
 }
@@ -382,6 +444,32 @@ td {
 td.light {
     background: #f0f0f5;
     color: #000000;
+}
+
+/* Стили для спиннера загрузки */
+.loading-spinner {
+    display: none; /* Скрыт по умолчанию */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Показываем спиннер, когда он активен */
+.loading-spinner.active {
+    display: block;
+}
+
+/* Анимация вращения спиннера */
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 /* Стили для ручки изменения размера */

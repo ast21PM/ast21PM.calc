@@ -30,117 +30,125 @@
         </div>
         <!-- Панель управления -->
         <div class="calculator-panels">
-            <div class="number-panel">
-                <div class="input-group">
-                    <label>Исходное число</label>
-                    <input type="text" id="inputValue" placeholder="Введите число">
+            <div class="main-content">
+                <!-- Панель ввода -->
+                <div class="number-panel">
+                    <div class="input-group">
+                        <label>Исходное число</label>
+                        <input type="text" id="inputValue" placeholder="Введите число">
+                    </div>
+                    <div class="input-group">
+                        <label>Начальная система</label>
+                        <select id="fromBase">
+                            <option value="2">(2)</option>
+                            <option value="3">(3)</option>
+                            <option value="4">(4)</option>
+                            <option value="5">(5)</option>
+                            <option value="6">(6)</option>
+                            <option value="7">(7)</option>
+                            <option value="8">(8)</option>
+                            <option value="9">(9)</option>
+                            <option value="10" selected>(10)</option>
+                            <option value="11">(11)</option>
+                            <option value="12">(12)</option>
+                            <option value="13">(13)</option>
+                            <option value="14">(14)</option>
+                            <option value="15">(15)</option>
+                            <option value="16">(16)</option>
+                            <option value="17">(17)</option>
+                            <option value="18">(18)</option>
+                            <option value="19">(19)</option>
+                            <option value="20">(20)</option>
+                            <option value="21">(21)</option>
+                            <option value="22">(22)</option>
+                            <option value="23">(23)</option>
+                            <option value="24">(24)</option>
+                            <option value="25">(25)</option>
+                            <option value="26">(26)</option>
+                            <option value="27">(27)</option>
+                            <option value="28">(28)</option>
+                            <option value="29">(29)</option>
+                            <option value="30">(30)</option>
+                            <option value="31">(31)</option>
+                            <option value="32">(32)</option>
+                            <option value="33">(33)</option>
+                            <option value="34">(34)</option>
+                            <option value="35">(35)</option>
+                            <option value="36">(36)</option>
+                        </select>
+                    </div>
+                    <!-- Кнопка для смены систем счисления -->
+                    <div class="swap-button-container">
+                        <button onclick="swapBases()" class="swap-btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <!-- Первая изогнутая стрелка (полукруг сверху, направление вправо) -->
+                                <path d="M19 5 A7 7 0 0 1 12 12 M19 5 L16 2 M19 5 L22 2"></path>
+                                <!-- Вторая изогнутая стрелка (полукруг снизу, направление влево) -->
+                                <path d="M5 19 A7 7 0 0 1 12 12 M5 19 L2 22 M5 19 L8 22"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="input-group">
+                        <label>Целевая система</label>
+                        <select id="toBase">
+                            <option value="2" selected>(2)</option>
+                            <option value="3">(3)</option>
+                            <option value="4">(4)</option>
+                            <option value="5">(5)</option>
+                            <option value="6">(6)</option>
+                            <option value="7">(7)</option>
+                            <option value="8">(8)</option>
+                            <option value="9">(9)</option>
+                            <option value="10">(10)</option>
+                            <option value="11">(11)</option>
+                            <option value="12">(12)</option>
+                            <option value="13">(13)</option>
+                            <option value="14">(14)</option>
+                            <option value="15">(15)</option>
+                            <option value="16">(16)</option>
+                            <option value="17">(17)</option>
+                            <option value="18">(18)</option>
+                            <option value="19">(19)</option>
+                            <option value="20">(20)</option>
+                            <option value="21">(21)</option>
+                            <option value="22">(22)</option>
+                            <option value="23">(23)</option>
+                            <option value="24">(24)</option>
+                            <option value="25">(25)</option>
+                            <option value="26">(26)</option>
+                            <option value="27">(27)</option>
+                            <option value="28">(28)</option>
+                            <option value="29">(29)</option>
+                            <option value="30">(30)</option>
+                            <option value="31">(31)</option>
+                            <option value="32">(32)</option>
+                            <option value="33">(33)</option>
+                            <option value="34">(34)</option>
+                            <option value="35">(35)</option>
+                            <option value="36">(36)</option>
+                        </select>
+                    </div>
+                    <button onclick="convertNumber()" class="convert-btn">КОНВЕРТИРОВАТЬ</button>
                 </div>
-                <div class="input-group">
-                    <label>Начальная система</label>
-                    <select id="fromBase">
-                        <option value="2">(2)</option>
-                        <option value="3">(3)</option>
-                        <option value="4">(4)</option>
-                        <option value="5">(5)</option>
-                        <option value="6">(6)</option>
-                        <option value="7">(7)</option>
-                        <option value="8">(8)</option>
-                        <option value="9">(9)</option>
-                        <option value="10" selected>(10)</option>
-                        <option value="11">(11)</option>
-                        <option value="12">(12)</option>
-                        <option value="13">(13)</option>
-                        <option value="14">(14)</option>
-                        <option value="15">(15)</option>
-                        <option value="16">(16)</option>
-                        <option value="17">(17)</option>
-                        <option value="18">(18)</option>
-                        <option value="19">(19)</option>
-                        <option value="20">(20)</option>
-                        <option value="21">(21)</option>
-                        <option value="22">(22)</option>
-                        <option value="23">(23)</option>
-                        <option value="24">(24)</option>
-                        <option value="25">(25)</option>
-                        <option value="26">(26)</option>
-                        <option value="27">(27)</option>
-                        <option value="28">(28)</option>
-                        <option value="29">(29)</option>
-                        <option value="30">(30)</option>
-                        <option value="31">(31)</option>
-                        <option value="32">(32)</option>
-                        <option value="33">(33)</option>
-                        <option value="34">(34)</option>
-                        <option value="35">(35)</option>
-                        <option value="36">(36)</option>
-                    </select>
+                <!-- Панель результата -->
+                <div class="result-panel">
+                    <!-- Спиннер загрузки -->
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                    <div class="result-section" id="resultSection">
+                        <h3>Результат: <span id="resultValue"></span></h3>
+                        <p id="explanation"></p>
+                        <table id="stepTable">
+                            <thead>
+                                <tr>
+                                    <th>Деление</th>
+                                    <th>Целое частное</th>
+                                    <th>Остаток</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stepTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <!-- Кнопка для смены систем счисления -->
-                <div class="swap-button-container">
-                    <button onclick="swapBases()" class="swap-btn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="17 2 21 6 17 10"></polyline>
-                            <polyline points="7 14 3 10 7 6"></polyline>
-                            <line x1="21" y1="6" x2="3" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                    </button>
-                </div>
-                <div class="input-group">
-                    <label>Целевая система</label>
-                    <select id="toBase">
-                        <option value="2" selected>(2)</option>
-                        <option value="3">(3)</option>
-                        <option value="4">(4)</option>
-                        <option value="5">(5)</option>
-                        <option value="6">(6)</option>
-                        <option value="7">(7)</option>
-                        <option value="8">(8)</option>
-                        <option value="9">(9)</option>
-                        <option value="10">(10)</option>
-                        <option value="11">(11)</option>
-                        <option value="12">(12)</option>
-                        <option value="13">(13)</option>
-                        <option value="14">(14)</option>
-                        <option value="15">(15)</option>
-                        <option value="16">(16)</option>
-                        <option value="17">(17)</option>
-                        <option value="18">(18)</option>
-                        <option value="19">(19)</option>
-                        <option value="20">(20)</option>
-                        <option value="21">(21)</option>
-                        <option value="22">(22)</option>
-                        <option value="23">(23)</option>
-                        <option value="24">(24)</option>
-                        <option value="25">(25)</option>
-                        <option value="26">(26)</option>
-                        <option value="27">(27)</option>
-                        <option value="28">(28)</option>
-                        <option value="29">(29)</option>
-                        <option value="30">(30)</option>
-                        <option value="31">(31)</option>
-                        <option value="32">(32)</option>
-                        <option value="33">(33)</option>
-                        <option value="34">(34)</option>
-                        <option value="35">(35)</option>
-                        <option value="36">(36)</option>
-                    </select>
-                </div>
-                <button onclick="convertNumber()" class="convert-btn">КОНВЕРТИРОВАТЬ</button>
-            </div>
-            <div class="result-section" id="resultSection">
-                <h3>Результат: <span id="resultValue"></span></h3>
-                <p id="explanation"></p>
-                <table id="stepTable">
-                    <thead>
-                        <tr>
-                            <th>Деление</th>
-                            <th>Целое частное</th>
-                            <th>Остаток</th>
-                        </tr>
-                    </thead>
-                    <tbody id="stepTableBody"></tbody>
-                </table>
             </div>
         </div>
         <div class="resize-handle" id="resizeHandle"></div>
