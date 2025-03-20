@@ -1,0 +1,489 @@
+/* Стили для тела страницы */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e, #2d2d44);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s ease;
+}
+
+/* Светлая тема */
+body.light {
+    background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
+}
+
+/* Переключатель темы */
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 80px;
+    height: 40px;
+    z-index: 1000;
+}
+
+.switch {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #28292c;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.switch input {
+    position: absolute;
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+
+.switch input:checked ~ .slider {
+    background-color: #d8dbe0;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 6px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    box-shadow: inset 12px -2px 0px 0px #d8dbe0;
+    background-color: #28292c;
+    transition: 0.3s;
+}
+
+.switch input:checked ~ .slider:before {
+    transform: translateX(38px);
+    background-color: #28292c;
+    box-shadow: none;
+}
+
+/* Контейнер конвертера */
+.converter {
+    background: #2d2d44;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 350px;
+    height: 600px; /* Увеличенная высота для графика */
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    z-index: 900;
+    min-width: 300px;
+    min-height: 500px;
+    margin-top: 70px;
+}
+
+/* Светлая тема для конвертера */
+.converter.light {
+    background: #ffffff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок конвертера */
+.converter-header {
+    width: 100%;
+    height: 25px;
+    border-radius: 8px 8px 0 0;
+    cursor: move;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    user-select: none;
+    background: linear-gradient(135deg, #3b3b50, #2d2d44);
+    color: #ffffff;
+    opacity: 0.9;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Светлая тема для заголовка */
+.converter-header.light {
+    background: transparent;
+    color: #000000;
+    box-shadow: none;
+}
+
+/* Тело конвертера */
+.converter-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Поле ввода суммы */
+#amount {
+    width: 100%;
+    height: 40px;
+    background: #1f1f2e;
+    color: #ffffff;
+    font-size: 16px;
+    text-align: right;
+    padding: 8px;
+    border: 1px solid #3b3b50;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-family: 'Courier New', monospace;
+    outline: none;
+    transition: background 0.3s ease, color 0.3s ease, border 0.3s ease;
+}
+
+#amount.light {
+    background: #f0f0f5;
+    color: #000000;
+    border: 1px solid #ccc;
+}
+
+/* Выбор валют */
+.currency-selection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.currency-selection select {
+    flex: 1;
+    padding: 8px 24px 8px 30px; /* Учитываем место для флага */
+    background: #3b3b50;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 20px;
+}
+
+.currency-selection select.light {
+    background: #e0e0ea;
+    color: #000000;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+}
+
+.currency-selection select:hover {
+    background-color: #4a4a66;
+}
+
+.currency-selection select.light:hover {
+    background-color: #d0d0d8;
+}
+
+.currency-selection .arrow {
+    font-size: 18px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.currency-selection .arrow.light {
+    color: #000000;
+}
+
+/* Стили для флагов в выпадающих списках */
+.currency-selection select option {
+    padding-left: 30px;
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    background-size: 20px;
+}
+
+/* Текущий курс и изменение */
+.rate-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 14px;
+}
+
+#currentRate {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+#currentRate.light {
+    color: #000000;
+}
+
+#rateChange {
+    font-weight: bold;
+}
+
+.rate-change.down {
+    color: #ff4d4d; /* Красный для снижения */
+}
+
+.rate-change.up {
+    color: #00ff00; /* Зеленый для роста */
+}
+
+/* Кнопки выбора периода */
+.period-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.period-btn {
+    flex: 1;
+    background: #3b3b50;
+    color: #ffffff;
+    border: none;
+    padding: 6px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: bold;
+}
+
+.period-btn.active {
+    background: #007bff;
+}
+
+.period-btn:hover {
+    background: #4a4a66;
+}
+
+.period-btn.light {
+    background: #e0e0ea;
+    color: #000000;
+}
+
+.period-btn.active.light {
+    background: #007bff;
+    color: #ffffff;
+}
+
+.period-btn.light:hover {
+    background: #d0d0d8;
+}
+
+/* Контейнер для графика */
+.chart-container {
+    height: 150px;
+    width: 100%;
+}
+
+/* Кнопка конвертации */
+.convert-btn {
+    background: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+}
+
+.convert-btn:hover {
+    background: #0056b3;
+    transform: scale(1.02);
+}
+
+.convert-btn:active {
+    background: #003d7a;
+    transform: scale(0.98);
+}
+
+/* Результат */
+.result {
+    background: #1f1f2e;
+    color: #00ff00;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 6px;
+    text-align: center;
+    transition: background 0.3s ease, color 0.3s ease;
+    font-weight: bold;
+}
+
+.result.light {
+    background: #f0f0f5;
+    color: #008000;
+}
+
+/* История конвертаций */
+.history {
+    background: #1f1f2e;
+    border-radius: 6px;
+    padding: 8px;
+    max-height: 100px;
+    overflow-y: auto;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.history.light {
+    background: #f0f0f5;
+}
+
+.history-header {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+    border-bottom: 1px solid #3b3b50;
+    padding-bottom: 4px;
+}
+
+.history-header.light {
+    color: #000000;
+    border-bottom: 1px solid #ccc;
+}
+
+.history-content div {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 12px;
+}
+
+.history-content .expression {
+    color: #00ccff;
+    font-weight: bold;
+    flex: 1;
+    text-align: right;
+    margin-right: 8px;
+}
+
+.history-content .equals {
+    color: #ffffff;
+    font-weight: bold;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.history-content .result {
+    color: #00ff00;
+    font-weight: bold;
+    flex: 1;
+    text-align: left;
+    margin-left: 8px;
+}
+
+.history.light .equals {
+    color: #000000;
+}
+
+.history.light .result {
+    color: #008000;
+}
+
+.history.light .expression {
+    color: #007bff;
+}
+
+/* Ручка изменения размера */
+.resize-handle {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 15px;
+    height: 15px;
+    background: #3b3b50;
+    border-radius: 50%;
+    cursor: nwse-resize;
+    z-index: 950;
+}
+
+.resize-handle.light {
+    background: #e0e0ea;
+}
+
+/* Навигация */
+.navigation-tabs {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.navigation-tabs .nav-link {
+    background: #3b3b50;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-weight: bold;
+    text-align: center;
+}
+
+.navigation-tabs .nav-link.active {
+    background: #007bff;
+    color: #ffffff;
+}
+
+.navigation-tabs .nav-link.light {
+    background: #e0e0ea;
+    color: #000000;
+}
+
+.navigation-tabs .nav-link.active.light {
+    background: #007bff;
+    color: #ffffff;
+}
+
+.navigation-tabs .nav-link:hover {
+    background: #4a4a66;
+}
+
+.navigation-tabs .nav-link.light:hover {
+    background: #d0d0d8;
+}
+
+/* Скрытие полосы прокрутки, но сохранение функциональности */
+.history::-webkit-scrollbar {
+    width: 6px;
+}
+
+.history::-webkit-scrollbar-track {
+    background: #1f1f2e;
+    border-radius: 6px;
+}
+
+.history::-webkit-scrollbar-thumb {
+    background: #3b3b50;
+    border-radius: 6px;
+}
+
+.history.light::-webkit-scrollbar-track {
+    background: #f0f0f5;
+}
+
+.history.light::-webkit-scrollbar-thumb {
+    background: #d0d0d8;
+}

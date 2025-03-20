@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конвертер валют</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Подключаем Chart.js для графика -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Переключатель темы -->
+    <div class="theme-toggle">
+        <label class="switch">
+            <input type="checkbox" id="themeSwitch">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <!-- Навигация -->
+    <div class="navigation-tabs">
+        <a href="../index.html" class="nav-link">Система счисления</a>
+        <a href="index.html" class="nav-link active">Валюта</a>
+        <a href="../graph/index.html" class="nav-link">График</a>
+        <a href="../numsys/index.html" class="nav-link">Числа</a>
+    </div>
+
+    <!-- Контейнер конвертера -->
+    <div class="converter" id="converter">
+        <div class="converter-header">Конвертер валют</div>
+        <div class="converter-body">
+            <!-- Поле ввода суммы -->
+            <input type="number" id="amount" placeholder="Введите сумму" step="0.01">
+
+            <!-- Выбор валют -->
+            <div class="currency-selection">
+                <select id="fromCurrency"></select>
+                <span class="arrow">→</span>
+                <select id="toCurrency"></select>
+            </div>
+
+            <!-- Текущий курс и изменение -->
+            <div class="rate-info">
+                <span id="currentRate"></span>
+                <span id="rateChange" class="rate-change"></span>
+            </div>
+
+            <!-- Кнопки выбора периода -->
+            <div class="period-buttons">
+                <button class="period-btn active" onclick="updateChart('month')">Месяц</button>
+                <button class="period-btn" onclick="updateChart('year')">Год</button>
+                <button class="period-btn" onclick="updateChart('all')">Всё время</button>
+            </div>
+
+            <!-- График -->
+            <div class="chart-container">
+                <canvas id="exchangeChart"></canvas>
+            </div>
+
+            <!-- Кнопка конвертации -->
+            <button class="convert-btn" onclick="convertCurrency()">Конвертировать</button>
+
+            <!-- Результат -->
+            <div id="result" class="result"></div>
+
+            <!-- История конвертаций -->
+            <div class="history" id="history">
+                <div class="history-header">История конвертаций</div>
+                <div class="history-content"></div>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
