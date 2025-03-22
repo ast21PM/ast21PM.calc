@@ -1,4 +1,3 @@
-/* Стили для тела страницы */
 body {
     display: flex;
     justify-content: center;
@@ -12,12 +11,10 @@ body {
     transition: background 0.3s ease;
 }
 
-/* Светлая тема */
 body.light {
     background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
 }
 
-/* Переключатель темы */
 .theme-toggle {
     position: absolute;
     top: 20px;
@@ -73,31 +70,28 @@ body.light {
     box-shadow: none;
 }
 
-/* Контейнер конвертера */
 .converter {
     background: #2d2d44;
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    width: 350px;
-    height: 600px; /* Увеличенная высота для графика */
+    width: 700px;
+    height: 600px;
     display: flex;
     flex-direction: column;
     position: absolute;
     transition: background 0.3s ease, box-shadow 0.3s ease;
     z-index: 900;
-    min-width: 300px;
+    min-width: 600px;
     min-height: 500px;
     margin-top: 70px;
 }
 
-/* Светлая тема для конвертера */
 .converter.light {
     background: #ffffff;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Заголовок конвертера */
 .converter-header {
     width: 100%;
     height: 25px;
@@ -117,14 +111,11 @@ body.light {
     transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* Светлая тема для заголовка */
 .converter-header.light {
     background: transparent;
     color: #000000;
-    box-shadow: none;
 }
 
-/* Тело конвертера */
 .converter-body {
     display: flex;
     flex-direction: column;
@@ -133,7 +124,6 @@ body.light {
     overflow: hidden;
 }
 
-/* Поле ввода суммы */
 #amount {
     width: 100%;
     height: 40px;
@@ -156,7 +146,6 @@ body.light {
     border: 1px solid #ccc;
 }
 
-/* Выбор валют */
 .currency-selection {
     display: flex;
     align-items: center;
@@ -165,7 +154,7 @@ body.light {
 
 .currency-selection select {
     flex: 1;
-    padding: 8px 24px 8px 30px; /* Учитываем место для флага */
+    padding: 8px 24px 8px 30px;
     background: #3b3b50;
     color: #ffffff;
     border: none;
@@ -194,17 +183,30 @@ body.light {
     background-color: #d0d0d8;
 }
 
-.currency-selection .arrow {
-    font-size: 18px;
+.swap-btn {
+    background: #3b3b50;
     color: #ffffff;
-    font-weight: bold;
+    border: none;
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.currency-selection .arrow.light {
+.swap-btn:hover {
+    background: #4a4a66;
+}
+
+.swap-btn.light {
+    background: #e0e0ea;
     color: #000000;
 }
 
-/* Стили для флагов в выпадающих списках */
+.swap-btn.light:hover {
+    background: #d0d0d8;
+}
+
 .currency-selection select option {
     padding-left: 30px;
     background-repeat: no-repeat;
@@ -212,7 +214,6 @@ body.light {
     background-size: 20px;
 }
 
-/* Текущий курс и изменение */
 .rate-info {
     display: flex;
     justify-content: space-between;
@@ -235,17 +236,42 @@ body.light {
 }
 
 .rate-change.down {
-    color: #ff4d4d; /* Красный для снижения */
+    color: #ff4d4d;
 }
 
 .rate-change.up {
-    color: #00ff00; /* Зеленый для роста */
+    color: #00ff00;
 }
 
-/* Кнопки выбора периода */
+.toggle-chart-btn {
+    background: #3b3b50;
+    color: #ffffff;
+    border: none;
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: bold;
+}
+
+.toggle-chart-btn:hover {
+    background: #4a4a66;
+}
+
+.toggle-chart-btn.light {
+    background: #e0e0ea;
+    color: #000000;
+}
+
+.toggle-chart-btn.light:hover {
+    background: #d0d0d8;
+}
+
 .period-buttons {
     display: flex;
     gap: 5px;
+    margin-bottom: 10px;
 }
 
 .period-btn {
@@ -283,13 +309,12 @@ body.light {
     background: #d0d0d8;
 }
 
-/* Контейнер для графика */
 .chart-container {
-    height: 150px;
+    height: 200px;
     width: 100%;
+    margin-bottom: 10px;
 }
 
-/* Кнопка конвертации */
 .convert-btn {
     background: #007bff;
     color: #ffffff;
@@ -313,7 +338,6 @@ body.light {
     transform: scale(0.98);
 }
 
-/* Результат */
 .result {
     background: #1f1f2e;
     color: #00ff00;
@@ -330,7 +354,6 @@ body.light {
     color: #008000;
 }
 
-/* История конвертаций */
 .history {
     background: #1f1f2e;
     border-radius: 6px;
@@ -363,7 +386,7 @@ body.light {
     display: flex;
     align-items: center;
     padding: 4px 0;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .history-content .expression {
@@ -372,6 +395,7 @@ body.light {
     flex: 1;
     text-align: right;
     margin-right: 8px;
+    font-size: 14px;
 }
 
 .history-content .equals {
@@ -380,6 +404,7 @@ body.light {
     width: 16px;
     text-align: center;
     flex-shrink: 0;
+    font-size: 14px;
 }
 
 .history-content .result {
@@ -388,6 +413,8 @@ body.light {
     flex: 1;
     text-align: left;
     margin-left: 8px;
+    font-size: 14px;
+    background: none;
 }
 
 .history.light .equals {
@@ -396,13 +423,13 @@ body.light {
 
 .history.light .result {
     color: #008000;
+    background: none;
 }
 
 .history.light .expression {
     color: #007bff;
 }
 
-/* Ручка изменения размера */
 .resize-handle {
     position: absolute;
     bottom: 5px;
@@ -419,7 +446,6 @@ body.light {
     background: #e0e0ea;
 }
 
-/* Навигация */
 .navigation-tabs {
     position: absolute;
     top: 20px;
@@ -434,7 +460,7 @@ body.light {
     background: #3b3b50;
     color: #ffffff;
     text-decoration: none;
-    padding: 8px 16px;
+    padding: 10px 20px; /* Унифицировано */
     font-size: 14px;
     border-radius: 4px;
     transition: all 0.2s ease;
@@ -465,7 +491,6 @@ body.light {
     background: #d0d0d8;
 }
 
-/* Скрытие полосы прокрутки, но сохранение функциональности */
 .history::-webkit-scrollbar {
     width: 6px;
 }
