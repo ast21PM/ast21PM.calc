@@ -512,3 +512,71 @@ body.light {
 .history.light::-webkit-scrollbar-thumb {
     background: #d0d0d8;
 }
+
+/* Стили для виджетов */
+.currency-widgets {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+    overflow-x: auto;
+    padding: 10px;
+    max-width: 90%;
+}
+
+.widget {
+    display: flex;
+    align-items: center;
+    background: #3b3b50;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+.widget.light {
+    background: #e0e0ea;
+    color: #000000;
+}
+
+.widget img {
+    width: 20px;
+    height: 15px;
+    margin-right: 8px;
+}
+
+.widget .rate {
+    margin-left: 8px;
+    color: #00ff00;
+}
+
+.widget.light .rate {
+    color: #008000;
+}
+
+.currency-widgets::-webkit-scrollbar {
+    height: 6px;
+}
+
+.currency-widgets::-webkit-scrollbar-track {
+    background: #1f1f2e;
+    border-radius: 6px;
+}
+
+.currency-widgets::-webkit-scrollbar-thumb {
+    background: #3b3b50;
+    border-radius: 6px;
+}
+
+.currency-widgets.light::-webkit-scrollbar-track {
+    background: #f0f0f5;
+}
+
+.currency-widgets.light::-webkit-scrollbar-thumb {
+    background: #d0d0d8;
+}

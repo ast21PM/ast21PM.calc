@@ -19,6 +19,8 @@ function applyTheme(isLight) {
         document.querySelector('#currentRate').classList.add('light');
         document.querySelectorAll('.period-btn').forEach(btn => btn.classList.add('light'));
         document.querySelector('.toggle-chart-btn').classList.add('light');
+        document.querySelectorAll('.widget').forEach(widget => widget.classList.add('light'));
+        document.querySelector('.currency-widgets').classList.add('light');
     } else {
         document.body.classList.remove('light');
         document.querySelector('.converter').classList.remove('light');
@@ -35,6 +37,8 @@ function applyTheme(isLight) {
         document.querySelector('#currentRate').classList.remove('light');
         document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('light'));
         document.querySelector('.toggle-chart-btn').classList.remove('light');
+        document.querySelectorAll('.widget').forEach(widget => widget.classList.remove('light'));
+        document.querySelector('.currency-widgets').classList.remove('light');
     }
     updateChartColors();
 }
@@ -130,21 +134,65 @@ document.getElementById('amount').addEventListener('input', (e) => {
 });
 
 // Данные валют и графиков
-const apiKey = '2LSSPK4AC1IHUWGS';
 let rates = {};
 let chart;
 let rateHistory = {};
 const supportedCurrencies = [
-    'USD', 'EUR', 'RUB', 'CNY', 'TRY', 'KZT', 'GBP', 'JPY', 'AUD', 'CAD', 
-    'CHF', 'NZD', 'BRL', 'INR', 'MXN', 'ZAR', 'SGD', 'HKD', 'NOK', 'SEK'
+    'USD', 'EUR', 'RUB', 'CNY', 'TRY', 'KZT', 'GBP', 'JPY', 'AUD', 'CAD',
+    'CHF', 'NZD', 'BRL', 'INR', 'MXN', 'ZAR', 'SGD', 'HKD', 'NOK', 'SEK', 'AED'
 ];
 
+// Статические курсы валют (1 [валюта] = X RUB)
+const staticRates = {
+    'USD': 84.64,    // 1 USD = 84.64 RUB
+    'EUR': 91.43,    // 1 EUR = 91.43 RUB
+    'RUB': 1,        // Курс RUB к самому себе
+    'CNY': 11.58,    // 1 CNY = 11.58 RUB
+    'TRY': 2.23,     // 1 TRY = 2.23 RUB
+    'KZT': 0.17,     // 1 KZT = 0.17 RUB
+    'GBP': 110.00,   // 1 GBP = 110.00 RUB
+    'JPY': 0.56,     // 1 JPY = 0.56 RUB
+    'AUD': 56.00,    // 1 AUD = 56.00 RUB
+    'CAD': 62.00,    // 1 CAD = 62.00 RUB
+    'CHF': 98.00,    // 1 CHF = 98.00 RUB
+    'NZD': 51.00,    // 1 NZD = 51.00 RUB
+    'BRL': 15.00,    // 1 BRL = 15.00 RUB
+    'INR': 1.01,     // 1 INR = 1.01 RUB
+    'MXN': 4.20,     // 1 MXN = 4.20 RUB
+    'ZAR': 4.50,     // 1 ZAR = 4.50 RUB
+    'SGD': 63.00,    // 1 SGD = 63.00 RUB
+    'HKD': 10.90,    // 1 HKD = 10.90 RUB
+    'NOK': 7.80,     // 1 NOK = 7.80 RUB
+    'SEK': 8.00,     // 1 SEK = 8.00 RUB
+    'AED': 23.05     // 1 AED = 23.05 RUB
+};
+
+// Генерация фейковых исторических данных
+function generateFakeHistoricalData(baseRate, days) {
+    const data = {};
+    const endDate = new Date();
+    for (let i = 0; i < days; i++) {
+        const date = new Date(endDate);
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        const fluctuation = (Math.random() - 0.5) * 0.5;
+        const rate = (baseRate + fluctuation).toFixed(6);
+        data[dateStr] = {
+            "1. open": rate,
+            "2. high": (parseFloat(rate) + 0.1).toFixed(6),
+            "3. low": (parseFloat(rate) - 0.1).toFixed(6),
+            "4. close": rate
+        };
+    }
+    return data;
+}
+
 function getFlagUrl(currency) {
-    const countryCodes = { 
+    const countryCodes = {
         'USD': 'us', 'EUR': 'eu', 'RUB': 'ru', 'CNY': 'cn', 'TRY': 'tr', 'KZT': 'kz',
         'GBP': 'gb', 'JPY': 'jp', 'AUD': 'au', 'CAD': 'ca', 'CHF': 'ch', 'NZD': 'nz',
         'BRL': 'br', 'INR': 'in', 'MXN': 'mx', 'ZAR': 'za', 'SGD': 'sg', 'HKD': 'hk',
-        'NOK': 'no', 'SEK': 'se'
+        'NOK': 'no', 'SEK': 'se', 'AED': 'ae'
     };
     return `https://flagcdn.com/20x15/${countryCodes[currency] || 'un'}.png`;
 }
@@ -157,33 +205,40 @@ function getCurrencyName(currency) {
         'CHF': 'Швейцарский франк', 'NZD': 'Новозеландский доллар', 'BRL': 'Бразильский реал',
         'INR': 'Индийская рупия', 'MXN': 'Мексиканское песо', 'ZAR': 'Южноафриканский рэнд',
         'SGD': 'Сингапурский доллар', 'HKD': 'Гонконгский доллар', 'NOK': 'Норвежская крона',
-        'SEK': 'Шведская крона'
+        'SEK': 'Шведская крона', 'AED': 'Дирхам ОАЭ'
     };
     return currencyNames[currency] || currency;
 }
 
+function updateCurrencyWidgets() {
+    const widgetCurrencies = ['USD', 'EUR', 'CNY', 'KZT', 'TRY', 'AED'];
+    widgetCurrencies.forEach(currency => {
+        const rateElement = document.getElementById(`rate-${currency}`);
+        if (rates[currency]) {
+            rateElement.textContent = rates[currency].toFixed(2);
+        } else {
+            rateElement.textContent = 'Н/Д';
+        }
+    });
+}
+
 async function fetchCurrencies() {
     try {
-        rates['RUB'] = 1;
+        rates = { ...staticRates };
+
         for (let currency of supportedCurrencies) {
             if (currency !== 'RUB') {
-                const response = await fetch(`https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${currency}&to_symbol=RUB&apikey=${apiKey}`);
-                const data = await response.json();
-                if (data["Time Series FX (Daily)"]) {
-                    const timeSeries = data["Time Series FX (Daily)"];
-                    const latestDate = Object.keys(timeSeries)[0];
-                    rates[currency] = parseFloat(timeSeries[latestDate]["4. close"]);
-                    rateHistory[`${currency}/RUB`] = timeSeries;
-                } else {
-                    console.warn(`Данные для ${currency}/RUB недоступны`);
-                }
+                const baseRate = staticRates[currency];
+                rateHistory[`${currency}/RUB`] = generateFakeHistoricalData(baseRate, 365 * 25);
             }
         }
+
         populateCurrencies();
         updateRateInfo();
+        updateCurrencyWidgets();
     } catch (error) {
         console.error('Ошибка:', error);
-        alert('Не удалось загрузить курсы валют. Проверьте лимит API.');
+        alert('Произошла ошибка при загрузке данных.');
     }
 }
 
@@ -207,8 +262,8 @@ function populateCurrencies() {
         }
     });
 
-    fromCurrency.value = 'RUB';
-    toCurrency.value = 'USD';
+    fromCurrency.value = 'EUR';
+    toCurrency.value = 'RUB';
 }
 
 function updateRateInfo() {
@@ -223,17 +278,17 @@ function updateRateInfo() {
 
     let rate;
     if (fromCurrency === 'RUB') {
-        rate = (1 / rates[toCurrency]).toFixed(4);
+        rate = (1 / rates[toCurrency]).toFixed(6);
     } else if (toCurrency === 'RUB') {
-        rate = rates[fromCurrency].toFixed(4);
+        rate = rates[fromCurrency].toFixed(6);
     } else {
-        rate = (rates[fromCurrency] / rates[toCurrency]).toFixed(4);
+        rate = (rates[fromCurrency] / rates[toCurrency]).toFixed(6);
     }
 
     document.getElementById('currentRate').textContent = `1 ${fromCurrency} = ${rate} ${toCurrency}`;
 
     const rateChange = document.getElementById('rateChange');
-    const pair = fromCurrency === 'RUB' ? `${toCurrency}/RUB` : `${fromCurrency}/RUB`;
+    const pair = `${fromCurrency}/${toCurrency}`;
     if (rateHistory[pair]) {
         const timeSeries = rateHistory[pair];
         const dates = Object.keys(timeSeries).sort();
@@ -241,7 +296,7 @@ function updateRateInfo() {
         const previousRate = parseFloat(timeSeries[dates[1]]["4. close"]);
         const change = latestRate - previousRate;
         const percentage = ((change / previousRate) * 100).toFixed(2);
-        rateChange.textContent = `${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(2)} (${percentage}%)`;
+        rateChange.textContent = `${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(6)} (${percentage}%)`;
         rateChange.classList.remove('up', 'down');
         rateChange.classList.add(change >= 0 ? 'up' : 'down');
     } else {
@@ -256,6 +311,10 @@ function swapCurrencies() {
     fromCurrency.value = toCurrency.value;
     toCurrency.value = temp;
     updateRateInfo();
+    const amount = parseFloat(document.getElementById('amount').value);
+    if (!isNaN(amount) && amount > 0) {
+        convertCurrency();
+    }
     if (document.getElementById('chartContainer').style.display === 'block') {
         updateChart(document.querySelector('.period-btn.active').getAttribute('onclick').match(/'([^']+)'/)[1]);
     }
@@ -281,42 +340,155 @@ async function updateChart(period) {
     let from = fromCurrency, to = toCurrency;
     let invert = false;
 
-    if (fromCurrency === 'RUB') {
-        from = toCurrency;
-        to = fromCurrency;
-        invert = true;
-    } else if (toCurrency !== 'RUB') {
+    if (toCurrency !== 'RUB') {
         from = fromCurrency;
         to = 'RUB';
+        invert = fromCurrency === 'RUB';
+    } else {
+        from = fromCurrency;
+        to = toCurrency;
+        invert = fromCurrency === 'RUB';
     }
 
-    const response = await fetch(`https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${from}&to_symbol=${to}&apikey=${apiKey}`);
-    const data = await response.json();
-
-    if (!data["Time Series FX (Daily)"]) {
-        alert('Ошибка загрузки графика. Проверьте лимит запросов API.');
+    const timeSeries = rateHistory[`${from === 'RUB' ? to : from}/RUB`];
+    if (!timeSeries) {
+        alert('Данные для графика недоступны.');
         return;
     }
 
-    const timeSeries = data["Time Series FX (Daily)"];
-    let labels = [], chartData = [];
+    let labels = [], chartData = [], pointRadii = [], fullDates = [];
     const entries = Object.entries(timeSeries);
     const limit = period === 'month' ? 30 : period === 'year' ? 365 : entries.length;
 
-    for (let i = 0; i < Math.min(limit, entries.length); i++) {
-        const [date, values] = entries[i];
-        labels.push(date.slice(8, 10) + '.' + date.slice(5, 7));
-        let rate = parseFloat(values["4. close"]);
-        if (invert) {
-            rate = 1 / rate;
-        } else if (toCurrency !== 'RUB' && toCurrency !== to) {
-            const rateToRUB = rates[toCurrency];
-            rate = rate / rateToRUB;
+    const monthNames = ['янв.', 'февр.', 'мар.', 'апр.', 'мая', 'июня', 'июля', 'авг.', 'сент.', 'окт.', 'нояб.', 'дек.'];
+    const fullMonthNames = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+    if (period === 'year') {
+        let lastMonth = -1;
+        let lastYear = -1;
+
+        for (let i = 0; i < Math.min(limit, entries.length); i++) {
+            const [date, values] = entries[i];
+            const dateObj = new Date(date);
+            const month = dateObj.getMonth();
+            const year = dateObj.getFullYear();
+            const day = dateObj.getDate();
+
+            if (dateObj.getDate() === 1 || i === 0) {
+                if (i === 0 || month !== lastMonth) {
+                    labels.push(`${monthNames[month]} ${year}`);
+                } else {
+                    labels.push('');
+                }
+            } else {
+                labels.push('');
+            }
+
+            fullDates.push(`${day} ${fullMonthNames[month]} ${year} г.`);
+
+            lastMonth = month;
+            lastYear = year;
+
+            let rate = parseFloat(values["4. close"]);
+            if (invert) {
+                rate = 1 / rate;
+            } else if (toCurrency !== 'RUB' && toCurrency !== to) {
+                const rateToRUB = rates[toCurrency];
+                rate = rate / rateToRUB;
+            }
+            chartData.push(rate);
+
+            let isTurningPoint = false;
+            if (i > 0 && i < chartData.length - 1) {
+                const prevRate = chartData[i - 1];
+                const nextRate = parseFloat(entries[i + 1][1]["4. close"]);
+                if (invert) nextRate = 1 / nextRate;
+                const changePrev = Math.abs(rate - prevRate) / prevRate;
+                const changeNext = Math.abs(nextRate - rate) / rate;
+                if (changePrev > 0.005 || changeNext > 0.005) {
+                    isTurningPoint = true;
+                }
+            }
+            pointRadii.push(isTurningPoint ? 3 : 0);
         }
-        chartData.push(rate);
+    } else if (period === 'month') {
+        let lastMonth = -1;
+
+        for (let i = 0; i < Math.min(limit, entries.length); i++) {
+            const [date, values] = entries[i];
+            const dateObj = new Date(date);
+            const month = dateObj.getMonth();
+            const year = dateObj.getFullYear();
+            const day = dateObj.getDate();
+
+            if (month !== lastMonth) {
+                labels.push(`${monthNames[month]} ${year}`);
+                lastMonth = month;
+            } else {
+                labels.push('');
+            }
+
+            fullDates.push(`${day} ${fullMonthNames[month]} ${year} г.`);
+
+            let rate = parseFloat(values["4. close"]);
+            if (invert) {
+                rate = 1 / rate;
+            } else if (toCurrency !== 'RUB' && toCurrency !== to) {
+                const rateToRUB = rates[toCurrency];
+                rate = rate / rateToRUB;
+            }
+            chartData.push(rate);
+
+            let isTurningPoint = false;
+            if (i > 0 && i < chartData.length - 1) {
+                const prevRate = chartData[i - 1];
+                const nextRate = parseFloat(entries[i + 1][1]["4. close"]);
+                if (invert) nextRate = 1 / nextRate;
+                const changePrev = Math.abs(rate - prevRate) / prevRate;
+                const changeNext = Math.abs(nextRate - rate) / rate;
+                if (changePrev > 0.005 || changeNext > 0.005) {
+                    isTurningPoint = true;
+                }
+            }
+            pointRadii.push(isTurningPoint ? 3 : 0);
+        }
+    } else {
+        const startYear = 2000;
+        const endYear = 2025;
+        const interval = 5;
+        const yearData = {};
+
+        entries.forEach(([date, values]) => {
+            const year = new Date(date).getFullYear();
+            if (!yearData[year]) {
+                yearData[year] = { sum: 0, count: 0 };
+            }
+            let rate = parseFloat(values["4. close"]);
+            if (invert) rate = 1 / rate;
+            yearData[year].sum += rate;
+            yearData[year].count += 1;
+        });
+
+        for (let year = startYear; year <= endYear; year += interval) {
+            if (yearData[year]) {
+                const avgRate = yearData[year].sum / yearData[year].count;
+                labels.push(year.toString());
+                chartData.push(avgRate);
+                pointRadii.push(3);
+                fullDates.push(`${year}`);
+            } else {
+                labels.push(year.toString());
+                chartData.push(null);
+                pointRadii.push(0);
+                fullDates.push(`${year}`);
+            }
+        }
     }
+
     labels.reverse();
     chartData.reverse();
+    pointRadii.reverse();
+    fullDates.reverse();
 
     document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelector(`.period-btn[onclick="updateChart('${period}')"]`).classList.add('active');
@@ -331,20 +503,60 @@ async function updateChart(period) {
             datasets: [{
                 label: `${fromCurrency}/${toCurrency}`,
                 data: chartData,
-                borderColor: '#ff4d4d',
+                borderColor: '#00ff00', // Возвращаем зеленый цвет
+                backgroundColor: 'rgba(0, 255, 0, 0.2)', // Заливка под линией
                 borderWidth: 2,
-                fill: false,
+                fill: true, // Включаем заливку
                 tension: 0.1,
-                pointRadius: 3,
+                pointRadius: pointRadii,
+                pointHoverRadius: 5,
+                pointBackgroundColor: '#00ff00', // Зеленые точки
             }]
         },
         options: {
             scales: {
-                x: { ticks: { color: document.body.classList.contains('light') ? '#000000' : '#ffffff', font: { size: 12 }, maxRotation: 45, minRotation: 45 }, grid: { display: false } },
-                y: { ticks: { color: document.body.classList.contains('light') ? '#000000' : '#ffffff', font: { size: 12 } }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+                x: {
+                    ticks: {
+                        color: document.body.classList.contains('light') ? '#000000' : '#ffffff',
+                        font: { size: 12 },
+                        maxRotation: 0,
+                        minRotation: 0
+                    },
+                    grid: { display: false }
+                },
+                y: {
+                    ticks: {
+                        color: document.body.classList.contains('light') ? '#000000' : '#ffffff',
+                        font: { size: 12 },
+                        callback: function(value) {
+                            return value.toFixed(2);
+                        }
+                    },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
             },
-            plugins: { legend: { display: false } },
-            maintainAspectRatio: false
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    enabled: true,
+                    mode: 'nearest',
+                    intersect: false,
+                    callbacks: {
+                        title: function(context) {
+                            return fullDates[context[0].dataIndex];
+                        },
+                        label: function(context) {
+                            const rate = context.parsed.y.toFixed(2);
+                            return `1 ${fromCurrency} = ${rate} ${toCurrency}`;
+                        }
+                    }
+                }
+            },
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'nearest',
+                intersect: false
+            }
         }
     });
 }
@@ -383,7 +595,7 @@ function convertCurrency() {
     }
 
     const convertedAmount = amount * rate;
-    const result = convertedAmount.toFixed(2);
+    const result = convertedAmount.toFixed(6);
     document.getElementById('result').textContent = `${amount} ${fromCurrency} = ${result} ${toCurrency}`;
 
     const historyContent = document.querySelector('.history-content');
