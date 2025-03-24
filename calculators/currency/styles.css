@@ -580,3 +580,66 @@ body.light {
 .currency-widgets.light::-webkit-scrollbar-thumb {
     background: #d0d0d8;
 }
+/* Стили для контейнера с кнопками */
+.amount-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin: 10px 0; /* Отступ сверху и снизу */
+    justify-content: center;
+}
+
+/* Стили для кнопок */
+.amount-btn {
+    background: #3b3b50;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.amount-btn:hover {
+    background: #4c4c68;
+}
+
+.amount-btn.light {
+    background: #e0e0ea;
+    color: #000000;
+}
+
+.amount-btn.light:hover {
+    background: #d0d0d8;
+}
+
+/* Стили для поля ввода */
+#amount {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #3b3b50;
+    border-radius: 4px;
+    background: #1f1f2e;
+    color: #ffffff;
+    font-size: 16px;
+    outline: none;
+    transition: background 0.3s ease, border 0.3s ease;
+}
+
+#amount.light {
+    background: #f0f0f5;
+    color: #000000;
+    border: 1px solid #d0d0d8;
+}
+
+/* Убираем стрелки для input (для совместимости с браузерами) */
+#amount::-webkit-inner-spin-button,
+#amount::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#amount {
+    -moz-appearance: textfield; /* Для Firefox */
+}

@@ -22,7 +22,6 @@
         <a href="../graph/index.html" class="nav-link">График</a>
     </div>
 
-    <!-- Новый контейнер для виджетов -->
     <div class="currency-widgets">
         <div class="widget" id="widget-USD">
             <img src="https://flagcdn.com/20x15/us.png" alt="USD">
@@ -59,7 +58,18 @@
     <div class="converter" id="converter">
         <div class="converter-header">Конвертер валют</div>
         <div class="converter-body">
-            <input type="number" id="amount" placeholder="Введите сумму" step="0.01" min="0">
+            <!-- Перемещаем кнопки сюда, сразу после заголовка -->
+            <div class="amount-buttons">
+                <button class="amount-btn" onclick="setAmount(1)">1</button>
+                <button class="amount-btn" onclick="setAmount(2)">2</button>
+                <button class="amount-btn" onclick="setAmount(5)">5</button>
+                <button class="amount-btn" onclick="setAmount(10)">10</button>
+                <button class="amount-btn" onclick="setAmount(15)">15</button>
+                <button class="amount-btn" onclick="setAmount(20)">20</button>
+                <button class="amount-btn" onclick="setAmount(50)">50</button>
+                <button class="amount-btn" onclick="setAmount(100)">100</button>
+            </div>
+            <input type="text" id="amount" inputmode="numeric" placeholder="Введите сумму">
             <div class="currency-selection">
                 <select id="fromCurrency"></select>
                 <button class="swap-btn" onclick="swapCurrencies()">↔</button>

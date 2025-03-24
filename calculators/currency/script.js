@@ -18,6 +18,7 @@ function applyTheme(isLight) {
         document.querySelector('.history-header').classList.add('light');
         document.querySelector('#currentRate').classList.add('light');
         document.querySelectorAll('.period-btn').forEach(btn => btn.classList.add('light'));
+        document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.add('light'));
         document.querySelector('.toggle-chart-btn').classList.add('light');
         document.querySelectorAll('.widget').forEach(widget => widget.classList.add('light'));
         document.querySelector('.currency-widgets').classList.add('light');
@@ -36,6 +37,7 @@ function applyTheme(isLight) {
         document.querySelector('.history-header').classList.remove('light');
         document.querySelector('#currentRate').classList.remove('light');
         document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('light'));
+        document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('light'));
         document.querySelector('.toggle-chart-btn').classList.remove('light');
         document.querySelectorAll('.widget').forEach(widget => widget.classList.remove('light'));
         document.querySelector('.currency-widgets').classList.remove('light');
@@ -128,10 +130,30 @@ document.addEventListener('mouseup', () => {
     isResizing = false;
 });
 
-// Ограничение ввода отрицательных чисел
+// Проверка ввода: разрешаем только числа и десятичные дроби
 document.getElementById('amount').addEventListener('input', (e) => {
-    if (e.target.value < 0) e.target.value = 0;
+    const value = e.target.value;
+    // Разрешаем только числа, точку и пустую строку
+    if (!/^\d*\.?\d*$/.test(value)) {
+        e.target.value = value.slice(0, -1); // Удаляем последний введенный символ, если он некорректный
+    }
+    // Запрещаем отрицательные значения
+    if (value.startsWith('-')) {
+        e.target.value = value.replace('-', '');
+    }
 });
+
+// Новая функция для установки значения в поле ввода
+function setAmount(value) {
+    const amountInput = document.getElementById('amount');
+    amountInput.value = value;
+    // Автоматически выполняем конвертацию, если валюты выбраны
+    const fromCurrency = document.getElementById('fromCurrency').value;
+    const toCurrency = document.getElementById('toCurrency').value;
+    if (fromCurrency && toCurrency && value > 0) {
+        convertCurrency();
+    }
+}
 
 // Данные валют и графиков
 let rates = {};
@@ -144,27 +166,27 @@ const supportedCurrencies = [
 
 // Статические курсы валют (1 [валюта] = X RUB)
 const staticRates = {
-    'USD': 84.64,    // 1 USD = 84.64 RUB
-    'EUR': 91.43,    // 1 EUR = 91.43 RUB
-    'RUB': 1,        // Курс RUB к самому себе
-    'CNY': 11.58,    // 1 CNY = 11.58 RUB
-    'TRY': 2.23,     // 1 TRY = 2.23 RUB
-    'KZT': 0.17,     // 1 KZT = 0.17 RUB
-    'GBP': 110.00,   // 1 GBP = 110.00 RUB
-    'JPY': 0.56,     // 1 JPY = 0.56 RUB
-    'AUD': 56.00,    // 1 AUD = 56.00 RUB
-    'CAD': 62.00,    // 1 CAD = 62.00 RUB
-    'CHF': 98.00,    // 1 CHF = 98.00 RUB
-    'NZD': 51.00,    // 1 NZD = 51.00 RUB
-    'BRL': 15.00,    // 1 BRL = 15.00 RUB
-    'INR': 1.01,     // 1 INR = 1.01 RUB
-    'MXN': 4.20,     // 1 MXN = 4.20 RUB
-    'ZAR': 4.50,     // 1 ZAR = 4.50 RUB
-    'SGD': 63.00,    // 1 SGD = 63.00 RUB
-    'HKD': 10.90,    // 1 HKD = 10.90 RUB
-    'NOK': 7.80,     // 1 NOK = 7.80 RUB
-    'SEK': 8.00,     // 1 SEK = 8.00 RUB
-    'AED': 23.05     // 1 AED = 23.05 RUB
+    'USD': 84.64,
+    'EUR': 91.43,
+    'RUB': 1,
+    'CNY': 11.58,
+    'TRY': 2.23,
+    'KZT': 0.17,
+    'GBP': 110.00,
+    'JPY': 0.56,
+    'AUD': 56.00,
+    'CAD': 62.00,
+    'CHF': 98.00,
+    'NZD': 51.00,
+    'BRL': 15.00,
+    'INR': 1.01,
+    'MXN': 4.20,
+    'ZAR': 4.50,
+    'SGD': 63.00,
+    'HKD': 10.90,
+    'NOK': 7.80,
+    'SEK': 8.00,
+    'AED': 23.05
 };
 
 // Генерация фейковых исторических данных
@@ -503,14 +525,14 @@ async function updateChart(period) {
             datasets: [{
                 label: `${fromCurrency}/${toCurrency}`,
                 data: chartData,
-                borderColor: '#00ff00', // Возвращаем зеленый цвет
-                backgroundColor: 'rgba(0, 255, 0, 0.2)', // Заливка под линией
+                borderColor: '#00ff00',
+                backgroundColor: 'rgba(0, 255, 0, 0.2)',
                 borderWidth: 2,
-                fill: true, // Включаем заливку
+                fill: true,
                 tension: 0.1,
                 pointRadius: pointRadii,
                 pointHoverRadius: 5,
-                pointBackgroundColor: '#00ff00', // Зеленые точки
+                pointBackgroundColor: '#00ff00',
             }]
         },
         options: {
