@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Графический Калькулятор</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Навигация -->
+    <div class="navigation-tabs">
+        <a href="../../index.html" class="nav-link">Главная</a>
+        <a href="../numsys/index.html" class="nav-link">Система счисления</a>
+        <a href="../currency/index.html" class="nav-link">Валюта</a>
+        <a href="index.html" class="nav-link active">График</a>
+    </div>
+
+    <!-- Кнопка переключения темы -->
+    <div class="theme-toggle" id="themeToggle">
+        <label class="switch">
+            <input type="checkbox" onclick="toggleTheme()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <!-- Контейнер для всего калькулятора -->
+    <div class="container">
+        <!-- Панель графика -->
+        <div class="graph-panel">
+            <canvas id="graphCanvas"></canvas>
+        </div>
+
+        <!-- Панель управления -->
+        <div class="control-panel">
+            <!-- Поле ввода -->
+            <div class="input-wrapper">
+                <span class="input-label">y=</span>
+                <input type="text" id="display" autocomplete="off">
+            </div>
+
+            <!-- Кнопки -->
+            <div class="button-panel">
+                <button onclick="append('(')">(</button>
+                <button onclick="append(')')">)</button>
+                <button onclick="append('[')">[</button>
+                <button onclick="append(']')">]</button>
+                <button onclick="append('sqrt(')">√</button>
+                <button onclick="append('^')">^</button>
+                <button onclick="append('sin(')">sin</button>
+                <button onclick="append('cos(')">cos</button>
+                <button onclick="append('tan(')">tan</button>
+                <button onclick="append('cot(')">cot</button>
+                <button onclick="append('ln(')">ln</button>
+                <button onclick="append('log(')">log</button>
+                <button onclick="append('e')">e</button>
+                <button onclick="append('θ')">θ</button>
+                <button onclick="append('π')">π</button>
+                <button onclick="append('i')">i</button>
+                <button onclick="append('x')">x</button>
+                <button onclick="append('y')">y</button>
+                <button onclick="append('z')">z</button>
+                <button onclick="append('7')">7</button>
+                <button onclick="append('8')">8</button>
+                <button onclick="append('9')">9</button>
+                <button onclick="append('/')">/</button>
+                <button onclick="append('4')">4</button>
+                <button onclick="append('5')">5</button>
+                <button onclick="append('6')">6</button>
+                <button onclick="append('*')">×</button>
+                <button onclick="append('1')">1</button>
+                <button onclick="append('2')">2</button>
+                <button onclick="append('3')">3</button>
+                <button onclick="append('-')">-</button>
+                <button onclick="append('0')">0</button>
+                <button onclick="append('.')">.</button>
+                <button onclick="append('%')">%</button>
+                <button onclick="append('+')">+</button>
+                <button onclick="toggleAlpha()" class="alpha-btn">abc</button>
+                <button onclick="moveCursor('left')">←</button>
+                <button onclick="moveCursor('right')">→</button>
+                <button onclick="deleteLast()" class="delete-btn">⌫</button>
+                <button onclick="drawGraph()" class="equals-btn">=</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключение math.js для парсинга выражений -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.0.0/math.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
