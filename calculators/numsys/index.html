@@ -81,9 +81,7 @@
                     <div class="swap-button-container">
                         <button onclick="swapBases()" class="swap-btn">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <!-- Первая изогнутая стрелка (полукруг сверху, направление вправо) -->
                                 <path d="M19 5 A7 7 0 0 1 12 12 M19 5 L16 2 M19 5 L22 2"></path>
-                                <!-- Вторая изогнутая стрелка (полукруг снизу, направление влево) -->
                                 <path d="M5 19 A7 7 0 0 1 12 12 M5 19 L2 22 M5 19 L8 22"></path>
                             </svg>
                         </button>
@@ -131,7 +129,7 @@
                     <button onclick="convertNumber()" class="convert-btn">КОНВЕРТИРОВАТЬ</button>
                 </div>
                 <!-- Панель результата -->
-                <div class="result-panel">
+                <div class="result-panel" id="resultPanel">
                     <!-- Спиннер загрузки -->
                     <div class="loading-spinner" id="loadingSpinner"></div>
                     <div class="result-section" id="resultSection">

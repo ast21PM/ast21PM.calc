@@ -1,18 +1,18 @@
-/* Стили для тела страницы: центрирование и темный фон */
+/* Стили для тела страницы */
 body {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(135deg, #1a1a2e, #2d2d44); /* Градиент, как в Desmos */
+    background: linear-gradient(135deg, #1a1a2e, #2d2d44);
     font-family: 'Arial', sans-serif;
     margin: 0;
-    position: relative; /* Для позиционирования кнопки темы */
-    overflow: hidden; /* Предотвращаем прокрутку при перетаскивании */
-    transition: background 0.3s ease; /* Анимация смены темы */
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s ease;
 }
 
-/* Стили для тела в светлой теме */
+/* Светлая тема для тела */
 body.light {
     background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
 }
@@ -22,7 +22,7 @@ body.light {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 80px; /* Уменьшенный размер для калькулятора */
+    width: 80px;
     height: 40px;
     z-index: 1000;
 }
@@ -32,8 +32,8 @@ body.light {
     position: relative;
     width: 100%;
     height: 100%;
-    background-color: #28292c; /* Темный фон */
-    border-radius: 20px; /* Уменьшенный радиус */
+    background-color: #28292c;
+    border-radius: 20px;
     cursor: pointer;
     transition: 0.3s;
 }
@@ -55,28 +55,28 @@ body.light {
 
 /* Состояние при включении (светлая тема) */
 .switch input:checked ~ .slider {
-    background-color: #d8dbe0; /* Светлый фон */
+    background-color: #d8dbe0;
 }
 
 /* Круглый элемент слайдера */
 .slider:before {
     content: "";
     position: absolute;
-    top: 5px; /* Пропорционально уменьшенный отступ */
-    left: 6px; /* Пропорционально уменьшенный отступ */
-    width: 30px; /* Уменьшенный размер круга */
+    top: 5px;
+    left: 6px;
+    width: 30px;
     height: 30px;
     border-radius: 50%;
-    box-shadow: inset 12px -2px 0px 0px #d8dbe0; /* Тень для луны */
-    background-color: #28292c; /* Темный фон круга */
+    box-shadow: inset 12px -2px 0px 0px #d8dbe0;
+    background-color: #28292c;
     transition: 0.3s;
 }
 
 /* Перемещение круга при включении */
 .switch input:checked ~ .slider:before {
-    transform: translateX(38px); /* Пропорционально уменьшенное смещение */
+    transform: translateX(38px);
     background-color: #28292c;
-    box-shadow: none; /* Убираем тень для солнца */
+    box-shadow: none;
 }
 
 /* Стили для основного контейнера калькулятора */
@@ -84,66 +84,67 @@ body.light {
     background: #2d2d44;
     padding: 15px;
     border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    width: 650px; /* Увеличиваем ширину */
-    height: 600px; /* Увеличиваем высоту для лучшего отображения инструкции */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 400px; /* Узкое окно изначально */
+    height: 650px;
     display: flex;
     flex-direction: column;
-    position: absolute; /* Для перетаскивания */
-    transition: background 0.3s ease, box-shadow 0.3s ease; /* Анимация смены темы */
-    z-index: 900; /* Под калькулятором, но над фоном */
-    min-width: 350px; /* Увеличиваем минимальную ширину */
-    min-height: 300px; /* Увеличиваем минимальную высоту */
-    margin-top: 50px; /* Уменьшаем отступ сверху */
-    overflow: hidden; /* Предотвращаем прокрутку внутри калькулятора */
+    position: absolute;
+    transition: width 0.5s ease, background 0.3s ease, box-shadow 0.3s ease;
+    z-index: 900;
+    min-width: 350px;
+    min-height: 300px;
+    margin-top: 50px;
+    overflow: hidden;
 }
 
-/* Стили для калькулятора в светлой теме */
+/* Расширенное состояние калькулятора */
+.calculator.expanded {
+    /* Ширина будет установлена динамически через JS */
+}
+
+/* Светлая тема для калькулятора */
 .calculator.light {
     background: #ffffff;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Стили для заголовка калькулятора (для перетаскивания) */
+/* Стили для заголовка калькулятора */
 .calculator-header {
     width: 100%;
     height: 20px;
     border-radius: 8px 8px 0 0;
-    cursor: move; /* Курсор для перетаскивания */
+    cursor: move;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
-    justify-content: center; /* Центрируем текст */
+    justify-content: center;
     padding: 5px;
-    user-select: none; /* Отключаем выделение текста */
-    transition: background 0.3s ease, color 0.3s ease; /* Анимация смены темы */
-}
-
-/* Стили для заголовка в темной теме */
-.calculator-header {
-    background: linear-gradient(135deg, #3b3b50, #2d2d44); /* Тонированный градиент */
+    user-select: none;
+    background: linear-gradient(135deg, #3b3b50, #2d2d44);
     color: #ffffff;
-    opacity: 0.8; /* Полупрозрачность */
+    opacity: 0.9;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* Стили для заголовка в светлой теме */
+/* Светлая тема для заголовка */
 .calculator-header.light {
-    background: transparent; /* Прозрачный фон */
-    color: #000000; /* Черный текст */
-    box-shadow: none; /* Убираем тень */
+    background: linear-gradient(135deg, #e0e0ea, #ffffff);
+    color: #333333;
+    opacity: 1;
 }
 
 /* Стили для контейнера панелей */
 .calculator-panels {
     display: flex;
-    flex-direction: row; /* Панели располагаются горизонтально */
+    flex-direction: row;
     gap: 10px;
-    flex: 1; /* Занимает оставшееся пространство после заголовка */
+    flex: 1;
     padding-bottom: 0;
     overflow: hidden;
 }
 
-/* Стили для основного содержимого (ввод и результат) */
+/* Стили для основного содержимого */
 .main-content {
     display: flex;
     flex-direction: row;
@@ -158,50 +159,64 @@ body.light {
     flex-direction: column;
     gap: 15px;
     padding: 10px;
-    width: 60%; /* Увеличиваем до 60% (примерно в 1.5 раза больше, чем было) */
-    align-items: center; /* Центрируем содержимое по горизонтали */
-    overflow-y: auto; /* Добавляем вертикальную прокрутку */
-    height: 100%; /* Ограничиваем высоту, чтобы прокрутка работала */
+    width: 100%; /* Занимает всё пространство в узком состоянии */
+    align-items: center;
+    overflow-y: auto;
+    height: 100%;
+    min-width: 350px; /* Минимальная ширина */
 }
 
-/* Стили для полосы прокрутки в .number-panel (для WebKit-браузеров) */
+/* После расширения калькулятора */
+.calculator.expanded .number-panel {
+    width: auto; /* Ширина будет установлена через JS */
+}
+
+/* Стили для полосы прокрутки */
 .number-panel::-webkit-scrollbar {
-    width: 8px; /* Ширина полосы прокрутки */
+    width: 8px;
 }
 
 .number-panel::-webkit-scrollbar-track {
-    background: #2d2d44; /* Фон полосы прокрутки (темная тема) */
+    background: #2d2d44;
     border-radius: 4px;
 }
 
 .number-panel::-webkit-scrollbar-track.light {
-    background: #f0f0f5; /* Фон полосы прокрутки (светлая тема) */
+    background: #f0f0f5;
 }
 
 .number-panel::-webkit-scrollbar-thumb {
-    background: #555; /* Цвет бегунка (темная тема) */
+    background: #555;
     border-radius: 4px;
 }
 
 .number-panel::-webkit-scrollbar-thumb.light {
-    background: #bbb; /* Цвет бегунка (светлая тема) */
+    background: #bbb;
 }
 
 .number-panel::-webkit-scrollbar-thumb:hover {
-    background: #666; /* Цвет бегунка при наведении (темная тема) */
+    background: #666;
 }
 
 .number-panel::-webkit-scrollbar-thumb:hover.light {
-    background: #aaa; /* Цвет бегунка при наведении (светлая тема) */
+    background: #aaa;
 }
 
 /* Стили для панели результата */
 .result-panel {
-    width: 40%; /* Уменьшаем до 40% */
+    width: 0; /* Изначально скрыта */
     display: flex;
     flex-direction: column;
     padding: 10px;
-    position: relative; /* Для позиционирования спиннера */
+    position: relative;
+    overflow: hidden;
+    transition: width 0.5s ease;
+    min-width: 0;
+}
+
+/* Показываем панель результата при расширении */
+.calculator.expanded .result-panel {
+    min-width: 350px; /* Минимальная ширина */
 }
 
 /* Стили для групп ввода */
@@ -209,62 +224,60 @@ body.light {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 90%; /* Увеличиваем ширину для заполнения пространства */
-    max-width: 350px; /* Увеличиваем максимальную ширину для гармонии */
+    width: 90%;
+    max-width: 350px;
 }
 
 /* Стили для меток */
 .input-group label {
     color: #ffffff;
     font-size: 14px;
+    white-space: nowrap; /* Запрещаем перенос текста */
 }
 
 .input-group label.light {
-    color: #000000;
+    color: #333333;
 }
 
 /* Стили для выпадающих списков */
 select {
-    background: #2d2d44; /* Темный фон для select */
+    background: #2d2d44;
     color: #ffffff;
     border: 1px solid #3b3b50;
-    padding: 10px 50px 10px 10px; /* Увеличиваем padding справа для стрелки */
+    padding: 10px 50px 10px 10px;
     font-size: 16px;
-    border-radius: 8px; /* Скругляем углы */
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: 'Arial', sans-serif;
-    width: 100%; /* Растягиваем на всю ширину группы */
+    width: 100%;
     box-sizing: border-box;
-    -webkit-appearance: none; /* Убираем стандартную стрелку в WebKit */
-    -moz-appearance: none; /* Убираем стандартную стрелку в Firefox */
-    appearance: none; /* Убираем стандартную стрелку */
-    position: relative;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); /* Кастомная стрелка */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
     background-repeat: no-repeat;
-    background-position: right 15px center; /* Отодвигаем стрелку чуть дальше */
-    overflow: visible; /* Убеждаемся, что содержимое не обрезается */
+    background-position: right 15px center;
 }
 
-/* Стили для выпадающих списков в светлой теме */
+/* Светлая тема для выпадающих списков */
 select.light {
-    background: #f0f0f5;
-    color: #000000;
-    border: 1px solid #ccc;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); /* Исправленная кастомная стрелка для светлой темы */
+    background: #f5f5fa;
+    color: #333333;
+    border: 1px solid #d0d0d8;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="#333333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
 }
 
-/* Стили при наведении на выпадающие списки */
+/* Наведение на выпадающие списки */
 select:hover {
     background: #3b3b50;
 }
 
-/* Стили при наведении на выпадающие списки в светлой теме */
 select.light:hover {
     background: #e0e0ea;
 }
 
-/* Стили для полей ввода в группах */
+/* Стили для полей ввода */
 .input-group input {
     width: 100%;
     background: #1f1f2e;
@@ -278,18 +291,20 @@ select.light:hover {
     font-family: 'Courier New', monospace;
     outline: none;
     transition: background 0.3s ease, color 0.3s ease, border 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Стили для полей ввода в светлой теме */
+/* Светлая тема для полей ввода */
 .input-group input.light {
-    background: #f0f0f5;
-    color: #000000;
-    border: 1px solid #ccc;
+    background: #f5f5fa;
+    color: #333333;
+    border: 1px solid #d0d0d8;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Стили для кнопки конвертации */
 .convert-btn {
-    background: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: #ffffff;
     border: none;
     padding: 10px 20px;
@@ -297,30 +312,35 @@ select.light:hover {
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 90%; /* Увеличиваем ширину для заполнения пространства */
-    max-width: 350px; /* Увеличиваем максимальную ширину для гармонии */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 350px;
     box-sizing: border-box;
 }
 
+/* Светлая тема для кнопки конвертации */
 .convert-btn.light {
-    background: #0056b3;
+    background: linear-gradient(135deg, #007bff, #0056b3);
 }
 
+/* Наведение на кнопку конвертации */
 .convert-btn:hover {
-    background: #0056b3;
+    background: linear-gradient(135deg, #0056b3, #003d7a);
 }
 
+/* Наведение в светлой теме */
 .convert-btn.light:hover {
-    background: #003d80;
+    background: linear-gradient(135deg, #0056b3, #003d7a);
 }
 
+/* Нажатие на кнопку конвертации */
 .convert-btn:active {
-    background: #003d80;
+    background: linear-gradient(135deg, #003d7a, #002b55);
 }
 
+/* Нажатие в светлой теме */
 .convert-btn.light:active {
-    background: #002f5d;
+    background: linear-gradient(135deg, #003d7a, #002b55);
 }
 
 /* Стили для контейнера кнопки смены систем */
@@ -332,41 +352,45 @@ select.light:hover {
 
 /* Стили для кнопки смены систем */
 .swap-btn {
-    background: #444; /* Темно-серый фон */
+    background: linear-gradient(135deg, #4a4a66, #3b3b50);
     border: none;
-    padding: 0; /* Убираем padding, так как размер задается через width/height */
+    padding: 0;
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px; /* Диаметр 36px */
+    width: 36px;
     height: 36px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Легкая тень */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+/* Светлая тема для кнопки смены систем */
 .swap-btn.light {
-    background: #ccc; /* Светло-серый фон для светлой темы */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Тень чуть светлее */
+    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
+/* Наведение на кнопку смены систем */
 .swap-btn:hover {
-    background: #555; /* Чуть светлее при наведении */
+    background: linear-gradient(135deg, #5a5a80, #4a4a66);
 }
 
+/* Наведение в светлой теме */
 .swap-btn.light:hover {
-    background: #bbb; /* Чуть темнее при наведении в светлой теме */
+    background: linear-gradient(135deg, #d0d0d8, #c0c0c8);
 }
 
+/* Иконка кнопки смены систем */
 .swap-btn svg {
-    stroke: #ffffff; /* Белая иконка */
-    width: 24px; /* Размер иконки */
+    stroke: #ffffff;
+    width: 24px;
     height: 24px;
 }
 
 .swap-btn.light svg {
-    stroke: #000000; /* Черная иконка в светлой теме */
+    stroke: #333333;
 }
 
 /* Стили для секции результата */
@@ -378,35 +402,46 @@ select.light:hover {
     color: #ffffff;
     flex: 1;
     overflow-y: auto;
-    opacity: 0; /* Изначально скрыто для анимации */
-    transform: translateX(20px); /* Сдвиг вправо для анимации */
-    transition: opacity 0.5s ease, transform 0.5s ease; /* Плавный переход */
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    white-space: normal; /* Позволяем тексту переноситься */
+    word-wrap: break-word; /* Перенос длинных слов */
 }
 
+/* Показываем секцию результата */
 .result-section.visible {
     opacity: 1;
-    transform: translateX(0); /* Появление с анимацией */
+    transform: translateX(0);
 }
 
+/* Светлая тема для секции результата */
 .result-section.light {
-    background: #f0f0f5;
-    color: #000000;
+    background: #f5f5fa;
+    color: #333333;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Заголовок в секции результата */
 .result-section h3 {
     margin: 0 0 10px 0;
     font-size: 18px;
+    white-space: nowrap; /* Запрещаем перенос */
 }
 
+/* Значение результата */
 .result-section #resultValue {
     font-weight: bold;
     color: #00ff00;
+    white-space: nowrap; /* Запрещаем перенос */
 }
 
+/* Пояснение */
 .result-section p {
     margin: 0 0 5px 0;
     font-size: 14px;
-    white-space: pre-wrap; /* Поддержка многострочного текста */
+    white-space: pre-wrap;
 }
 
 /* Стили для таблицы */
@@ -424,16 +459,17 @@ th, td {
     border: 1px solid #3b3b50;
     padding: 8px;
     text-align: center;
+    white-space: nowrap; /* Запрещаем перенос */
 }
 
 th {
-    background: #3b3b50;
+    background: linear-gradient(135deg, #4a4a66, #3b3b50);
     color: #ffffff;
 }
 
 th.light {
-    background: #e0e0ea;
-    color: #000000;
+    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
+    color: #333333;
 }
 
 td {
@@ -442,13 +478,13 @@ td {
 }
 
 td.light {
-    background: #f0f0f5;
-    color: #000000;
+    background: #f5f5fa;
+    color: #333333;
 }
 
 /* Стили для спиннера загрузки */
 .loading-spinner {
-    display: none; /* Скрыт по умолчанию */
+    display: none;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -479,15 +515,15 @@ td.light {
     right: 5px;
     width: 15px;
     height: 15px;
-    background: #3b3b50;
+    background: linear-gradient(135deg, #4a4a66, #3b3b50);
     border-radius: 50%;
-    cursor: nwse-resize; /* Курсор для изменения размера */
-    z-index: 950; /* Над калькулятором */
+    cursor: nwse-resize;
+    z-index: 950;
 }
 
-/* Стили для ручки изменения размера в светлой теме */
+/* Светлая тема для ручки */
 .resize-handle.light {
-    background: #e0e0ea;
+    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
 }
 
 /* Стили для блока навигации */
@@ -502,7 +538,7 @@ td.light {
 }
 
 .navigation-tabs .nav-link {
-    background: #3b3b50;
+    background: linear-gradient(135deg, #4a4a66, #3b3b50);
     color: #ffffff;
     text-decoration: none;
     padding: 10px 20px;
@@ -511,27 +547,29 @@ td.light {
     transition: all 0.2s ease;
     font-weight: bold;
     text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .navigation-tabs .nav-link.active {
-    background: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: #ffffff;
 }
 
 .navigation-tabs .nav-link.light {
-    background: #e0e0ea;
-    color: #000000;
+    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
+    color: #333333;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .navigation-tabs .nav-link.active.light {
-    background: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: #ffffff;
 }
 
 .navigation-tabs .nav-link:hover {
-    background: #4a4a66;
+    background: linear-gradient(135deg, #5a5a80, #4a4a66);
 }
 
 .navigation-tabs .nav-link.light:hover {
-    background: #d0d0d8;
+    background: linear-gradient(135deg, #d0d0d8, #c0c0c8);
 }
