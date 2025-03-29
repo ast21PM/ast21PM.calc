@@ -4,15 +4,15 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(135deg, #1a1a2e, #2d2d44); /* Градиент, как в Desmos */
+    background: linear-gradient(135deg, #1a1a2e, #2d2d44);
     font-family: 'Arial', sans-serif;
     margin: 0;
-    position: relative; /* Для позиционирования кнопки темы */
-    overflow: hidden; /* Предотвращаем прокрутку при перетаскивании */
-    transition: background 0.3s ease; /* Анимация смены темы */
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s ease;
 }
 
-/* Стили для тела в светлой теме */
+/* Светлая тема для тела */
 body.light {
     background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
 }
@@ -22,7 +22,7 @@ body.light {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 80px; /* Уменьшенный размер для калькулятора */
+    width: 80px;
     height: 40px;
     z-index: 1000;
 }
@@ -32,8 +32,8 @@ body.light {
     position: relative;
     width: 100%;
     height: 100%;
-    background-color: #28292c; /* Темный фон из переменной --dark */
-    border-radius: 20px; /* Уменьшенный радиус для меньшего размера */
+    background-color: #28292c;
+    border-radius: 20px;
     cursor: pointer;
     transition: 0.3s;
 }
@@ -55,28 +55,28 @@ body.light {
 
 /* Состояние при включении (светлая тема) */
 .switch input:checked ~ .slider {
-    background-color: #d8dbe0; /* Светлый фон из переменной --light */
+    background-color: #d8dbe0;
 }
 
 /* Круглый элемент слайдера */
 .slider:before {
     content: "";
     position: absolute;
-    top: 5px; /* Пропорционально уменьшенный отступ */
-    left: 6px; /* Пропорционально уменьшенный отступ */
-    width: 30px; /* Уменьшенный размер круга */
+    top: 5px;
+    left: 6px;
+    width: 30px;
     height: 30px;
     border-radius: 50%;
-    box-shadow: inset 12px -2px 0px 0px #d8dbe0; /* Пропорционально уменьшенная тень для луны */
-    background-color: #28292c; /* Темный фон круга */
+    box-shadow: inset 12px -2px 0px 0px #d8dbe0;
+    background-color: #28292c;
     transition: 0.3s;
 }
 
 /* Перемещение круга при включении */
 .switch input:checked ~ .slider:before {
-    transform: translateX(38px); /* Пропорционально уменьшенное смещение */
+    transform: translateX(38px);
     background-color: #28292c;
-    box-shadow: none; /* Убираем тень для солнца */
+    box-shadow: none;
 }
 
 /* Стили для основного контейнера калькулятора */
@@ -84,118 +84,115 @@ body.light {
     background: #2d2d44;
     padding: 15px;
     border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    width: 650px; /* Увеличиваем ширину */
-    height: 550px; /* Увеличиваем высоту */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Усилил тень для глубины */
+    width: 650px;
+    height: 550px;
     display: flex;
     flex-direction: column;
-    position: absolute; /* Для перетаскивания */
-    transition: background 0.3s ease, box-shadow 0.3s ease; /* Анимация смены темы */
-    z-index: 900; /* Под калькулятором, но над фоном */
-    min-width: 350px; /* Увеличиваем минимальную ширину */
-    min-height: 250px; /* Увеличиваем минимальную высоту */
-    margin-top: 70px; /* Отступ сверху для навигации */
+    position: absolute;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    z-index: 900;
+    min-width: 350px;
+    min-height: 250px;
+    margin-top: 70px;
 }
 
-/* Стили для калькулятора в светлой теме */
+/* Светлая тема для калькулятора */
 .calculator.light {
     background: #ffffff;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Стили для заголовка калькулятора (для перетаскивания) */
+/* Стили для заголовка калькулятора */
 .calculator-header {
     width: 100%;
     height: 20px;
     border-radius: 8px 8px 0 0;
-    cursor: move; /* Курсор для перетаскивания */
+    cursor: move;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
-    justify-content: center; /* Центрируем текст */
+    justify-content: center;
     padding: 5px;
-    user-select: none; /* Отключаем выделение текста */
-    transition: background 0.3s ease, color 0.3s ease; /* Анимация смены темы */
-}
-
-/* Стили для заголовка в темной теме */
-.calculator-header {
-    background: linear-gradient(135deg, #3b3b50, #2d2d44); /* Тонированный градиент для темной темы */
+    user-select: none;
+    background: linear-gradient(135deg, #3b3b50, #2d2d44); /* Градиент для заголовка */
     color: #ffffff;
-    opacity: 0.8; /* Полупрозрачность для тонирования */
+    opacity: 0.9;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* Стили для заголовка в светлой теме */
+/* Светлая тема для заголовка */
 .calculator-header.light {
-    background: transparent; /* Прозрачный фон */
-    color: #000000; /* Черный текст для светлой темы */
-    box-shadow: none; /* Убираем тень */
+    background: linear-gradient(135deg, #e0e0ea, #ffffff); /* Градиент для светлой темы */
+    color: #333333;
+    opacity: 1;
 }
 
 /* Стили для поля ввода */
 #display {
     width: 100%;
-    height: 90px; /* Увеличиваем высоту поля ввода */
+    height: 90px;
     background: #1f1f2e;
     color: #ffffff;
-    font-size: 28px; /* Увеличиваем размер шрифта */
+    font-size: 28px;
     text-align: right;
-    padding: 15px; /* Увеличиваем отступы */
+    padding: 15px;
     border: 1px solid #3b3b50;
     border-radius: 8px;
-    margin-bottom: 15px; /* Увеличиваем отступ снизу */
+    margin-bottom: 15px;
     box-sizing: border-box;
     font-family: 'Courier New', monospace;
-    outline: none; /* Убрал обводку при фокусе */
-    transition: background 0.3s ease, color 0.3s ease, border 0.3s ease; /* Анимация смены темы */
+    outline: none;
+    transition: background 0.3s ease, color 0.3s ease, border 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); /* Легкая тень для глубины */
 }
 
-/* Стили для поля ввода в светлой теме */
+/* Светлая тема для поля ввода */
 #display.light {
-    background: #f0f0f5;
-    color: #000000;
-    border: 1px solid #ccc;
+    background: #f5f5fa;
+    color: #333333;
+    border: 1px solid #d0d0d8;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Стили для контейнера панелей */
 .calculator-panels {
     display: flex;
-    gap: 5px; /* Уменьшил отступ для компактности */
+    gap: 5px;
     flex: 1;
-    overflow: hidden; /* Скрываем прокрутку по умолчанию */
-    max-height: calc(100% - 135px); /* Учитываем увеличенное поле ввода (90px + 15px + 15px отступов) и кнопку AC */
+    overflow: hidden;
+    max-height: calc(100% - 135px);
 }
 
 /* Стили для панели цифр */
 .number-panel {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(6, 1fr); /* Увеличиваем количество строк для стрелок и AC */
-    gap: 5px; /* Уменьшил отступы для компактности */
+    grid-template-rows: repeat(6, 1fr);
+    gap: 5px;
     flex: 1;
-    background: transparent; /* Убрал фон для минимализма */
     padding: 5px;
-    width: 50%; /* Устанавливаем фиксированную ширину 50% для каждой панели */
-    height: 100%; /* Фиксируем высоту для стабильности */
+    width: 50%;
+    height: 100%;
 }
 
-/* Стили для кнопок курсора (центрирование) */
+/* Стили для кнопок курсора */
 .cursor-buttons {
-    grid-column: span 4; /* Занимает всю ширину панели */
+    grid-column: span 4;
     display: flex;
-    justify-content: center; /* Центрируем кнопки по горизонтали */
-    align-items: center; /* Центрируем кнопки по вертикали */
-    gap: 10px; /* Увеличиваем отступ между кнопками для удобства */
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
-/* Стили для панели функций с вкладками */
+/* Стили для панели функций */
 .function-panels {
     flex: 1;
     display: flex;
     flex-direction: column;
-    max-height: 100%; /* Ограничиваем высоту для стабильности */
-    height: 100%; /* Фиксируем высоту для стабильности при дефолтном размере */
-    width: 50%; /* Устанавливаем фиксированную ширину 50% для каждой панели */
+    max-height: 100%;
+    height: 100%;
+    width: 50%;
 }
 
 /* Стили для вкладок панелей */
@@ -207,7 +204,7 @@ body.light {
 
 /* Стили для кнопок вкладок */
 .tab-button {
-    background: #3b3b50;
+    background: linear-gradient(135deg, #4a4a66, #3b3b50); /* Градиент для вкладок */
     color: #ffffff;
     border: none;
     padding: 8px;
@@ -216,222 +213,204 @@ body.light {
     cursor: pointer;
     transition: all 0.2s ease;
     flex: 1;
-    text-align: center; /* Центрируем текст */
-    font-weight: bold; /* Делаем текст жирным, как на Desmos */
+    text-align: center;
+    font-weight: bold;
 }
 
-/* Стили для активной кнопки вкладки */
+/* Активная вкладка */
 .tab-button.active {
-    background: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: #ffffff;
 }
 
-/* Стили для кнопок вкладок в светлой теме */
+/* Светлая тема для вкладок */
 .tab-button.light {
-    background: #e0e0ea;
-    color: #000000;
+    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
+    color: #333333;
 }
 
-/* Стили для активной кнопки вкладки в светлой теме */
+/* Активная вкладка в светлой теме */
 .tab-button.active.light {
-    background: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: #ffffff;
 }
 
-/* Стили при наведении на кнопки вкладок */
+/* Наведение на вкладки */
 .tab-button:hover {
-    background: #4a4a66;
+    background: linear-gradient(135deg, #5a5a80, #4a4a66);
 }
 
-/* Стили при наведении на кнопки вкладок в светлой теме */
+/* Наведение в светлой теме */
 .tab-button.light:hover {
-    background: #d0d0d8;
+    background: linear-gradient(135deg, #d0d0d8, #c0c0c8);
 }
 
-/* Стили для панелей (базовые операции, функции, алфавит) */
+/* Стили для панелей */
 .panel {
     display: grid;
     gap: 5px;
-    background: transparent; /* Убрал фон для минимализма */
     padding: 5px;
-    transition: all 0.3s ease; /* Анимация появления */
+    transition: all 0.3s ease;
     flex: 1;
-    overflow: hidden; /* Скрываем прокрутку по умолчанию */
-    max-height: 100%; /* Ограничиваем высоту для стабильности */
-    height: 100%; /* Фиксируем высоту для стабильности при дефолтном размере */
+    overflow: hidden;
+    max-height: 100%;
+    height: 100%;
 }
 
-/* Показываем прокрутку только при уменьшенном размере (меньше дефолтного) */
+/* Прокрутка при уменьшении размера */
 .calculator:not([style*="width: 650px"]):not([style*="height: 550px"]) .panel,
 .calculator:not([style*="width: 650px"]):not([style*="height: 550px"]) .calculator-panels {
-    overflow: auto; /* Прокрутка только при уменьшенном размере */
+    overflow: auto;
 }
 
-/* Стили для панели базовых операций */
+/* Панель базовых операций */
 .basic-panel {
-    grid-template-columns: repeat(3, 1fr); /* 3 колонки для базовых операций */
+    grid-template-columns: repeat(3, 1fr);
 }
 
-/* Стили для панели функций */
+/* Панель функций */
 .functions-panel {
-    grid-template-columns: repeat(3, 1fr); /* 3 колонки для функций */
+    grid-template-columns: repeat(3, 1fr);
 }
 
-/* Стили для панели алфавита (3 строки по 9 кнопок) */
+/* Панель алфавита */
 .alpha-panel {
-    grid-template-columns: repeat(9, 1fr); /* 9 колонок для каждой строки */
-    grid-template-rows: repeat(3, 1fr); /* 3 строки для алфавита */
-}
-
-/* Стили для панелей в светлой теме */
-.panel.light {
-    background: transparent;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(3, 1fr);
 }
 
 /* Стили для кнопок */
 button {
-    background: #3b3b50;
+    background: linear-gradient(135deg, #4a4a66, #3b3b50); /* Градиент для кнопок */
     color: #ffffff;
     border: none;
-    padding: 10px; /* Увеличиваем для большего пространства */
-    font-size: 16px; /* Увеличиваем размер шрифта */
-    border-radius: 4px; /* Уменьшил радиус для острых углов, как на Desmos */
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'Arial', sans-serif;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Легкая тень, как в Desmos */
-    display: flex;
-    justify-content: center;
-    align-items: center; /* Центрируем содержимое кнопки */
-    min-width: 0; /* Убираем минимальную ширину для компактности */
-}
-
-/* Стили для кнопок в светлой теме */
-button.light {
-    background: #e0e0ea;
-    color: #000000;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Стили для специальных кнопок (например, e^x, a^n) */
-button.special {
-    font-size: 14px; /* Чуть меньше для верхнего индекса */
-    padding: 8px; /* Чуть меньше для компактности */
-    line-height: 1; /* Корректируем высоту строки для верхнего индекса */
-}
-
-/* Стили при наведении на кнопки */
-button:hover {
-    background: #4a4a66;
-    transform: scale(1.02);
-}
-
-/* Стили при наведении на кнопки в светлой теме */
-button.light:hover {
-    background: #d0d0d8;
-}
-
-/* Стили при нажатии на кнопки */
-button:active {
-    background: #2d2d44;
-    transform: scale(0.98);
-}
-
-/* Стили при нажатии на кнопки в светлой теме */
-button.light:active {
-    background: #c0c0c8;
-}
-
-/* Стили для кнопки равенства */
-button[onclick*="="] {
-    background: #007bff;
-    color: #ffffff;
-}
-
-/* Стили для кнопки равенства в светлой теме */
-button[onclick*="="].light {
-    background: #007bff;
-    color: #ffffff;
-}
-
-/* Стили при наведении на кнопку равенства */
-button[onclick*="="]:hover {
-    background: #0056b3;
-}
-
-/* Стили при наведении на кнопку равенства в светлой теме */
-button[onclick*="="].light:hover {
-    background: #0056b3;
-}
-
-/* Стили при нажатии на кнопку равенства */
-button[onclick*="="]:active {
-    background: #003d7a;
-}
-
-/* Стили при нажатии на кнопку равенства в светлой теме */
-button[onclick*="="].light:active {
-    background: #003d7a;
-}
-
-/* Стили для кнопки очистки */
-.clear-btn {
-    background: #ff4d4d; /* Красный цвет для выделения */
-    color: #ffffff;
-    border: none;
-    padding: 8px 20px; /* Увеличиваем ширину кнопки */
-    font-size: 14px;
+    padding: 10px;
+    font-size: 16px;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Усилил тень */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
 }
 
-/* Стили для кнопки очистки в светлой теме */
-.clear-btn.light {
-    background: #ff6666;
+/* Светлая тема для кнопок */
+button.light {
+    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
+    color: #333333;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Специальные кнопки */
+button.special {
+    font-size: 14px;
+    padding: 8px;
+    line-height: 1;
+}
+
+/* Наведение на кнопки */
+button:hover {
+    background: linear-gradient(135deg, #5a5a80, #4a4a66);
+    transform: scale(1.02);
+}
+
+/* Наведение в светлой теме */
+button.light:hover {
+    background: linear-gradient(135deg, #d0d0d8, #c0c0c8);
+}
+
+/* Нажатие на кнопки */
+button:active {
+    background: linear-gradient(135deg, #3b3b50, #2d2d44);
+    transform: scale(0.98);
+}
+
+/* Нажатие в светлой теме */
+button.light:active {
+    background: linear-gradient(135deg, #c0c0c8, #b0b0b8);
+}
+
+/* Кнопка равенства */
+button[onclick*="="] {
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: #ffffff;
 }
 
-/* Стили при наведении на кнопку очистки */
+/* Кнопка равенства в светлой теме */
+button[onclick*="="].light {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #ffffff;
+}
+
+/* Наведение на кнопку равенства */
+button[onclick*="="]:hover {
+    background: linear-gradient(135deg, #0056b3, #003d7a);
+}
+
+/* Нажатие на кнопку равенства */
+button[onclick*="="]:active {
+    background: linear-gradient(135deg, #003d7a, #002b55);
+}
+
+/* Кнопка очистки */
+.clear-btn {
+    background: linear-gradient(135deg, #ff6666, #ff4d4d); /* Градиент для кнопки AC */
+    color: #ffffff;
+    padding: 8px 20px;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Светлая тема для кнопки очистки */
+.clear-btn.light {
+    background: linear-gradient(135deg, #ff8080, #ff6666);
+    color: #ffffff;
+}
+
+/* Наведение на кнопку очистки */
 .clear-btn:hover {
-    background: #e60000;
+    background: linear-gradient(135deg, #ff4d4d, #e60000);
 }
 
-/* Стили при наведении на кнопку очистки в светлой теме */
+/* Наведение в светлой теме */
 .clear-btn.light:hover {
-    background: #ff3333;
+    background: linear-gradient(135deg, #ff6666, #ff3333);
 }
 
-/* Стили при нажатии на кнопку очистки */
+/* Нажатие на кнопку очистки */
 .clear-btn:active {
-    background: #cc0000;
+    background: linear-gradient(135deg, #e60000, #cc0000);
 }
 
-/* Стили при нажатии на кнопку очистки в светлой теме */
+/* Нажатие в светлой теме */
 .clear-btn.light:active {
-    background: #cc3333;
+    background: linear-gradient(135deg, #ff3333, #cc3333);
 }
 
-/* Стили для ручки изменения размера */
+/* Ручка изменения размера */
 .resize-handle {
     position: absolute;
     bottom: 5px;
     right: 5px;
     width: 15px;
     height: 15px;
-    background: #3b3b50;
+    background: linear-gradient(135deg, #4a4a66, #3b3b50);
     border-radius: 50%;
-    cursor: nwse-resize; /* Курсор для изменения размера */
-    z-index: 950; /* Над калькулятором, но под панелями */
+    cursor: nwse-resize;
+    z-index: 950;
 }
 
-/* Стили для ручки изменения размера в светлой теме */
+/* Светлая тема для ручки */
 .resize-handle.light {
-    background: #e0e0ea;
+    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
 }
 
-/* Стили для блока истории вычислений */
+/* История вычислений */
 .history {
     max-height: 100px;
     overflow-y: auto;
@@ -442,54 +421,56 @@ button[onclick*="="].light:active {
     margin-top: 10px;
     font-size: 14px;
     transition: background 0.3s ease, color 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); /* Легкая тень */
 }
 
-/* Стили для элемента истории */
+/* Элемент истории */
 .history div {
-    display: flex; /* Используем flexbox для выравнивания */
-    align-items: center; /* Выравниваем по вертикали */
-    padding: 2px 0; /* Небольшой отступ для читаемости */
+    display: flex;
+    align-items: center;
+    padding: 2px 0;
 }
 
-/* Стили для выражения */
+/* Выражение */
 .expression {
-    color: #00ccff; /* Голубой для выражения */
+    color: #00ccff;
     font-weight: bold;
-    flex: 1; /* Занимает доступное пространство слева */
-    text-align: right; /* Выравнивание текста вправо */
-    margin-right: 10px; /* Отступ справа */
+    flex: 1;
+    text-align: right;
+    margin-right: 10px;
 }
 
-/* Стили для знака равенства */
+/* Знак равенства */
 .equals {
-    color: #ffffff; /* Цвет знака = */
-    font-weight: bold; /* Жирный шрифт для единообразия */
-    width: 20px; /* Фиксированная ширина для стабильности */
-    text-align: center; /* Центрируем знак = */
-    flex-shrink: 0; /* Предотвращаем сжатие */
-}
-
-/* Стили для результата */
-.result {
-    color: #00ff00; /* Зеленый для результата */
+    color: #ffffff;
     font-weight: bold;
-    flex: 1; /* Занимает доступное пространство справа */
-    text-align: left; /* Выравнивание текста влево */
-    margin-left: 10px; /* Отступ слева */
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
 }
 
-/* Стили для блока истории в светлой теме */
+/* Результат */
+.result {
+    color: #00ff00;
+    font-weight: bold;
+    flex: 1;
+    text-align: left;
+    margin-left: 10px;
+}
+
+/* Светлая тема для истории */
 .history.light {
-    background: #f0f0f5;
-    color: #000000;
+    background: #f5f5fa;
+    color: #333333;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Стили для знака = в светлой теме */
+/* Знак = в светлой теме */
 .history.light .equals {
-    color: #000000;
+    color: #333333;
 }
 
-/* Стили для блока навигации */
+/* Навигация */
 .navigation-tabs {
     position: absolute;
     top: 20px;
@@ -501,7 +482,7 @@ button[onclick*="="].light:active {
 }
 
 .navigation-tabs .nav-link {
-    background: #3b3b50;
+    background: linear-gradient(135deg, #4a4a66, #3b3b50); /* Градиент для навигации */
     color: #ffffff;
     text-decoration: none;
     padding: 10px 20px;
@@ -510,27 +491,30 @@ button[onclick*="="].light:active {
     transition: all 0.2s ease;
     font-weight: bold;
     text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .navigation-tabs .nav-link.active {
-    background: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: #ffffff;
 }
 
+/* Светлая тема для навигации */
 .navigation-tabs .nav-link.light {
-    background: #e0e0ea;
-    color: #000000;
+    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
+    color: #333333;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .navigation-tabs .nav-link.active.light {
-    background: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: #ffffff;
 }
 
 .navigation-tabs .nav-link:hover {
-    background: #4a4a66;
+    background: linear-gradient(135deg, #5a5a80, #4a4a66);
 }
 
 .navigation-tabs .nav-link.light:hover {
-    background: #d0d0d8;
+    background: linear-gradient(135deg, #d0d0d8, #c0c0c8);
 }
