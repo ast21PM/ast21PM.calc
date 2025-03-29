@@ -1,7 +1,6 @@
 // Переключение темы
 const themeSwitch = document.getElementById('themeSwitch');
 
-// Функция для применения темы
 function applyTheme(isLight) {
     if (isLight) {
         document.body.classList.add('light');
@@ -45,7 +44,6 @@ function applyTheme(isLight) {
     updateChartColors();
 }
 
-// При загрузке страницы проверяем сохраненное состояние темы
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme');
     const isLight = savedTheme === 'light';
@@ -53,20 +51,17 @@ document.addEventListener('DOMContentLoaded', () => {
     applyTheme(isLight);
 });
 
-// При изменении темы сохраняем состояние в localStorage
 themeSwitch.addEventListener('change', () => {
     const isLight = themeSwitch.checked;
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
     applyTheme(isLight);
 });
 
-// Перетаскивание конвертера
 const converter = document.getElementById('converter');
 const header = document.querySelector('.converter-header');
 let isDragging = false;
 let startX, startY;
 
-// Устанавливаем начальную позицию
 function setInitialPosition() {
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
@@ -108,7 +103,6 @@ header.addEventListener('dblclick', () => {
     setInitialPosition();
 });
 
-// Изменение размера конвертера
 const resizeHandle = document.querySelector('.resize-handle');
 let isResizing = false;
 
@@ -130,24 +124,19 @@ document.addEventListener('mouseup', () => {
     isResizing = false;
 });
 
-// Проверка ввода: разрешаем только числа и десятичные дроби
 document.getElementById('amount').addEventListener('input', (e) => {
     const value = e.target.value;
-    // Разрешаем только числа, точку и пустую строку
     if (!/^\d*\.?\d*$/.test(value)) {
-        e.target.value = value.slice(0, -1); // Удаляем последний введенный символ, если он некорректный
+        e.target.value = value.slice(0, -1);
     }
-    // Запрещаем отрицательные значения
     if (value.startsWith('-')) {
         e.target.value = value.replace('-', '');
     }
 });
 
-// Новая функция для установки значения в поле ввода
 function setAmount(value) {
     const amountInput = document.getElementById('amount');
     amountInput.value = value;
-    // Автоматически выполняем конвертацию, если валюты выбраны
     const fromCurrency = document.getElementById('fromCurrency').value;
     const toCurrency = document.getElementById('toCurrency').value;
     if (fromCurrency && toCurrency && value > 0) {
@@ -155,7 +144,6 @@ function setAmount(value) {
     }
 }
 
-// Данные валют и графиков
 let rates = {};
 let chart;
 let rateHistory = {};
@@ -164,7 +152,6 @@ const supportedCurrencies = [
     'CHF', 'NZD', 'BRL', 'INR', 'MXN', 'ZAR', 'SGD', 'HKD', 'NOK', 'SEK', 'AED'
 ];
 
-// Статические курсы валют (1 [валюта] = X RUB)
 const staticRates = {
     'USD': 84.64,
     'EUR': 91.43,
@@ -189,7 +176,6 @@ const staticRates = {
     'AED': 23.05
 };
 
-// Генерация фейковых исторических данных
 function generateFakeHistoricalData(baseRate, days) {
     const data = {};
     const endDate = new Date();
@@ -539,7 +525,7 @@ async function updateChart(period) {
             scales: {
                 x: {
                     ticks: {
-                        color: document.body.classList.contains('light') ? '#000000' : '#ffffff',
+                        color: document.body.classList.contains('light') ? '#333333' : '#ffffff',
                         font: { size: 12 },
                         maxRotation: 0,
                         minRotation: 0
@@ -548,7 +534,7 @@ async function updateChart(period) {
                 },
                 y: {
                     ticks: {
-                        color: document.body.classList.contains('light') ? '#000000' : '#ffffff',
+                        color: document.body.classList.contains('light') ? '#333333' : '#ffffff',
                         font: { size: 12 },
                         callback: function(value) {
                             return value.toFixed(2);
@@ -585,8 +571,8 @@ async function updateChart(period) {
 
 function updateChartColors() {
     if (chart) {
-        chart.options.scales.x.ticks.color = document.body.classList.contains('light') ? '#000000' : '#ffffff';
-        chart.options.scales.y.ticks.color = document.body.classList.contains('light') ? '#000000' : '#ffffff';
+        chart.options.scales.x.ticks.color = document.body.classList.contains('light') ? '#333333' : '#ffffff';
+        chart.options.scales.y.ticks.color = document.body.classList.contains('light') ? '#333333' : '#ffffff';
         chart.options.scales.y.grid.color = document.body.classList.contains('light') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
         chart.update();
     }

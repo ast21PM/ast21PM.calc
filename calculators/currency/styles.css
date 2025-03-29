@@ -3,16 +3,16 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(135deg, #1a1a2e, #2d2d44);
+    background: linear-gradient(135deg, #1a1a2e, #2d2d44, #3b3b50);
     font-family: 'Arial', sans-serif;
     margin: 0;
     position: relative;
     overflow: hidden;
-    transition: background 0.3s ease;
+    transition: background 0.5s ease;
 }
 
 body.light {
-    background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
+    background: linear-gradient(135deg, #f0f0f5, #e0e0ea, #d0d0d8);
 }
 
 .theme-toggle {
@@ -28,7 +28,7 @@ body.light {
     position: relative;
     width: 100%;
     height: 100%;
-    background-color: #28292c;
+    background: linear-gradient(90deg, #28292c, #3b3b50);
     border-radius: 20px;
     cursor: pointer;
     transition: 0.3s;
@@ -48,7 +48,7 @@ body.light {
 }
 
 .switch input:checked ~ .slider {
-    background-color: #d8dbe0;
+    background: linear-gradient(90deg, #d8dbe0, #e0e0ea);
 }
 
 .slider:before {
@@ -59,22 +59,23 @@ body.light {
     width: 30px;
     height: 30px;
     border-radius: 50%;
+    background: #1f1f2e;
     box-shadow: inset 12px -2px 0px 0px #d8dbe0;
-    background-color: #28292c;
     transition: 0.3s;
 }
 
 .switch input:checked ~ .slider:before {
     transform: translateX(38px);
-    background-color: #28292c;
+    background: #28292c;
     box-shadow: none;
 }
 
 .converter {
-    background: #2d2d44;
-    padding: 15px;
+    background: linear-gradient(145deg, #2d2d44, #1f1f2e);
+    padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     width: 700px;
     height: 600px;
     display: flex;
@@ -88,75 +89,120 @@ body.light {
 }
 
 .converter.light {
-    background: #ffffff;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(145deg, #ffffff, #f0f0f5);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .converter-header {
     width: 100%;
-    height: 25px;
-    border-radius: 8px 8px 0 0;
+    height: 30px;
+    border-radius: 8px 8px 0 0; /* Исправлено: указано корректное значение */
     cursor: move;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 5px;
-    user-select: none;
+    user-select: none; /* Это свойство уже есть ниже, оставляем его здесь */
     background: linear-gradient(135deg, #3b3b50, #2d2d44);
     color: #ffffff;
-    opacity: 0.9;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
     transition: background 0.3s ease, color 0.3s ease;
 }
 
 .converter-header.light {
-    background: transparent;
-    color: #000000;
+    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
+    color: #333333;
 }
 
 .converter-body {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     flex: 1;
     overflow: hidden;
 }
 
+.amount-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.amount-btn {
+    background: linear-gradient(90deg, #3b3b50, #4a4a66);
+    color: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.amount-btn:hover {
+    background: linear-gradient(90deg, #4c4c68, #5a5a80);
+    transform: translateY(-1px);
+}
+
+.amount-btn.light {
+    background: linear-gradient(90deg, #e0e0ea, #d0d0d8);
+    color: #333333;
+}
+
+.amount-btn.light:hover {
+    background: linear-gradient(90deg, #d0d0d8, #c0c0d0);
+}
+
 #amount {
     width: 100%;
-    height: 40px;
-    background: #1f1f2e;
+    height: 45px;
+    background: linear-gradient(145deg, #1f1f2e, #2d2d44);
     color: #ffffff;
     font-size: 16px;
     text-align: right;
-    padding: 8px;
-    border: 1px solid #3b3b50;
+    padding: 10px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 6px;
-    box-sizing: border-box;
-    font-family: 'Courier New', monospace;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-family: 'Arial', sans-serif;
     outline: none;
-    transition: background 0.3s ease, color 0.3s ease, border 0.3s ease;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+#amount::placeholder {
+    color: #888888;
+    font-size: 14px;
+    opacity: 0.7;
+    text-align: right;
 }
 
 #amount.light {
-    background: #f0f0f5;
-    color: #000000;
-    border: 1px solid #ccc;
+    background: linear-gradient(145deg, #f0f0f5, #e0e0ea);
+    color: #333333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+#amount.light::placeholder {
+    color: #666666;
 }
 
 .currency-selection {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .currency-selection select {
     flex: 1;
-    padding: 8px 24px 8px 30px;
-    background: #3b3b50;
-    color: #ffffff;
+    padding: 10px 24px 10px 30px;
+    background: linear-gradient(90deg, #3b3b50, #4a4a66);
+    color: #ffffff; /* Цвет текста в темном режиме */
     border: none;
     border-radius: 6px;
     font-size: 14px;
@@ -169,25 +215,38 @@ body.light {
     background-size: 20px;
 }
 
+/* Стили для выпадающего списка (option) в темном режиме */
+.currency-selection select option {
+    background: #2d2d44; /* Фон для option в темном режиме */
+    color: #ffffff; /* Цвет текста для option в темном режиме */
+}
+
+/* Стили для светлого режима */
 .currency-selection select.light {
-    background: #e0e0ea;
-    color: #000000;
+    background: linear-gradient(90deg, #e0e0ea, #d0d0d8);
+    color: #333333;
     background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
 }
 
+/* Стили для option в светлом режиме */
+.currency-selection select.light option {
+    background: #f0f0f5; /* Фон для option в светлом режиме */
+    color: #333333; /* Цвет текста для option в светлом режиме */
+}
+
 .currency-selection select:hover {
-    background-color: #4a4a66;
+    background: linear-gradient(90deg, #4a4a66, #5a5a80);
 }
 
 .currency-selection select.light:hover {
-    background-color: #d0d0d8;
+    background: linear-gradient(90deg, #d0d0d8, #c0c0d0);
 }
 
 .swap-btn {
-    background: #3b3b50;
+    background: linear-gradient(90deg, #3b3b50, #4a4a66);
     color: #ffffff;
     border: none;
-    padding: 8px 12px;
+    padding: 10px 14px;
     font-size: 16px;
     border-radius: 6px;
     cursor: pointer;
@@ -195,23 +254,16 @@ body.light {
 }
 
 .swap-btn:hover {
-    background: #4a4a66;
+    background: linear-gradient(90deg, #4a4a66, #5a5a80);
 }
 
 .swap-btn.light {
-    background: #e0e0ea;
-    color: #000000;
+    background: linear-gradient(90deg, #e0e0ea, #d0d0d8);
+    color: #333333;
 }
 
 .swap-btn.light:hover {
-    background: #d0d0d8;
-}
-
-.currency-selection select option {
-    padding-left: 30px;
-    background-repeat: no-repeat;
-    background-position: 5px center;
-    background-size: 20px;
+    background: linear-gradient(90deg, #d0d0d8, #c0c0d0);
 }
 
 .rate-info {
@@ -228,7 +280,7 @@ body.light {
 }
 
 #currentRate.light {
-    color: #000000;
+    color: #333333;
 }
 
 #rateChange {
@@ -244,10 +296,10 @@ body.light {
 }
 
 .toggle-chart-btn {
-    background: #3b3b50;
+    background: linear-gradient(90deg, #3b3b50, #4a4a66);
     color: #ffffff;
     border: none;
-    padding: 8px;
+    padding: 10px;
     font-size: 14px;
     border-radius: 6px;
     cursor: pointer;
@@ -256,130 +308,134 @@ body.light {
 }
 
 .toggle-chart-btn:hover {
-    background: #4a4a66;
+    background: linear-gradient(90deg, #4a4a66, #5a5a80);
 }
 
 .toggle-chart-btn.light {
-    background: #e0e0ea;
-    color: #000000;
+    background: linear-gradient(90deg, #e0e0ea, #d0d0d8);
+    color: #333333;
 }
 
 .toggle-chart-btn.light:hover {
-    background: #d0d0d8;
+    background: linear-gradient(90deg, #d0d0d8, #c0c0d0);
 }
 
 .period-buttons {
     display: flex;
-    gap: 5px;
+    gap: 6px;
     margin-bottom: 10px;
 }
 
 .period-btn {
     flex: 1;
-    background: #3b3b50;
+    background: linear-gradient(90deg, #3b3b50, #4a4a66);
     color: #ffffff;
     border: none;
-    padding: 6px;
+    padding: 8px;
     font-size: 12px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: bold;
 }
 
 .period-btn.active {
-    background: #007bff;
+    background: linear-gradient(90deg, #007bff, #00b7ff);
 }
 
 .period-btn:hover {
-    background: #4a4a66;
+    background: linear-gradient(90deg, #4a4a66, #5a5a80);
 }
 
 .period-btn.light {
-    background: #e0e0ea;
-    color: #000000;
+    background: linear-gradient(90deg, #e0e0ea, #d0d0d8);
+    color: #333333;
 }
 
 .period-btn.active.light {
-    background: #007bff;
+    background: linear-gradient(90deg, #007bff, #00b7ff);
     color: #ffffff;
 }
 
 .period-btn.light:hover {
-    background: #d0d0d8;
+    background: linear-gradient(90deg, #d0d0d8, #c0c0d0);
 }
 
 .chart-container {
     height: 200px;
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .convert-btn {
-    background: #007bff;
+    background: linear-gradient(90deg, #1e90ff, #00b7ff);
     color: #ffffff;
     border: none;
-    padding: 10px;
+    padding: 12px;
     font-size: 16px;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
     font-weight: bold;
 }
 
 .convert-btn:hover {
-    background: #0056b3;
-    transform: scale(1.02);
+    background: linear-gradient(90deg, #1c86ee, #00aaff);
+    transform: scale(1.03);
 }
 
 .convert-btn:active {
-    background: #003d7a;
+    background: linear-gradient(90deg, #187bcd, #0099cc);
     transform: scale(0.98);
 }
 
 .result {
-    background: #1f1f2e;
+    background: linear-gradient(145deg, #1f1f2e, #2d2d44);
     color: #00ff00;
     font-size: 16px;
-    padding: 8px;
+    padding: 10px;
     border-radius: 6px;
     text-align: center;
-    transition: background 0.3s ease, color 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
     font-weight: bold;
 }
 
 .result.light {
-    background: #f0f0f5;
+    background: linear-gradient(145deg, #f0f0f5, #e0e0ea);
     color: #008000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .history {
-    background: #1f1f2e;
+    background: linear-gradient(145deg, #1f1f2e, #2d2d44);
     border-radius: 6px;
-    padding: 8px;
-    max-height: 100px;
+    padding: 10px;
+    max-height: 120px;
     overflow-y: auto;
-    transition: background 0.3s ease, color 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
 .history.light {
-    background: #f0f0f5;
+    background: linear-gradient(145deg, #f0f0f5, #e0e0ea);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .history-header {
     color: #ffffff;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
     margin-bottom: 8px;
     text-align: center;
-    border-bottom: 1px solid #3b3b50;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     padding-bottom: 4px;
 }
 
 .history-header.light {
-    color: #000000;
-    border-bottom: 1px solid #ccc;
+    color: #333333;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .history-content div {
@@ -395,7 +451,6 @@ body.light {
     flex: 1;
     text-align: right;
     margin-right: 8px;
-    font-size: 14px;
 }
 
 .history-content .equals {
@@ -404,7 +459,6 @@ body.light {
     width: 16px;
     text-align: center;
     flex-shrink: 0;
-    font-size: 14px;
 }
 
 .history-content .result {
@@ -413,17 +467,15 @@ body.light {
     flex: 1;
     text-align: left;
     margin-left: 8px;
-    font-size: 14px;
     background: none;
 }
 
 .history.light .equals {
-    color: #000000;
+    color: #333333;
 }
 
 .history.light .result {
     color: #008000;
-    background: none;
 }
 
 .history.light .expression {
@@ -436,14 +488,14 @@ body.light {
     right: 5px;
     width: 15px;
     height: 15px;
-    background: #3b3b50;
+    background: linear-gradient(90deg, #3b3b50, #4a4a66);
     border-radius: 50%;
     cursor: nwse-resize;
     z-index: 950;
 }
 
 .resize-handle.light {
-    background: #e0e0ea;
+    background: linear-gradient(90deg, #e0e0ea, #d0d0d8);
 }
 
 .navigation-tabs {
@@ -452,43 +504,42 @@ body.light {
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 10px;
+    gap: 12px;
     z-index: 1000;
 }
 
 .navigation-tabs .nav-link {
-    background: #3b3b50;
+    background: linear-gradient(90deg, #3b3b50, #4a4a66);
     color: #ffffff;
     text-decoration: none;
-    padding: 10px 20px; /* Унифицировано */
+    padding: 12px 24px;
     font-size: 14px;
-    border-radius: 4px;
+    border-radius: 6px;
     transition: all 0.2s ease;
     font-weight: bold;
     text-align: center;
 }
 
 .navigation-tabs .nav-link.active {
-    background: #007bff;
-    color: #ffffff;
-}
-
-.navigation-tabs .nav-link.light {
-    background: #e0e0ea;
-    color: #000000;
-}
-
-.navigation-tabs .nav-link.active.light {
-    background: #007bff;
-    color: #ffffff;
+    background: linear-gradient(90deg, #007bff, #00b7ff);
 }
 
 .navigation-tabs .nav-link:hover {
-    background: #4a4a66;
+    background: linear-gradient(90deg, #4a4a66, #5a5a80);
+}
+
+.navigation-tabs .nav-link.light {
+    background: linear-gradient(90deg, #e0e0ea, #d0d0d8);
+    color: #333333;
+}
+
+.navigation-tabs .nav-link.active.light {
+    background: linear-gradient(90deg, #007bff, #00b7ff);
+    color: #ffffff;
 }
 
 .navigation-tabs .nav-link.light:hover {
-    background: #d0d0d8;
+    background: linear-gradient(90deg, #d0d0d8, #c0c0d0);
 }
 
 .history::-webkit-scrollbar {
@@ -513,14 +564,13 @@ body.light {
     background: #d0d0d8;
 }
 
-/* Стили для виджетов */
 .currency-widgets {
     position: absolute;
     top: 70px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 10px;
+    gap: 12px;
     z-index: 1000;
     overflow-x: auto;
     padding: 10px;
@@ -530,18 +580,20 @@ body.light {
 .widget {
     display: flex;
     align-items: center;
-    background: #3b3b50;
-    padding: 8px 12px;
-    border-radius: 6px;
+    background: linear-gradient(145deg, #3b3b50, #2d2d44);
+    padding: 10px 14px;
+    border-radius: 8px;
     color: #ffffff;
     font-size: 14px;
     font-weight: bold;
-    transition: background 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
 .widget.light {
-    background: #e0e0ea;
-    color: #000000;
+    background: linear-gradient(145deg, #e0e0ea, #d0d0d8);
+    color: #333333;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .widget img {
@@ -580,60 +632,7 @@ body.light {
 .currency-widgets.light::-webkit-scrollbar-thumb {
     background: #d0d0d8;
 }
-/* Стили для контейнера с кнопками */
-.amount-buttons {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-    margin: 10px 0; /* Отступ сверху и снизу */
-    justify-content: center;
-}
 
-/* Стили для кнопок */
-.amount-btn {
-    background: #3b3b50;
-    color: #ffffff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.amount-btn:hover {
-    background: #4c4c68;
-}
-
-.amount-btn.light {
-    background: #e0e0ea;
-    color: #000000;
-}
-
-.amount-btn.light:hover {
-    background: #d0d0d8;
-}
-
-/* Стили для поля ввода */
-#amount {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #3b3b50;
-    border-radius: 4px;
-    background: #1f1f2e;
-    color: #ffffff;
-    font-size: 16px;
-    outline: none;
-    transition: background 0.3s ease, border 0.3s ease;
-}
-
-#amount.light {
-    background: #f0f0f5;
-    color: #000000;
-    border: 1px solid #d0d0d8;
-}
-
-/* Убираем стрелки для input (для совместимости с браузерами) */
 #amount::-webkit-inner-spin-button,
 #amount::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -641,5 +640,5 @@ body.light {
 }
 
 #amount {
-    -moz-appearance: textfield; /* Для Firefox */
+    -moz-appearance: textfield;
 }
