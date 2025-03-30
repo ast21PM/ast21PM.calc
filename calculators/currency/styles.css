@@ -97,14 +97,14 @@ body.light {
 .converter-header {
     width: 100%;
     height: 30px;
-    border-radius: 8px 8px 0 0; /* Исправлено: указано корректное значение */
+    border-radius: 8px 8px 0 0;
     cursor: move;
     margin-bottom: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 5px;
-    user-select: none; /* Это свойство уже есть ниже, оставляем его здесь */
+    user-select: none;
     background: linear-gradient(135deg, #3b3b50, #2d2d44);
     color: #ffffff;
     font-size: 18px;
@@ -202,7 +202,7 @@ body.light {
     flex: 1;
     padding: 10px 24px 10px 30px;
     background: linear-gradient(90deg, #3b3b50, #4a4a66);
-    color: #ffffff; /* Цвет текста в темном режиме */
+    color: #ffffff;
     border: none;
     border-radius: 6px;
     font-size: 14px;
@@ -215,23 +215,30 @@ body.light {
     background-size: 20px;
 }
 
-/* Стили для выпадающего списка (option) в темном режиме */
 .currency-selection select option {
-    background: #2d2d44; /* Фон для option в темном режиме */
-    color: #ffffff; /* Цвет текста для option в темном режиме */
+    background: #2d2d44;
+    color: #ffffff;
+    background-size: 20px 15px;
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    padding-left: 30px;
+    line-height: 20px;
 }
 
-/* Стили для светлого режима */
 .currency-selection select.light {
     background: linear-gradient(90deg, #e0e0ea, #d0d0d8);
     color: #333333;
     background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
 }
 
-/* Стили для option в светлом режиме */
 .currency-selection select.light option {
-    background: #f0f0f5; /* Фон для option в светлом режиме */
-    color: #333333; /* Цвет текста для option в светлом режиме */
+    background: #f0f0f5;
+    color: #333333;
+    background-size: 20px 15px;
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    padding-left: 30px;
+    line-height: 20px;
 }
 
 .currency-selection select:hover {
