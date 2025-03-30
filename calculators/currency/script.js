@@ -202,7 +202,7 @@ function getFlagUrl(currency) {
         'BRL': 'br', 'INR': 'in', 'MXN': 'mx', 'ZAR': 'za', 'SGD': 'sg', 'HKD': 'hk',
         'NOK': 'no', 'SEK': 'se', 'AED': 'ae'
     };
-    return `https://flagcdn.com/20x15/${countryCodes[currency] || 'un'}.png`;
+    return `../../image/${countryCodes[currency] || 'un'}.png`;
 }
 
 function getCurrencyName(currency) {
