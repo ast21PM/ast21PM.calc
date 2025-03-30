@@ -11,7 +11,7 @@ function applyTheme(isLight) {
         document.querySelector('.history').classList.add('light');
         document.querySelector('.converter-header').classList.add('light');
         document.querySelector('.resize-handle').classList.add('light');
-        document.querySelectorAll('select').forEach(select => select.classList.add('light'));
+        document.querySelectorAll('.custom-select').forEach(select => select.classList.add('light'));
         document.querySelectorAll('.nav-link').forEach(link => link.classList.add('light'));
         document.querySelector('.swap-btn').classList.add('light');
         document.querySelector('.history-header').classList.add('light');
@@ -30,7 +30,7 @@ function applyTheme(isLight) {
         document.querySelector('.history').classList.remove('light');
         document.querySelector('.converter-header').classList.remove('light');
         document.querySelector('.resize-handle').classList.remove('light');
-        document.querySelectorAll('select').forEach(select => select.classList.remove('light'));
+        document.querySelectorAll('.custom-select').forEach(select => select.classList.remove('light'));
         document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('light'));
         document.querySelector('.swap-btn').classList.remove('light');
         document.querySelector('.history-header').classList.remove('light');
@@ -137,8 +137,8 @@ document.getElementById('amount').addEventListener('input', (e) => {
 function setAmount(value) {
     const amountInput = document.getElementById('amount');
     amountInput.value = value;
-    const fromCurrency = document.getElementById('fromCurrency').value;
-    const toCurrency = document.getElementById('toCurrency').value;
+    const fromCurrency = document.getElementById('fromCurrency').dataset.value;
+    const toCurrency = document.getElementById('toCurrency').dataset.value;
     if (fromCurrency && toCurrency && value > 0) {
         convertCurrency();
     }
@@ -254,29 +254,65 @@ function populateCurrencies() {
     const fromCurrency = document.getElementById('fromCurrency');
     const toCurrency = document.getElementById('toCurrency');
 
-    supportedCurrencies.forEach(currency => {
-        if (rates[currency] !== undefined) {
-            const option1 = document.createElement('option');
-            option1.value = currency;
-            option1.textContent = `${currency} - ${getCurrencyName(currency)}`;
-            option1.style.backgroundImage = `url(${getFlagUrl(currency)})`;
-            fromCurrency.appendChild(option1);
+    // Функция для создания кастомного выпадающего списка
+    function setupCustomSelect(selectElement, defaultCurrency) {
+        const selectedOption = selectElement.querySelector('.selected-option');
+        const optionsList = selectElement.querySelector('.options-list');
 
-            const option2 = document.createElement('option');
-            option2.value = currency;
-            option2.textContent = `${currency} - ${getCurrencyName(currency)}`;
-            option2.style.backgroundImage = `url(${getFlagUrl(currency)})`;
-            toCurrency.appendChild(option2);
-        }
-    });
+        // Заполняем список опций
+        supportedCurrencies.forEach(currency => {
+            if (rates[currency] !== undefined) {
+                const option = document.createElement('div');
+                option.classList.add('option');
+                option.innerHTML = `
+                    <img src="${getFlagUrl(currency)}" alt="${currency}" class="flag">
+                    <span>${currency} - ${getCurrencyName(currency)}</span>
+                `;
+                option.dataset.value = currency;
+                option.addEventListener('click', () => {
+                    selectElement.dataset.value = currency;
+                    selectedOption.querySelector('.flag').src = getFlagUrl(currency);
+                    selectedOption.querySelector('.flag').alt = currency;
+                    selectedOption.querySelector('.currency-text').textContent = `${currency} - ${getCurrencyName(currency)}`;
+                    optionsList.style.display = 'none';
+                    updateRateInfo();
+                    if (document.getElementById('chartContainer').style.display === 'block') {
+                        updateChart(document.querySelector('.period-btn.active').getAttribute('onclick').match(/'([^']+)'/)[1]);
+                    }
+                });
+                optionsList.appendChild(option);
+            }
+        });
 
-    fromCurrency.value = 'EUR';
-    toCurrency.value = 'RUB';
+        // Устанавливаем значение по умолчанию
+        selectElement.dataset.value = defaultCurrency;
+        selectedOption.querySelector('.flag').src = getFlagUrl(defaultCurrency);
+        selectedOption.querySelector('.flag').alt = defaultCurrency;
+        selectedOption.querySelector('.currency-text').textContent = `${defaultCurrency} - ${getCurrencyName(defaultCurrency)}`;
+
+        // Открытие/закрытие списка
+        selectedOption.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = optionsList.style.display === 'block';
+            document.querySelectorAll('.options-list').forEach(list => list.style.display = 'none');
+            optionsList.style.display = isOpen ? 'none' : 'block';
+        });
+
+        // Закрытие списка при клике вне
+        document.addEventListener('click', (e) => {
+            if (!selectElement.contains(e.target)) {
+                optionsList.style.display = 'none';
+            }
+        });
+    }
+
+    setupCustomSelect(fromCurrency, 'EUR');
+    setupCustomSelect(toCurrency, 'RUB');
 }
 
 function updateRateInfo() {
-    const fromCurrency = document.getElementById('fromCurrency').value;
-    const toCurrency = document.getElementById('toCurrency').value;
+    const fromCurrency = document.getElementById('fromCurrency').dataset.value;
+    const toCurrency = document.getElementById('toCurrency').dataset.value;
 
     if (!rates[fromCurrency] || !rates[toCurrency]) {
         document.getElementById('currentRate').textContent = `Курс недоступен`;
@@ -294,6 +330,8 @@ function updateRateInfo() {
     }
 
     document.getElementById('currentRate').textContent = `1 ${fromCurrency} = ${rate} ${toCurrency}`;
+
+   
 
     const rateChange = document.getElementById('rateChange');
     const pair = `${fromCurrency}/${toCurrency}`;

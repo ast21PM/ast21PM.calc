@@ -71,9 +71,22 @@
             </div>
             <input type="text" id="amount" inputmode="numeric" placeholder="Введите сумму">
             <div class="currency-selection">
-                <select id="fromCurrency"></select>
+                <!-- Заменяем <select> на кастомный выпадающий список -->
+                <div class="custom-select" id="fromCurrency">
+                    <div class="selected-option">
+                        <img src="" alt="" class="flag">
+                        <span class="currency-text"></span>
+                    </div>
+                    <div class="options-list" style="display: none;"></div>
+                </div>
                 <button class="swap-btn" onclick="swapCurrencies()">↔</button>
-                <select id="toCurrency"></select>
+                <div class="custom-select" id="toCurrency">
+                    <div class="selected-option">
+                        <img src="" alt="" class="flag">
+                        <span class="currency-text"></span>
+                    </div>
+                    <div class="options-list" style="display: none;"></div>
+                </div>
             </div>
             <div class="rate-info">
                 <span id="currentRate"></span>
