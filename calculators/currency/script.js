@@ -251,6 +251,12 @@ function populateCurrencies() {
         const selectedOption = selectElement.querySelector('.selected-option');
         const optionsList = selectElement.querySelector('.options-list');
 
+        // Устанавливаем значение по умолчанию сразу
+        selectElement.dataset.value = defaultCurrency;
+        selectedOption.querySelector('.flag').src = getFlagUrl(defaultCurrency);
+        selectedOption.querySelector('.flag').alt = `Флаг ${defaultCurrency}`;
+        selectedOption.querySelector('.currency-text').textContent = `${defaultCurrency} - ${getCurrencyName(defaultCurrency)}`;
+
         // Заполняем список опций
         supportedCurrencies.forEach(currency => {
             if (rates[currency] !== undefined) {
@@ -275,12 +281,6 @@ function populateCurrencies() {
                 optionsList.appendChild(option);
             }
         });
-
-        // Устанавливаем значение по умолчанию
-        selectElement.dataset.value = defaultCurrency;
-        selectedOption.querySelector('.flag').src = getFlagUrl(defaultCurrency);
-        selectedOption.querySelector('.flag').alt = `Флаг ${defaultCurrency}`;
-        selectedOption.querySelector('.currency-text').textContent = `${defaultCurrency} - ${getCurrencyName(defaultCurrency)}`;
 
         // Открытие/закрытие списка
         selectedOption.addEventListener('click', (e) => {
