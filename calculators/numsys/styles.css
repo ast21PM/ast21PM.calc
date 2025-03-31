@@ -389,6 +389,14 @@ select.light:hover {
     height: 24px;
 }
 
+.swap-icon path {
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
 .swap-btn.light svg {
     stroke: #333333;
 }

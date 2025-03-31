@@ -12,7 +12,7 @@
     <div class="theme-toggle">
         <label class="switch">
             <input type="checkbox" id="themeSwitch">
-            <span class="slider"></span>
+            <span class="slider"> </span>
         </label>
     </div>
 
@@ -25,32 +25,32 @@
 
     <div class="currency-widgets">
         <div class="widget" id="widget-USD">
-            <img src="../../image/us.png" alt="USD">
+            <img src="../../image/us.png" alt="Флаг USD">
             <span>USD/RUB</span>
             <span class="rate" id="rate-USD"></span>
         </div>
         <div class="widget" id="widget-EUR">
-            <img src="../../image/eu.png" alt="EUR">
+            <img src="../../image/eu.png" alt="Флаг EUR">
             <span>EUR/RUB</span>
             <span class="rate" id="rate-EUR"></span>
         </div>
         <div class="widget" id="widget-CNY">
-            <img src="../../image/cn.png" alt="CNY">
+            <img src="../../image/cn.png" alt="Флаг CNY">
             <span>CNY/RUB</span>
             <span class="rate" id="rate-CNY"></span>
         </div>
         <div class="widget" id="widget-KZT">
-            <img src="../../image/kz.png" alt="KZT">
+            <img src="../../image/kz.png" alt="Флаг KZT">
             <span>KZT/RUB</span>
             <span class="rate" id="rate-KZT"></span>
         </div>
         <div class="widget" id="widget-TRY">
-            <img src="../../image/tr.png" alt="TRY">
+            <img src="../../image/tr.png" alt="Флаг TRY">
             <span>TRY/RUB</span>
             <span class="rate" id="rate-TRY"></span>
         </div>
         <div class="widget" id="widget-AED">
-            <img src="../../image/ae.png" alt="AED">
+            <img src="../../image/ae.png" alt="Флаг AED">
             <span>AED/RUB</span>
             <span class="rate" id="rate-AED"></span>
         </div>
@@ -69,23 +69,23 @@
                 <button class="amount-btn" onclick="setAmount(50)">50</button>
                 <button class="amount-btn" onclick="setAmount(100)">100</button>
             </div>
-            <input type="text" id="amount" inputmode="numeric" placeholder="Введите сумму">
+            <input type="number" id="amount" placeholder="Введите сумму">
             <div class="currency-selection">
                 <!-- Заменяем <select> на кастомный выпадающий список -->
                 <div class="custom-select" id="fromCurrency">
                     <div class="selected-option">
-                        <img src="" alt="" class="flag">
-                        <span class="currency-text"></span>
+                        <img alt="Флаг валюты" class="flag">
+                        <span class="currency-text">Выберите валюту</span>
                     </div>
-                    <div class="options-list" style="display: none;"></div>
+                    <div class="options-list"></div>
                 </div>
                 <button class="swap-btn" onclick="swapCurrencies()">↔</button>
                 <div class="custom-select" id="toCurrency">
                     <div class="selected-option">
-                        <img src="" alt="" class="flag">
-                        <span class="currency-text"></span>
+                        <img alt="Флаг валюты" class="flag">
+                        <span class="currency-text">Выберите валюту</span>
                     </div>
-                    <div class="options-list" style="display: none;"></div>
+                    <div class="options-list"></div>
                 </div>
             </div>
             <div class="rate-info">
@@ -93,7 +93,7 @@
                 <span id="rateChange" class="rate-change"></span>
             </div>
             <button class="toggle-chart-btn" onclick="toggleChart()">Показать график</button>
-            <div class="chart-container" id="chartContainer" style="display: none;">
+            <div class="chart-container" id="chartContainer">
                 <div class="period-buttons">
                     <button class="period-btn active" onclick="updateChart('month')">Месяц</button>
                     <button class="period-btn" onclick="updateChart('year')">Год</button>
