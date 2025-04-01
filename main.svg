@@ -1,1 +1,19 @@
-<svg id="svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="400" height="240" viewBox="0, 0, 400,240"><g id="svgg"><path id="path0" d="M0.000 120.168 L 0.000 160.384 200.000 160.384 L 400.000 160.384 400.000 120.168 L 400.000 79.952 200.000 79.952 L 0.000 79.952 0.000 120.168 " stroke="none" fill="#fbcc04" fill-rule="evenodd"></path><path id="path1" d="M0.000 200.240 L 0.000 240.096 200.000 240.096 L 400.000 240.096 400.000 200.240 L 400.000 160.384 200.000 160.384 L 0.000 160.384 0.000 200.240 " stroke="none" fill="#fcfcfb" fill-rule="evenodd"></path><path id="path2" d="M0.000 39.976 L 0.000 79.952 200.000 79.952 L 400.000 79.952 400.000 39.976 L 400.000 0.000 200.000 0.000 L 0.000 0.000 0.000 39.976 " stroke="none" fill="#040404" fill-rule="evenodd"></path></g></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg width="800px" height="800px" viewBox="0 -4 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_503_2726)">
+<rect x="0.25" y="0.25" width="27.5" height="19.5" rx="1.75" fill="white" stroke="#F5F5F5" stroke-width="0.5"/>
+<mask id="mask0_503_2726" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="28" height="20">
+<rect x="0.25" y="0.25" width="27.5" height="19.5" rx="1.75" fill="white" stroke="white" stroke-width="0.5"/>
+</mask>
+<g mask="url(#mask0_503_2726)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M0 13.3333H28V6.66667H0V13.3333Z" fill="#0C47B7"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M0 20H28V13.3333H0V20Z" fill="#E53B35"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_503_2726">
+<rect width="28" height="20" rx="2" fill="white"/>
+</clipPath>
+</defs>
+</svg>
