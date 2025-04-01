@@ -1,279 +1,177 @@
-// Инициализация WebGL
+// Получаем элементы
 const canvas = document.getElementById('graphCanvas');
-const gl = canvas.getContext('webgl');
+const ctx = canvas.getContext('2d');
+const functionList = document.getElementById('functionList');
 
-if (!gl) {
-    alert('Ваш браузер не поддерживает WebGL.');
-}
+// Устанавливаем размеры канваса
+canvas.width = 600;
+canvas.height = 400;
 
-// Установка размеров canvas
-canvas.width = canvas.clientWidth;
-canvas.height = canvas.clientHeight;
+// Параметры графика
+const scale = 20; // Масштаб (пикселей на единицу)
+const xAxis = canvas.height / 2; // Положение оси X
+const yAxis = canvas.width / 2; // Положение оси Y
 
-// Настройка WebGL
-gl.viewport(0, 0, canvas.width, canvas.height);
-gl.clearColor(1.0, 1.0, 1.0, 1.0); // Белый фон
-gl.clear(gl.COLOR_BUFFER_BIT);
+// Функция для очистки канваса и рисования осей
+function drawAxes() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-// Шейдеры
-const vertexShaderSource = `
-    attribute vec2 a_position;
-    void main() {
-        gl_Position = vec4(a_position, 0.0, 1.0);
+    // Рисуем оси
+    ctx.beginPath();
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1;
+
+    // Ось X
+    ctx.moveTo(0, xAxis);
+    ctx.lineTo(canvas.width, xAxis);
+    ctx.stroke();
+
+    // Ось Y
+    ctx.moveTo(yAxis, 0);
+    ctx.lineTo(yAxis, canvas.height);
+    ctx.stroke();
+
+    // Деления на осях
+    ctx.font = '10px Arial';
+    ctx.fillStyle = '#000';
+    for (let i = -yAxis / scale; i <= yAxis / scale; i++) {
+        const x = yAxis + i * scale;
+        ctx.moveTo(x, xAxis - 5);
+        ctx.lineTo(x, xAxis + 5);
+        ctx.stroke();
+        if (i !== 0) ctx.fillText(i, x - 5, xAxis + 15);
     }
-`;
-
-const fragmentShaderSource = `
-    precision mediump float;
-    void main() {
-        gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0); // Синий цвет для графика
+    for (let i = -xAxis / scale; i <= xAxis / scale; i++) {
+        const y = xAxis - i * scale;
+        ctx.moveTo(yAxis - 5, y);
+        ctx.lineTo(yAxis + 5, y);
+        ctx.stroke();
+        if (i !== 0) ctx.fillText(i, yAxis - 15, y + 5);
     }
-`;
-
-// Создание шейдеров
-function createShader(gl, type, source) {
-    const shader = gl.createShader(type);
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('Ошибка компиляции шейдера:', gl.getShaderInfoLog(shader));
-        gl.deleteShader(shader);
-        return null;
-    }
-    return shader;
 }
 
-const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-
-// Создание программы
-const program = gl.createProgram();
-gl.attachShader(program, vertexShader);
-gl.attachShader(program, fragmentShader);
-gl.linkProgram(program);
-
-if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error('Ошибка линковки программы:', gl.getProgramInfoLog(program));
-}
-
-gl.useProgram(program);
-
-// Получение позиции атрибута
-const positionLocation = gl.getAttribLocation(program, 'a_position');
-
-// Создание буфера
-const positionBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-// Переменная для отслеживания режима abc
-let isAlphaMode = false;
-
-// Функция для переключения темы
-function toggleTheme() {
-    document.body.classList.toggle('light');
-    document.querySelector('.control-panel').classList.toggle('light');
-    document.querySelector('.input-wrapper').classList.toggle('light');
-    document.querySelector('.input-label').classList.toggle('light');
-    document.querySelector('#display').classList.toggle('light');
-    document.querySelectorAll('button').forEach(button => button.classList.toggle('light'));
-    document.querySelectorAll('.nav-link').forEach(link => link.classList.toggle('light'));
-}
-
-// Функция для переключения режима abc
-function toggleAlpha() {
-    isAlphaMode = !isAlphaMode;
-    const alphaBtn = document.querySelector('.alpha-btn');
-    alphaBtn.textContent = isAlphaMode ? '123' : 'abc';
-    // Здесь можно добавить логику для изменения отображаемых кнопок, если нужно
-}
-
-// Функция для добавления символов в поле ввода
-function append(value) {
-    const display = document.getElementById('display');
-    display.value += value;
-    display.focus();
-}
-
-// Функция очистки поля ввода
-function clearDisplay() {
-    const display = document.getElementById('display');
-    display.value = '';
-    display.focus();
-    gl.clear(gl.COLOR_BUFFER_BIT); // Очистка графика
-    drawGrid();
-    drawAxes(); // Перерисовка осей
-}
-
-// Функция перемещения курсора
-function moveCursor(direction) {
-    const display = document.getElementById('display');
-    const cursorPos = display.selectionStart;
-    if (direction === 'left' && cursorPos > 0) {
-        display.setSelectionRange(cursorPos - 1, cursorPos - 1);
-    } else if (direction === 'right' && cursorPos < display.value.length) {
-        display.setSelectionRange(cursorPos + 1, cursorPos + 1);
-    }
-    display.focus();
-}
-
-// Функция удаления последнего символа
-function deleteLast() {
-    const display = document.getElementById('display');
-    display.value = display.value.slice(0, -1);
-    display.focus();
-}
-
-// Функция для построения графика
-function drawGraph() {
-    const display = document.getElementById('display');
-    let expression = display.value;
-
-    // Парсинг уравнения
-    let func;
+// Функция для парсинга и вычисления значения функции
+function evaluateFunction(funcStr, x) {
     try {
-        const node = math.parse(expression);
-        func = node.compile();
-    } catch (error) {
-        alert('Ошибка в уравнении: ' + error.message);
-        return;
+        // Заменяем математические константы и функции
+        let expr = funcStr.replace(/pi/g, Math.PI)
+                         .replace(/e/g, Math.E)
+                         .replace(/sin/g, 'Math.sin')
+                         .replace(/cos/g, 'Math.cos')
+                         .replace(/tan/g, 'Math.tan')
+                         .replace(/cot/g, '1/Math.tan')
+                         .replace(/ln/g, 'Math.log')
+                         .replace(/log/g, 'Math.log10')
+                         .replace(/abs/g, 'Math.abs')
+                         .replace(/sqrt/g, 'Math.sqrt')
+                         .replace(/\^/g, '**');
+
+        // Убираем "y =" из начала строки, если есть
+        expr = expr.replace(/y\s*=\s*/, '');
+
+        // Подставляем значение x
+        return eval(expr);
+    } catch (e) {
+        console.error('Ошибка в выражении:', e);
+        return NaN;
     }
+}
 
-    // Очистка canvas
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    // Отрисовка осей и сетки
-    drawGrid();
+// Функция для рисования графика
+function drawGraph() {
     drawAxes();
 
-    // Массив точек для графика
-    const points = [];
-    const scaleX = 2 * Math.PI / canvas.width; // Масштаб по X (от -π до π)
-    const scaleY = 4 / canvas.height; // Масштаб по Y (от -2 до 2)
+    // Получаем все поля ввода функций
+    const functionInputs = document.querySelectorAll('.function-input');
+    functionInputs.forEach(input => {
+        const funcStr = input.querySelector('input[type="text"]').value.trim();
+        const color = input.querySelector('input[type="color"]').value;
 
-    for (let pixelX = 0; pixelX < canvas.width; pixelX++) {
-        const x = (pixelX - canvas.width / 2) * scaleX; // Преобразование пикселей в координаты
-        try {
-            const y = func.evaluate({ x: x });
-            const pixelY = canvas.height / 2 - y / scaleY; // Преобразование Y в пиксели
-            points.push((pixelX / canvas.width) * 2 - 1); // Нормализация X
-            points.push((pixelY / canvas.height) * 2 - 1); // Нормализация Y
-        } catch (error) {
-            continue; // Пропускаем точки, где функция не определена
+        if (funcStr) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+
+            let firstPoint = true;
+            for (let px = 0; px < canvas.width; px++) {
+                const x = (px - yAxis) / scale; // Переводим пиксели в координаты x
+                const y = evaluateFunction(funcStr, x);
+                if (isNaN(y)) continue;
+
+                const py = xAxis - y * scale; // Переводим y в пиксели
+                if (firstPoint) {
+                    ctx.moveTo(px, py);
+                    firstPoint = false;
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            ctx.stroke();
         }
-    }
-
-    // Передача точек в буфер
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
-
-    // Настройка атрибута
-    gl.enableVertexAttribArray(positionLocation);
-    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-    // Отрисовка графика
-    gl.drawArrays(gl.LINE_STRIP, 0, points.length / 2);
+    });
 }
 
-// Функция для отрисовки сетки (квадратов)
-function drawGrid() {
-    const gridPoints = [];
-    const scaleX = 2 * Math.PI / canvas.width; // Масштаб по X
-    const scaleY = 4 / canvas.height; // Масштаб по Y
-    const stepX = Math.PI / 3; // Шаг по X (π/3)
-    const stepY = 1; // Шаг по Y (1)
-
-    // Вертикальные линии
-    for (let x = -Math.PI; x <= Math.PI; x += stepX) {
-        const pixelX = (x / scaleX + canvas.width / 2) / canvas.width * 2 - 1;
-        gridPoints.push(pixelX);
-        gridPoints.push(-1); // От низа
-        gridPoints.push(pixelX);
-        gridPoints.push(1); // До верха
-    }
-
-    // Горизонтальные линии
-    for (let y = -2; y <= 2; y += stepY) {
-        const pixelY = (canvas.height / 2 - y / scaleY) / canvas.height * 2 - 1;
-        gridPoints.push(-1); // От левого края
-        gridPoints.push(pixelY);
-        gridPoints.push(1); // До правого края
-        gridPoints.push(pixelY);
-    }
-
-    // Установка серого цвета для сетки
-    const fragmentShaderSourceGrid = `
-        precision mediump float;
-        void main() {
-            gl_FragColor = vec4(0.8, 0.8, 0.8, 1.0); // Серый цвет для сетки
-        }
+// Функция для добавления нового поля ввода функции
+function addFunctionInput() {
+    const functionDiv = document.createElement('div');
+    functionDiv.className = 'function-input';
+    functionDiv.innerHTML = `
+        <input type="text" placeholder="Введите функцию (например, y = x + 1)" oninput="drawGraph()">
+        <input type="color" value="#${Math.floor(Math.random()*16777215).toString(16)}" onchange="drawGraph()">
+        <button onclick="removeFunctionInput(this)" class="remove-btn">✖</button>
     `;
-    const fragmentShaderGrid = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSourceGrid);
-    const programGrid = gl.createProgram();
-    gl.attachShader(programGrid, vertexShader);
-    gl.attachShader(programGrid, fragmentShaderGrid);
-    gl.linkProgram(programGrid);
-    gl.useProgram(programGrid);
-
-    const positionLocationGrid = gl.getAttribLocation(programGrid, 'a_position');
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(gridPoints), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(positionLocationGrid);
-    gl.vertexAttribPointer(positionLocationGrid, 2, gl.FLOAT, false, 0, 0);
-
-    // Отрисовка сетки
-    gl.drawArrays(gl.LINES, 0, gridPoints.length / 2);
-
-    // Возвращаем программу для графика
-    gl.useProgram(program);
+    functionList.appendChild(functionDiv);
+    drawGraph();
 }
 
-// Функция для отрисовки осей координат
-function drawAxes() {
-    const axisPoints = [];
+// Функция для удаления поля ввода функции
+function removeFunctionInput(button) {
+    button.parentElement.remove();
+    drawGraph();
+}
 
-    // Ось X (горизонтальная линия через центр)
-    for (let pixelX = 0; pixelX < canvas.width; pixelX++) {
-        const x = (pixelX / canvas.width) * 2 - 1;
-        const y = 0; // Центр по Y
-        axisPoints.push(x);
-        axisPoints.push(y);
+// Функции для работы с вводом
+function appendToFunction(char) {
+    const activeInput = document.activeElement;
+    if (activeInput.tagName === 'INPUT' && activeInput.type === 'text') {
+        activeInput.value += char;
+        drawGraph();
     }
+}
 
-    // Ось Y (вертикальная линия через центр)
-    for (let pixelY = 0; pixelY < canvas.height; pixelY++) {
-        const x = 0; // Центр по X
-        const y = (pixelY / canvas.height) * 2 - 1;
-        axisPoints.push(x);
-        axisPoints.push(-y);
-    }
+function clearFunctions() {
+    functionList.innerHTML = '';
+    addFunctionInput(); // Добавляем одно пустое поле после очистки
+    drawGraph();
+}
 
-    // Установка черного цвета для осей
-    const fragmentShaderSourceAxis = `
-        precision mediump float;
-        void main() {
-            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Черный цвет для осей
+function moveCursor(direction) {
+    const activeInput = document.activeElement;
+    if (activeInput.tagName === 'INPUT' && activeInput.type === 'text') {
+        const pos = activeInput.selectionStart;
+        if (direction === 'left' && pos > 0) {
+            activeInput.setSelectionRange(pos - 1, pos - 1);
+        } else if (direction === 'right' && pos < activeInput.value.length) {
+            activeInput.setSelectionRange(pos + 1, pos + 1);
         }
-    `;
-    const fragmentShaderAxis = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSourceAxis);
-    const programAxis = gl.createProgram();
-    gl.attachShader(programAxis, vertexShader);
-    gl.attachShader(programAxis, fragmentShaderAxis);
-    gl.linkProgram(programAxis);
-    gl.useProgram(programAxis);
-
-    const positionLocationAxis = gl.getAttribLocation(programAxis, 'a_position');
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(axisPoints), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(positionLocationAxis);
-    gl.vertexAttribPointer(positionLocationAxis, 2, gl.FLOAT, false, 0, 0);
-
-    // Отрисовка осей
-    gl.drawArrays(gl.LINES, 0, axisPoints.length / 2);
-
-    // Возвращаем программу для графика
-    gl.useProgram(program);
+    }
 }
 
-// Отрисовка сетки и осей при загрузке страницы
-drawGrid();
-drawAxes();
+// Функция переключения панелей
+function showPanel(panelName) {
+    document.querySelectorAll('.panel').forEach(panel => panel.style.display = 'none');
+    document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+    document.querySelector(`.${panelName}-panel`).style.display = 'grid';
+    document.querySelector(`button[onclick="showPanel('${panelName}')"]`).classList.add('active');
+}
+
+// Функция переключения темы
+function toggleTheme() {
+    document.body.classList.toggle('light');
+    document.querySelectorAll('.calculator, .calculator-header, button, .tab-button, .nav-link, .resize-handle')
+        .forEach(el => el.classList.toggle('light'));
+}
+
+// Инициализация: добавляем одно поле ввода по умолчанию
+addFunctionInput();
+drawGraph();

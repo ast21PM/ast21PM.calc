@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Графический Калькулятор</title>
-    <link rel="stylesheet" href="styles.css">|
-    <link rel="icon" type="image/svg+xml" href="../../main.svg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="main.svg">
 </head>
 <body>
     <!-- Навигация -->
@@ -20,73 +20,118 @@
     <div class="theme-toggle" id="themeToggle">
         <label class="switch">
             <input type="checkbox" onclick="toggleTheme()">
-            <span class="slider"></span>
+            <span class="slider"> </span>
         </label>
     </div>
 
-    <!-- Контейнер для всего калькулятора -->
-    <div class="container">
-        <!-- Панель графика -->
-        <div class="graph-panel">
-            <canvas id="graphCanvas"></canvas>
+    <!-- Основной контейнер -->
+    <div class="calculator" id="calculator">
+        <div class="calculator-header">
+            <span>Графический Калькулятор</span>
         </div>
 
-        <!-- Панель управления -->
-        <div class="control-panel">
-            <!-- Поле ввода -->
-            <div class="input-wrapper">
-                <span class="input-label">y=</span>
-                <input type="text" id="display" autocomplete="off">
+        <!-- Контейнер для графика и ввода функций -->
+        <div class="graph-container">
+            <!-- Панель для ввода функций (слева) -->
+            <div class="function-inputs">
+                <div class="function-list" id="functionList">
+                    <!-- Функции будут добавляться динамически -->
+                </div>
+                <button onclick="addFunctionInput()" class="add-function-btn">Добавить функцию</button>
             </div>
 
-            <!-- Кнопки -->
-            <div class="button-panel">
-                <button onclick="append('(')">(</button>
-                <button onclick="append(')')">)</button>
-                <button onclick="append('[')">[</button>
-                <button onclick="append(']')">]</button>
-                <button onclick="append('sqrt(')">√</button>
-                <button onclick="append('^')">^</button>
-                <button onclick="append('sin(')">sin</button>
-                <button onclick="append('cos(')">cos</button>
-                <button onclick="append('tan(')">tan</button>
-                <button onclick="append('cot(')">cot</button>
-                <button onclick="append('ln(')">ln</button>
-                <button onclick="append('log(')">log</button>
-                <button onclick="append('e')">e</button>
-                <button onclick="append('θ')">θ</button>
-                <button onclick="append('π')">π</button>
-                <button onclick="append('i')">i</button>
-                <button onclick="append('x')">x</button>
-                <button onclick="append('y')">y</button>
-                <button onclick="append('z')">z</button>
-                <button onclick="append('7')">7</button>
-                <button onclick="append('8')">8</button>
-                <button onclick="append('9')">9</button>
-                <button onclick="append('/')">/</button>
-                <button onclick="append('4')">4</button>
-                <button onclick="append('5')">5</button>
-                <button onclick="append('6')">6</button>
-                <button onclick="append('*')">×</button>
-                <button onclick="append('1')">1</button>
-                <button onclick="append('2')">2</button>
-                <button onclick="append('3')">3</button>
-                <button onclick="append('-')">-</button>
-                <button onclick="append('0')">0</button>
-                <button onclick="append('.')">.</button>
-                <button onclick="append('%')">%</button>
-                <button onclick="append('+')">+</button>
-                <button onclick="toggleAlpha()" class="alpha-btn">abc</button>
-                <button onclick="moveCursor('left')">←</button>
-                <button onclick="moveCursor('right')">→</button>
-                <button onclick="deleteLast()" class="delete-btn">⌫</button>
+            <!-- Канвас для графика (справа) -->
+            <canvas id="graphCanvas" class="graph-canvas"></canvas>
+        </div>
+
+        <!-- Центрированная панель кнопок -->
+        <div class="calculator-panels centered">
+            <div class="number-panel">
+                <div class="cursor-buttons">
+                    <button onclick="appendToFunction('(')">(</button>
+                    <button onclick="appendToFunction(')')">)</button>
+                    <button onclick="clearFunctions()" class="clear-btn">AC</button>
+                    <button onclick="moveCursor('left')">←</button>
+                    <button onclick="moveCursor('right')">→</button>
+                </div>
+                <button onclick="appendToFunction('7')">7</button>
+                <button onclick="appendToFunction('8')">8</button>
+                <button onclick="appendToFunction('9')">9</button>
+                <button onclick="appendToFunction('/')">/</button>
+                <button onclick="appendToFunction('4')">4</button>
+                <button onclick="appendToFunction('5')">5</button>
+                <button onclick="appendToFunction('6')">6</button>
+                <button onclick="appendToFunction('*')">×</button>
+                <button onclick="appendToFunction('1')">1</button>
+                <button onclick="appendToFunction('2')">2</button>
+                <button onclick="appendToFunction('3')">3</button>
+                <button onclick="appendToFunction('-')">-</button>
+                <button onclick="appendToFunction('0')">0</button>
+                <button onclick="appendToFunction('.')">.</button>
                 <button onclick="drawGraph()" class="equals-btn">=</button>
+                <button onclick="appendToFunction('+')">+</button>
+            </div>
+            <div class="function-panels">
+                <div class="panel-tabs">
+                    <button onclick="showPanel('basic')" class="tab-button active">ОСН.</button>
+                    <button onclick="showPanel('functions')" class="tab-button">ФУНК.</button>
+                    <button onclick="showPanel('alpha')" class="tab-button">abc</button>
+                </div>
+                <div class="panel basic-panel" style="display: grid;">
+                    <button onclick="appendToFunction('sqrt(')">√</button>
+                    <button onclick="appendToFunction('^2')">x²</button>
+                    <button onclick="appendToFunction('sin(')">sin</button>
+                    <button onclick="appendToFunction('cos(')">cos</button>
+                    <button onclick="appendToFunction('tan(')">tan</button>
+                    <button onclick="appendToFunction('pi')">π</button>
+                    <button onclick="appendToFunction('i')">i</button>
+                    <button onclick="appendToFunction('cot(')">cot</button>
+                </div>
+                <div class="panel functions-panel" style="display: none;">
+                    <button onclick="appendToFunction('ln(')">ln</button>
+                    <button onclick="appendToFunction('log(')">log</button>
+                    <button onclick="appendToFunction('abs(')">abs</button>
+                    <button onclick="appendToFunction('e')">e</button>
+                    <button onclick="appendToFunction('e^')">e⁽ˣ⁾</button>
+                    <button onclick="appendToFunction('arcsin(')">arcsin</button>
+                    <button onclick="appendToFunction('arccos(')">arccos</button>
+                    <button onclick="appendToFunction('^')">a⁽ⁿ⁾</button>
+                    <button onclick="appendToFunction('arctan(')">arctan</button>
+                    <button onclick="appendToFunction('!')">n!</button>
+                </div>
+                <div class="panel alpha-panel" style="display: none;">
+                    <button onclick="appendToFunction('a')">a</button>
+                    <button onclick="appendToFunction('b')">b</button>
+                    <button onclick="appendToFunction('c')">c</button>
+                    <button onclick="appendToFunction('d')">d</button>
+                    <button onclick="appendToFunction('e')">e</button>
+                    <button onclick="appendToFunction('f')">f</button>
+                    <button onclick="appendToFunction('g')">g</button>
+                    <button onclick="appendToFunction('h')">h</button>
+                    <button onclick="appendToFunction('i')">i</button>
+                    <button onclick="appendToFunction('j')">j</button>
+                    <button onclick="appendToFunction('k')">k</button>
+                    <button onclick="appendToFunction('l')">l</button>
+                    <button onclick="appendToFunction('m')">m</button>
+                    <button onclick="appendToFunction('n')">n</button>
+                    <button onclick="appendToFunction('o')">o</button>
+                    <button onclick="appendToFunction('p')">p</button>
+                    <button onclick="appendToFunction('q')">q</button>
+                    <button onclick="appendToFunction('r')">r</button>
+                    <button onclick="appendToFunction('s')">s</button>
+                    <button onclick="appendToFunction('t')">t</button>
+                    <button onclick="appendToFunction('u')">u</button>
+                    <button onclick="appendToFunction('v')">v</button>
+                    <button onclick="appendToFunction('w')">w</button>
+                    <button onclick="appendToFunction('x')">x</button>
+                    <button onclick="appendToFunction('y')">y</button>
+                    <button onclick="appendToFunction('z')">z</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Подключение math.js для парсинга выражений -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.0.0/math.min.js"></script>
+        <div class="resize-handle" id="resizeHandle"></div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
