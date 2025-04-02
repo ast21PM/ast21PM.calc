@@ -1,15 +1,10 @@
-/* Стили для тела страницы: центрирование и темный фон */
+/* Стили для тела страницы */
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #1a1a2e, #2d2d44);
-    font-family: 'Arial', sans-serif;
     margin: 0;
-    position: relative;
-    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e, #2d2d44);
     transition: background 0.3s ease;
+    overflow: hidden;
 }
 
 /* Светлая тема для тела */
@@ -79,36 +74,31 @@ body.light {
     box-shadow: none;
 }
 
-/* Стили для основного контейнера калькулятора */
-.calculator {
+/* Панель для ввода функций (слева) */
+.function-panel {
+    position: absolute;
+    top: 70px;
+    left: 20px;
     background: #2d2d44;
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    width: 900px;
-    height: 600px;
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
+    width: 250px;
     z-index: 900;
-    min-width: 350px;
-    min-height: 250px;
-    margin-top: 70px;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Светлая тема для калькулятора */
-.calculator.light {
+/* Светлая тема для панели функций */
+.function-panel.light {
     background: #ffffff;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Стили для заголовка калькулятора */
-.calculator-header {
+/* Стили для заголовка панели функций */
+.function-header {
     width: 100%;
     height: 20px;
     border-radius: 8px 8px 0 0;
-    cursor: move;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
@@ -122,26 +112,18 @@ body.light {
 }
 
 /* Светлая тема для заголовка */
-.calculator-header.light {
+.function-header.light {
     background: linear-gradient(135deg, #e0e0ea, #ffffff);
     color: #333333;
     opacity: 1;
 }
 
-/* Контейнер для графика и ввода функций */
-.graph-container {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
-    flex: 1;
-}
-
-/* Панель для ввода функций (слева) */
+/* Панель для ввода функций */
 .function-inputs {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 250px;
+    max-height: 400px;
     overflow-y: auto;
 }
 
@@ -202,19 +184,40 @@ body.light {
     background: linear-gradient(135deg, #007bff, #0056b3);
 }
 
-/* Канвас для графика */
+/* Канвас для графика (на весь экран) */
 .graph-canvas {
-    flex: 1;
-    border: 1px solid #3b3b50;
-    border-radius: 4px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: #f8f8f8; /* Мягкий серый фон, как у Mathway */
 }
 
-/* Центрированная панель кнопок */
-.calculator-panels.centered {
+/* Выезжающая панель кнопок */
+.calculator-panels {
+    position: absolute;
+    bottom: -300px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2d2d44;
+    padding: 15px;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
     display: flex;
-    justify-content: center;
     gap: 5px;
-    max-height: 200px;
+    z-index: 900;
+    transition: bottom 0.3s ease;
+}
+
+.calculator-panels.visible {
+    bottom: 0;
+}
+
+.calculator-panels.light {
+    background: #ffffff;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.15);
 }
 
 /* Стили для панели цифр */
@@ -224,8 +227,8 @@ body.light {
     grid-template-rows: repeat(5, 1fr);
     gap: 5px;
     padding: 5px;
-    width: 50%;
-    height: 100%;
+    width: 300px;
+    height: 250px;
 }
 
 /* Стили для кнопок курсора */
@@ -242,9 +245,9 @@ body.light {
     flex: 1;
     display: flex;
     flex-direction: column;
-    max-height: 100%;
+    max-height: 250px;
     height: 100%;
-    width: 50%;
+    width: 300px;
 }
 
 /* Стили для вкладок панелей */
@@ -307,12 +310,6 @@ body.light {
     overflow: hidden;
     max-height: 100%;
     height: 100%;
-}
-
-/* Прокрутка при уменьшении размера */
-.calculator:not([style*="width: 900px"]):not([style*="height: 600px"]) .panel,
-.calculator:not([style*="width: 900px"]):not([style*="height: 600px"]) .calculator-panels {
-    overflow: auto;
 }
 
 /* Панель базовых операций */
@@ -442,24 +439,6 @@ button[onclick*="="]:active {
 /* Нажатие в светлой теме */
 .clear-btn.light:active {
     background: linear-gradient(135deg, #ff3333, #cc3333);
-}
-
-/* Ручка изменения размера */
-.resize-handle {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    width: 15px;
-    height: 15px;
-    background: linear-gradient(135deg, #4a4a66, #3b3b50);
-    border-radius: 50%;
-    cursor: nwse-resize;
-    z-index: 950;
-}
-
-/* Светлая тема для ручки */
-.resize-handle.light {
-    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
 }
 
 /* Навигация */
