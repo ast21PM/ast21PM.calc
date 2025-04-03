@@ -192,7 +192,39 @@ body.light {
     width: 100%;
     height: 100%;
     z-index: 0;
-    background: #f8f8f8; /* Мягкий серый фон, как у Mathway */
+    background: #ffffff; /* Белый фон, как у Mathway */
+}
+
+/* Кнопки управления масштабом */
+.zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.zoom-btn {
+    background: #007bff;
+    color: #ffffff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.zoom-btn:hover {
+    background: #0056b3;
+}
+
+.zoom-btn:active {
+    background: #003d7a;
 }
 
 /* Выезжающая панель кнопок */
@@ -488,4 +520,12 @@ button[onclick*="="]:active {
 
 .navigation-tabs .nav-link.light:hover {
     background: linear-gradient(135deg, #d0d0d8, #c0c0c8);
+}
+
+.graph-canvas {
+    cursor: grab;
+}
+
+.graph-canvas:active {
+    cursor: grabbing;
 }

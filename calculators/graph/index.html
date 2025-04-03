@@ -20,7 +20,7 @@
     <div class="theme-toggle" id="themeToggle">
         <label class="switch">
             <input type="checkbox" onclick="toggleTheme()">
-            <span class="slider">&nbsp;</span>
+            <span class="slider"> </span>
         </label>
     </div>
 
@@ -39,6 +39,13 @@
 
     <!-- Канвас для графика (на весь экран) -->
     <canvas id="graphCanvas" class="graph-canvas"></canvas>
+
+    <!-- Кнопки управления масштабом -->
+    <div class="zoom-controls">
+        <button onclick="zoomIn()" class="zoom-btn">+</button>
+        <button onclick="zoomOut()" class="zoom-btn">-</button>
+        <button onclick="resetView()" class="zoom-btn">↺</button>
+    </div>
 
     <!-- Выезжающая панель кнопок -->
     <div class="calculator-panels" id="functionButtons">

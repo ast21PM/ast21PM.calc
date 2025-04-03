@@ -8,7 +8,15 @@ const functionButtons = document.getElementById('functionButtons');
 let lastActiveInput = null;
 
 // Параметры графика
-const scale = 50; // Масштаб (пикселей на единицу) - увеличим масштаб для более редких делений
+let scale = 50; // Масштаб (пикселей на единицу)
+let targetScale = scale; // Целевой масштаб для анимации
+let offsetX = 0; // Смещение по оси X
+let offsetY = 0; // Смещение по оси Y
+let scaleHistory = []; // История масштаба и смещений для кнопки "вернуться назад"
+
+// Переменные для перемещения графика
+let isDragging = false;
+let startX, startY;
 
 // Устанавливаем размеры канваса на весь экран
 function resizeCanvas() {
@@ -20,27 +28,33 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
+// Сохранение текущего состояния масштаба и смещений
+function saveState() {
+    scaleHistory.push({ scale, offsetX, offsetY });
+}
+
 // Функция для очистки канваса и рисования осей
 function drawAxes() {
-    const xAxis = canvas.height / 2; // Локальная переменная
-    const yAxis = canvas.width / 2;  // Локальная переменная
+    const xAxis = canvas.height / 2 + offsetY; // Учитываем смещение по Y
+    const yAxis = canvas.width / 2 + offsetX;  // Учитываем смещение по X
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Рисуем сетку
     ctx.beginPath();
-    ctx.strokeStyle = '#e0e0e0'; // Серый цвет для сетки
+    ctx.strokeStyle = '#e0e0e0'; // Светло-серый цвет для сетки, как у Mathway
     ctx.lineWidth = 0.5;
 
-    // Вертикальные линии сетки
-    for (let i = -yAxis / scale; i <= yAxis / scale; i++) {
+    // Вертикальные линии сетки (каждые 5 единиц)
+    const gridStep = 5; // Деления через каждые 5 единиц
+    for (let i = Math.floor((-yAxis / scale) / gridStep) * gridStep; i <= Math.ceil((canvas.width - yAxis) / scale / gridStep) * gridStep; i += gridStep) {
         const x = yAxis + i * scale;
         ctx.moveTo(x, 0);
         ctx.lineTo(x, canvas.height);
     }
 
-    // Горизонтальные линии сетки
-    for (let i = -xAxis / scale; i <= xAxis / scale; i++) {
+    // Горизонтальные линии сетки (каждые 5 единиц)
+    for (let i = Math.floor((-xAxis / scale) / gridStep) * gridStep; i <= Math.ceil((canvas.height - xAxis) / scale / gridStep) * gridStep; i += gridStep) {
         const y = xAxis - i * scale;
         ctx.moveTo(0, y);
         ctx.lineTo(canvas.width, y);
@@ -63,37 +77,35 @@ function drawAxes() {
     ctx.stroke();
 
     // Деления на осях
-    ctx.font = '12px Arial'; // Увеличим шрифт
-    ctx.fillStyle = '#333'; // Темно-серый цвет для меток
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#333';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Деления на оси X
-    for (let i = -yAxis / scale; i <= yAxis / scale; i++) {
-        if (i % 1 !== 0) continue; // Пропускаем, чтобы деления были реже (каждую 1 единицу)
+    // Деления на оси X (каждые 5 единиц)
+    for (let i = Math.floor((-yAxis / scale) / gridStep) * gridStep; i <= Math.ceil((canvas.width - yAxis) / scale / gridStep) * gridStep; i += gridStep) {
         const x = yAxis + i * scale;
         ctx.beginPath();
         ctx.moveTo(x, xAxis - 5);
         ctx.lineTo(x, xAxis + 5);
         ctx.stroke();
         if (i !== 0) {
-            ctx.fillText(i, x, xAxis + 20); // Смещаем метки ниже оси
+            ctx.fillText(i, x, xAxis + 20);
         }
     }
 
-    // Деления на оси Y
-    for (let i = -xAxis / scale; i <= xAxis / scale; i++) {
-        if (i % 1 !== 0) continue; // Пропускаем, чтобы деления были реже (каждую 1 единицу)
+    // Деления на оси Y (каждые 5 единиц)
+    for (let i = Math.floor((-xAxis / scale) / gridStep) * gridStep; i <= Math.ceil((canvas.height - xAxis) / scale / gridStep) * gridStep; i += gridStep) {
         const y = xAxis - i * scale;
         ctx.beginPath();
         ctx.moveTo(yAxis - 5, y);
         ctx.lineTo(yAxis + 5, y);
         ctx.stroke();
         if (i !== 0) {
-            ctx.fillText(i, yAxis - 25, y); // Смещаем метки левее оси
+            ctx.fillText(i, yAxis - 25, y);
         }
     }
-    console.log('Axes drawn'); // Отладка
+    console.log('Axes drawn');
 }
 
 // Функция для вычисления факториала
@@ -106,9 +118,8 @@ function factorial(n) {
 // Функция для парсинга и вычисления значения функции
 function evaluateFunction(funcStr, x) {
     try {
-        // Заменяем математические константы и функции
         let expr = funcStr.replace(/pi/g, 'Math.PI')
-                         .replace(/e(?!\^)/g, 'Math.E') // e как константа, но не e^
+                         .replace(/e(?!\^)/g, 'Math.E')
                          .replace(/sin/g, 'Math.sin')
                          .replace(/cos/g, 'Math.cos')
                          .replace(/tan/g, 'Math.tan')
@@ -124,10 +135,8 @@ function evaluateFunction(funcStr, x) {
                          .replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)))
                          .replace(/\^/g, '**');
 
-        // Убираем "y =" из начала строки, если есть
         expr = expr.replace(/y\s*=\s*/, '');
 
-        // Подставляем значение x
         const result = eval(`(function(x) { return ${expr}; })(${x})`);
         if (isNaN(result) || !isFinite(result)) {
             console.warn(`Invalid result for x=${x} in expression "${expr}": ${result}`);
@@ -142,34 +151,33 @@ function evaluateFunction(funcStr, x) {
 
 // Функция для рисования графика
 function drawGraph() {
-    console.log('Drawing graph...'); // Отладка
+    console.log('Drawing graph...');
     drawAxes();
 
-    // Получаем все поля ввода функций
     const functionInputs = document.querySelectorAll('.function-input');
-    console.log('Function inputs found:', functionInputs.length); // Отладка
+    console.log('Function inputs found:', functionInputs.length);
 
     functionInputs.forEach(input => {
         const funcStr = input.querySelector('input[type="text"]').value.trim();
         const color = input.querySelector('input[type="color"]').value;
 
-        console.log('Processing function:', funcStr, 'with color:', color); // Отладка
+        console.log('Processing function:', funcStr, 'with color:', color);
 
         if (funcStr) {
-            const xAxis = canvas.height / 2; // Локальная переменная для рисования графика
-            const yAxis = canvas.width / 2;  // Локальная переменная для рисования графика
+            const xAxis = canvas.height / 2 + offsetY;
+            const yAxis = canvas.width / 2 + offsetX;
 
             ctx.beginPath();
             ctx.strokeStyle = color;
-            ctx.lineWidth = 2.5; // Увеличим толщину линии графика
+            ctx.lineWidth = 2.5;
 
             let firstPoint = true;
             for (let px = 0; px < canvas.width; px++) {
-                const x = (px - yAxis) / scale; // Переводим пиксели в координаты x
+                const x = (px - yAxis) / scale;
                 const y = evaluateFunction(funcStr, x);
                 if (isNaN(y) || !isFinite(y)) continue;
 
-                const py = xAxis - y * scale; // Переводим y в пиксели
+                const py = xAxis - y * scale;
                 if (firstPoint) {
                     ctx.moveTo(px, py);
                     firstPoint = false;
@@ -178,10 +186,89 @@ function drawGraph() {
                 }
             }
             ctx.stroke();
-            console.log('Graph drawn for:', funcStr); // Отладка
+            console.log('Graph drawn for:', funcStr);
         }
     });
 }
+
+// Анимация масштабирования
+function animateScale() {
+    const diff = targetScale - scale;
+    if (Math.abs(diff) > 0.1) {
+        scale += diff * 0.1; // Плавное приближение к целевому масштабу
+        drawGraph();
+        requestAnimationFrame(animateScale);
+    } else {
+        scale = targetScale; // Устанавливаем точное значение
+        drawGraph();
+    }
+}
+
+// Функции для управления масштабом
+function zoomIn() {
+    saveState();
+    targetScale *= 1.2; // Увеличиваем целевой масштаб
+    requestAnimationFrame(animateScale);
+}
+
+function zoomOut() {
+    saveState();
+    targetScale /= 1.2; // Уменьшаем целевой масштаб
+    requestAnimationFrame(animateScale);
+}
+
+function resetView() {
+    if (scaleHistory.length > 0) {
+        const lastState = scaleHistory.pop();
+        targetScale = lastState.scale;
+        offsetX = lastState.offsetX;
+        offsetY = lastState.offsetY;
+    } else {
+        targetScale = 50; // Исходный масштаб
+        offsetX = 0;
+        offsetY = 0;
+    }
+    requestAnimationFrame(animateScale);
+}
+
+// Масштабирование колесом мыши
+canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    saveState();
+    if (e.deltaY < 0) {
+        targetScale *= 1.1; // Приближение
+    } else {
+        targetScale /= 1.1; // Отдаление
+    }
+    requestAnimationFrame(animateScale);
+});
+
+// Перемещение графика мышью
+canvas.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        offsetX += dx;
+        offsetY += dy;
+        startX = e.clientX;
+        startY = e.clientY;
+        drawGraph();
+    }
+});
+
+canvas.addEventListener('mouseup', () => {
+    isDragging = false;
+});
+
+canvas.addEventListener('mouseleave', () => {
+    isDragging = false;
+});
 
 // Функция для добавления нового поля ввода функции
 function addFunctionInput(defaultValue = 'y = x') {
@@ -206,14 +293,14 @@ function removeFunctionInput(button) {
 function appendToFunction(char) {
     if (lastActiveInput && lastActiveInput.tagName === 'INPUT' && lastActiveInput.type === 'text') {
         lastActiveInput.value += char;
-        lastActiveInput.focus(); // Возвращаем фокус на поле ввода
+        lastActiveInput.focus();
         drawGraph();
     }
 }
 
 function clearFunctions() {
     functionList.innerHTML = '';
-    addFunctionInput(); // Добавляем одно пустое поле после очистки
+    addFunctionInput();
     drawGraph();
 }
 
@@ -225,7 +312,7 @@ function moveCursor(direction) {
         } else if (direction === 'right' && pos < lastActiveInput.value.length) {
             lastActiveInput.setSelectionRange(pos + 1, pos + 1);
         }
-        lastActiveInput.focus(); // Возвращаем фокус
+        lastActiveInput.focus();
     }
 }
 
@@ -239,14 +326,13 @@ function showPanel(panelName) {
 
 // Функция для показа панели кнопок
 function showFunctionButtons(input) {
-    lastActiveInput = input; // Сохраняем последнее активное поле ввода
+    lastActiveInput = input;
     functionButtons.classList.add('visible');
 }
 
 // Функция для скрытия панели кнопок
 function hideFunctionButtons() {
     setTimeout(() => {
-        // Проверяем, находится ли фокус внутри панели кнопок
         const isFocusInsidePanel = functionButtons.contains(document.activeElement);
         if (!isFocusInsidePanel && document.activeElement.tagName !== 'INPUT') {
             functionButtons.classList.remove('visible');
@@ -254,9 +340,8 @@ function hideFunctionButtons() {
     }, 200);
 }
 
-// Предотвращаем скрытие панели при клике внутри неё
 functionButtons.addEventListener('mousedown', (e) => {
-    e.preventDefault(); // Предотвращаем потерю фокуса
+    e.preventDefault();
 });
 
 // Функция переключения темы
@@ -264,9 +349,9 @@ function toggleTheme() {
     document.body.classList.toggle('light');
     document.querySelectorAll('.function-panel, .function-header, button, .tab-button, .nav-link')
         .forEach(el => el.classList.toggle('light'));
-    drawGraph(); // Перерисовываем график при смене темы
+    drawGraph();
 }
 
-// Инициализация: добавляем одно поле ввода с тестовым выражением
-addFunctionInput('y = x'); // Добавляем тестовое выражение по умолчанию
+// Инициализация
+addFunctionInput('y = x');
 drawGraph();
