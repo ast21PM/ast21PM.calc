@@ -11,18 +11,18 @@ let history = [];
 function append(value) {
     if (/[\d+\-*/.()πi]/.test(value) || ['sin', 'cos', 'tan', 'cot', 'sqrt', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs', 'e', 'e^x', 'a^n', 'factorial', 'square'].includes(value) || /^[a-z]$/i.test(value)) {
         if (value === 'sqrt') {
-            display.value += '√('; // Символ корня √ (U+221A)
+            display.value += '√(';
         } else if (value === 'square') {
             let lastChar = display.value.slice(-1);
             if (display.value === '' || !/[\d)]/.test(lastChar)) {
-                display.value += '2²'; // Символ ² (U+00B2)
+                display.value += '2²';
             } else {
                 display.value += '²';
             }
         } else if (value === 'e^x') {
-            display.value += 'e^x('; // e^x
+            display.value += 'e^x(';
         } else if (value === 'a^n') {
-            display.value += '^'; // Произвольная степень
+            display.value += '^';
         } else if (['sin', 'cos', 'tan', 'cot', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs', 'factorial'].includes(value)) {
             display.value += value + '(';
         } else {
@@ -48,12 +48,11 @@ function calculate(operation) {
     try {
         if (operation === '=') {
             let evalExpression = expression
-                .replace(/√(\d+|\([^()]*\))/g, 'Math.sqrt($1)') // √4 или √(4) → Math.sqrt(4)
-                .replace(/²/g, '**2')                           // ² → **2
-                .replace(/e\^x(\d+|\([^()]*\))/g, 'Math.exp($1)') // e^x4 или e^x(4) → Math.exp(4)
+                .replace(/√(\d+|\([^()]*\))/g, 'Math.sqrt($1)')
+                .replace(/²/g, '**2')
+                .replace(/e\^x(\d+|\([^()]*\))/g, 'Math.exp($1)')
                 .replace(/π/g, 'Math.PI')
                 .replace(/e/g, 'Math.E')
-                .replace(/i/g, 'i')
                 .replace(/\^/g, '**');
 
             while (evalExpression.match(/([a-z]+)\(([^()]+)\)/i)) {
@@ -66,7 +65,7 @@ function calculate(operation) {
                         case 'tan': return Math.tan(toRadians(number));
                         case 'cot': {
                             let tanValue = Math.tan(toRadians(number));
-                            return tanValue === 0 ? 'Infinity' : 1 / tanValue;
+                            return tanValue === 0 ? 'Infinity' : (Math.abs(tanValue) === Infinity ? 0 : 1 / tanValue);
                         }
                         case 'arcsin': return toDegrees(Math.asin(number));
                         case 'arccos': return toDegrees(Math.acos(number));
@@ -80,18 +79,76 @@ function calculate(operation) {
                 });
             }
 
-            result = eval(evalExpression);
-            if (isNaN(result) || !isFinite(result)) {
-                display.value = 'Ошибка';
-            } else {
-                display.value = formatNumber(result);
-            }
+            result = parseExpression(evalExpression);
+            display.value = result.toString();
             updateHistory(expression, display.value);
         }
     } catch (error) {
         display.value = 'Ошибка';
         updateHistory(expression, 'Ошибка');
     }
+}
+
+function parseExpression(expr) {
+    expr = expr.replace(/\s/g, '');
+    let terms = [];
+    let current = '';
+    for (let i = 0; i < expr.length; i++) {
+        if ((expr[i] === '+' || expr[i] === '-') && !isInsideMultiplyDivide(expr, i)) {
+            if (current) terms.push(current);
+            current = expr[i];
+        } else {
+            current += expr[i];
+        }
+    }
+    if (current) terms.push(current);
+
+    let result = parseTerm(terms[0]);
+    for (let i = 1; i < terms.length; i++) {
+        let term = parseTerm(terms[i].slice(1));
+        if (terms[i][0] === '+') result = result.add(term);
+        else result = result.subtract(term);
+    }
+    return result;
+}
+
+function isInsideMultiplyDivide(expr, index) {
+    let depth = 0;
+    for (let i = 0; i < index; i++) {
+        if (expr[i] === '(') depth++;
+        if (expr[i] === ')') depth--;
+        if ((expr[i] === '*' || expr[i] === '/') && depth === 0) return true;
+    }
+    return false;
+}
+
+function parseTerm(term) {
+    if (term.includes('*') || term.includes('/')) {
+        let factors = term.split(/([*/])/);
+        let result = parseNumber(factors[0]);
+        for (let i = 1; i < factors.length; i += 2) {
+            let op = factors[i];
+            let next = parseNumber(factors[i + 1]);
+            if (op === '*') result = result.multiply(next);
+            else if (op === '/') result = result.divide(next);
+        }
+        return result;
+    }
+    return parseNumber(term);
+}
+
+function parseNumber(str) {
+    if (!str) return new Complex(0, 0);
+    if (str === 'i') return new Complex(0, 1);
+    let real = 0, imag = 0;
+    let match = str.match(/([+-]?)(\d*\.?\d*)(i?)/);
+    if (match) {
+        let sign = match[1] === '-' ? -1 : 1;
+        let num = parseFloat(match[2]) || (match[2] === '' ? 1 : 0);
+        if (match[3] === 'i') imag = sign * num;
+        else real = sign * num;
+    }
+    return new Complex(real, imag);
 }
 
 function updateHistory(expression, result) {
@@ -273,4 +330,39 @@ function factorial(n) {
     if (!Number.isInteger(n) || n < 0) return 'Ошибка';
     if (n === 0) return 1;
     return n * factorial(n - 1);
+}
+
+class Complex {
+    constructor(real, imag) {
+        this.real = real || 0;
+        this.imag = imag || 0;
+    }
+
+    add(other) {
+        return new Complex(this.real + other.real, this.imag + other.imag);
+    }
+
+    subtract(other) {
+        return new Complex(this.real - other.real, this.imag - other.imag);
+    }
+
+    multiply(other) {
+        const real = this.real * other.real - this.imag * other.imag;
+        const imag = this.real * other.imag + this.imag * other.real;
+        return new Complex(real, imag);
+    }
+
+    divide(other) {
+        const denominator = other.real * other.real + other.imag * other.imag;
+        if (denominator === 0) throw new Error('Division by zero');
+        const real = (this.real * other.real + this.imag * other.imag) / denominator;
+        const imag = (this.imag * other.real - this.real * other.imag) / denominator;
+        return new Complex(real, imag);
+    }
+
+    toString() {
+        if (this.imag === 0) return formatNumber(this.real);
+        if (this.real === 0) return this.imag === 1 ? 'i' : (this.imag === -1 ? '-i' : `${formatNumber(this.imag)}i`);
+        return `${formatNumber(this.real)}${this.imag >= 0 ? '+' : ''}${this.imag === 1 ? 'i' : (this.imag === -1 ? '-i' : `${formatNumber(this.imag)}i`)}`;
+    }
 }
