@@ -1,4 +1,4 @@
-// Переключение темы
+
 const themeSwitch = document.getElementById('themeSwitch');
 
 function applyTheme(isLight) {
@@ -47,7 +47,7 @@ themeSwitch.addEventListener('change', () => {
     applyTheme(isLight);
 });
 
-// Перетаскивание и изменение размера конвертера
+
 const converter = document.getElementById('converter');
 const header = document.querySelector('.converter-header');
 let isDragging = false;
@@ -115,7 +115,7 @@ document.addEventListener('mouseup', () => {
     isResizing = false;
 });
 
-// Валидация ввода суммы
+
 document.getElementById('amount').addEventListener('input', (e) => {
     const value = e.target.value;
     if (!/^\d*\.?\d*$/.test(value)) {
@@ -136,7 +136,7 @@ function setAmount(value) {
     }
 }
 
-// Данные о валютах
+
 let rates = {};
 let chart;
 let rateHistory = {};
@@ -251,13 +251,13 @@ function populateCurrencies() {
         const selectedOption = selectElement.querySelector('.selected-option');
         const optionsList = selectElement.querySelector('.options-list');
 
-        // Устанавливаем значение по умолчанию сразу
+
         selectElement.dataset.value = defaultCurrency;
         selectedOption.querySelector('.flag').src = getFlagUrl(defaultCurrency);
         selectedOption.querySelector('.flag').alt = `Флаг ${defaultCurrency}`;
         selectedOption.querySelector('.currency-text').textContent = `${defaultCurrency} - ${getCurrencyName(defaultCurrency)}`;
 
-        // Заполняем список опций
+
         supportedCurrencies.forEach(currency => {
             if (rates[currency] !== undefined) {
                 const option = document.createElement('div');
@@ -282,7 +282,7 @@ function populateCurrencies() {
             }
         });
 
-        // Открытие/закрытие списка
+
         selectedOption.addEventListener('click', (e) => {
             e.stopPropagation();
             const isOpen = optionsList.classList.contains('visible');
@@ -290,7 +290,7 @@ function populateCurrencies() {
             optionsList.classList.toggle('visible', !isOpen);
         });
 
-        // Закрытие списка при клике вне
+
         document.addEventListener('click', (e) => {
             if (!selectElement.contains(e.target)) {
                 optionsList.classList.remove('visible');

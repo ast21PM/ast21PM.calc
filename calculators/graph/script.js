@@ -1,4 +1,4 @@
-// Получаем элементы
+
 const canvas = document.getElementById('graphCanvas');
 const ctx = canvas.getContext('2d');
 const functionList = document.getElementById('functionList');
@@ -6,18 +6,18 @@ const functionButtons = document.getElementById('functionButtons');
 
 let lastActiveInput = null;
 
-// Параметры графика
+
 let scale = 50;
 let targetScale = scale;
 let offsetX = 0;
 let offsetY = 0;
 const initialState = { scale: 50, offsetX: 0, offsetY: 0 };
 
-// Переменные для перемещения
+
 let isDragging = false;
 let startX, startY;
 
-// Устанавливаем размеры канваса
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -26,7 +26,7 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-// Определяем шаг сетки в зависимости от масштаба
+
 function getGridStep(scale) {
     const steps = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100];
     const pixelsPerUnit = scale;
@@ -40,14 +40,14 @@ function getGridStep(scale) {
     return scale > 500 ? 0.01 : 100;
 }
 
-// Отрисовка осей и сетки
+
 function drawAxes() {
     const xAxis = canvas.height / 2 + offsetY;
     const yAxis = canvas.width / 2 + offsetX;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Сетка
+
     ctx.beginPath();
     ctx.strokeStyle = '#e0e0e0';
     ctx.lineWidth = 0.5;
@@ -73,7 +73,7 @@ function drawAxes() {
     }
     ctx.stroke();
 
-    // Оси
+
     ctx.beginPath();
     ctx.strokeStyle = '#666';
     ctx.lineWidth = 1.5;
@@ -83,20 +83,20 @@ function drawAxes() {
     ctx.lineTo(yAxis, canvas.height);
     ctx.stroke();
 
-    // Деления
+
     ctx.font = '12px Arial';
     ctx.fillStyle = '#333';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     for (let i = minX; i <= maxX; i += gridStep) {
-        if (Math.abs(i) < gridStep / 2) continue; // Пропускаем 0
+        if (Math.abs(i) < gridStep / 2) continue;
         const x = yAxis + i * scale;
         ctx.beginPath();
         ctx.moveTo(x, xAxis - 5);
         ctx.lineTo(x, xAxis + 5);
         ctx.stroke();
-        // Форматирование: целые числа без нулей, дробные с двумя знаками
+
         const label = Number.isInteger(i) ? i.toString() : i.toFixed(2);
         ctx.fillText(label, x, xAxis + 15);
     }
@@ -113,14 +113,14 @@ function drawAxes() {
     }
 }
 
-// Факториал
+
 function factorial(n) {
     if (n < 0 || !Number.isInteger(n)) return NaN;
     if (n === 0 || n === 1) return 1;
     return n * factorial(n - 1);
 }
 
-// Вычисление функции
+
 function evaluateFunction(funcStr, x) {
     try {
         let expr = funcStr.toLowerCase()
@@ -150,7 +150,7 @@ function evaluateFunction(funcStr, x) {
     }
 }
 
-// Отрисовка графика
+
 function drawGraph() {
     drawAxes();
     const functionInputs = document.querySelectorAll('.function-input');
@@ -197,7 +197,7 @@ function drawGraph() {
     });
 }
 
-// Плавное масштабирование
+
 let animationFrameId = null;
 function animateScale() {
     if (animationFrameId) cancelAnimationFrame(animationFrameId);
@@ -217,7 +217,7 @@ function animateScale() {
     animationFrameId = requestAnimationFrame(animate);
 }
 
-// Управление масштабом
+
 function zoomIn() {
     targetScale = Math.min(targetScale * 1.2, 1000);
     animateScale();
@@ -235,7 +235,7 @@ function resetView() {
     animateScale();
 }
 
-// Масштабирование колесом
+
 canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     const factor = e.deltaY < 0 ? 1.1 : 0.9;
@@ -243,7 +243,7 @@ canvas.addEventListener('wheel', (e) => {
     animateScale();
 });
 
-// Перемещение графика
+
 canvas.addEventListener('mousedown', (e) => {
     isDragging = true;
     startX = e.clientX;
@@ -263,7 +263,7 @@ canvas.addEventListener('mousemove', (e) => {
 canvas.addEventListener('mouseup', () => isDragging = false);
 canvas.addEventListener('mouseleave', () => isDragging = false);
 
-// Остальные функции остаются без изменений
+
 function addFunctionInput(defaultValue = 'y = x') {
     const functionDiv = document.createElement('div');
     functionDiv.className = 'function-input';

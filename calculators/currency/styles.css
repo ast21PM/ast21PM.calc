@@ -652,11 +652,11 @@ body.light {
     max-height: 200px;
     overflow-y: auto;
     z-index: 1000;
-    display: none; /* Скрываем по умолчанию */
+    display: none; 
 }
 
 .options-list.visible {
-    display: block; /* Показываем, когда добавлен класс visible */
+    display: block; 
 }
 
 .custom-select.light .options-list {

@@ -8,7 +8,7 @@
     <link rel="icon" type="image/svg+xml" href="../../main.svg">
 </head>
 <body>
-    <!-- Блок навигации -->
+
     <div class="navigation-tabs">
         <a href="../../index.html" class="nav-link">Главная</a>
         <a href="index.html" class="nav-link active">Система счисления</a>
@@ -16,7 +16,7 @@
         <a href="../graph/index.html" class="nav-link">График</a>
     </div>
 
-    <!-- Кнопка переключения темы -->
+
     <div class="theme-toggle" id="themeToggle">
         <label class="switch">
             <input type="checkbox" onclick="toggleTheme()">
@@ -24,15 +24,13 @@
         </label>
     </div>
 
-    <!-- Основной контейнер калькулятора -->
     <div class="calculator" id="calculator">
         <div class="calculator-header">
             <span>Калькулятор системы счисления</span>
         </div>
-        <!-- Панель управления -->
+
         <div class="calculator-panels">
             <div class="main-content">
-                <!-- Панель ввода -->
                 <div class="number-panel">
                     <div class="input-group">
                         <label>Исходное число</label>
@@ -78,7 +76,6 @@
                             <option value="36">(36)</option>
                         </select>
                     </div>
-                    <!-- Кнопка для смены систем счисления -->
                     <div class="swap-button-container">
                         <button onclick="swapBases()" class="swap-btn">
                             <svg width="24" height="24" viewBox="0 0 24 24" class="swap-icon">
@@ -129,9 +126,9 @@
                     </div>
                     <button onclick="convertNumber()" class="convert-btn">КОНВЕРТИРОВАТЬ</button>
                 </div>
-                <!-- Панель результата -->
+
                 <div class="result-panel" id="resultPanel">
-                    <!-- Спиннер загрузки -->
+
                     <div class="loading-spinner" id="loadingSpinner"></div>
                     <div class="result-section" id="resultSection">
                         <h3>Результат: <span id="resultValue"></span></h3>

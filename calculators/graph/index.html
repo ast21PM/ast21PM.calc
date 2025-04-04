@@ -8,7 +8,7 @@
     <link rel="icon" type="image/svg+xml" href="main.svg">
 </head>
 <body>
-    <!-- Навигация -->
+
     <div class="navigation-tabs">
         <a href="../../index.html" class="nav-link">Главная</a>
         <a href="../numsys/index.html" class="nav-link">Система счисления</a>
@@ -16,7 +16,7 @@
         <a href="index.html" class="nav-link active">График</a>
     </div>
 
-    <!-- Кнопка переключения темы -->
+
     <div class="theme-toggle" id="themeToggle">
         <label class="switch">
             <input type="checkbox" onclick="toggleTheme()">
@@ -24,30 +24,30 @@
         </label>
     </div>
 
-    <!-- Панель для ввода функций (слева) -->
+
     <div class="function-panel">
         <div class="function-header">
             <span>Функции</span>
         </div>
         <div class="function-inputs">
             <div class="function-list" id="functionList">
-                <!-- Функции будут добавляться динамически -->
+
             </div>
             <button onclick="addFunctionInput()" class="add-function-btn">Добавить функцию</button>
         </div>
     </div>
 
-    <!-- Канвас для графика (на весь экран) -->
+
     <canvas id="graphCanvas" class="graph-canvas"></canvas>
 
-    <!-- Кнопки управления масштабом -->
+
     <div class="zoom-controls">
         <button onclick="zoomIn()" class="zoom-btn">+</button>
         <button onclick="zoomOut()" class="zoom-btn">-</button>
         <button onclick="resetView()" class="zoom-btn">↺</button>
     </div>
 
-    <!-- Выезжающая панель кнопок -->
+
     <div class="calculator-panels" id="functionButtons">
         <div class="number-panel">
             <div class="cursor-buttons">

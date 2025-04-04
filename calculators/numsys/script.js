@@ -1,4 +1,4 @@
-// Получаем элементы
+
 let calculator = document.getElementById('calculator');
 let themeToggle = document.getElementById('themeToggle');
 let resizeHandle = document.getElementById('resizeHandle');
@@ -12,26 +12,25 @@ let resultSection = document.getElementById('resultSection');
 let resultPanel = document.getElementById('resultPanel');
 let loadingSpinner = document.getElementById('loadingSpinner');
 
-// Дефолтные размеры
-const DEFAULT_WIDTH = 400; // Узкое окно изначально
+
+const DEFAULT_WIDTH = 400;
 const DEFAULT_HEIGHT = 650;
 
-// Функция конвертации числа
+
 function convertNumber() {
     let value = inputValue.value.trim().toUpperCase();
     let from = parseInt(fromBase.value);
     let to = parseInt(toBase.value);
 
-    // Очищаем предыдущие результаты и скрываем секцию результата
     resultValue.textContent = '';
     explanation.textContent = '';
     stepTableBody.innerHTML = '';
     resultSection.classList.remove('visible');
 
-    // Показываем спиннер загрузки
+
     loadingSpinner.classList.add('active');
 
-    // Проверяем, введено ли число
+
     if (value === '') {
         setTimeout(() => {
             loadingSpinner.classList.remove('active');
@@ -43,7 +42,7 @@ function convertNumber() {
     }
 
     try {
-        // Преобразуем в десятичную систему
+
         let decimal = parseInt(value, from);
         if (isNaN(decimal)) {
             setTimeout(() => {
@@ -55,7 +54,6 @@ function convertNumber() {
             return;
         }
 
-        // Проверка на отрицательные числа
         if (decimal < 0) {
             setTimeout(() => {
                 loadingSpinner.classList.remove('active');
@@ -66,21 +64,20 @@ function convertNumber() {
             return;
         }
 
-        // Преобразуем в целевую систему
+
         let result = decimal.toString(to).toUpperCase();
 
-        // Задержка для анимации загрузки
+
         setTimeout(() => {
-            // Скрываем спиннер
+
             loadingSpinner.classList.remove('active');
 
-            // Отображаем результат
+
             resultValue.textContent = `${value} (base ${from}) = ${result} (base ${to})`;
 
-            // Показываем шаги
             stepTableBody.innerHTML = '';
 
-            // Шаг 1: Перевод в десятичную систему (если исходная система не 10)
+
             if (from !== 10) {
                 explanation.textContent = `Сначала переводим число ${value} из системы с основанием ${from} в десятичную систему.\nКаждый разряд числа умножаем на основание ${from} в степени n, где n — номер разряда (0 — младший разряд). Суммируем результаты.`;
                 showStepsToDecimal(value, from);
@@ -88,7 +85,7 @@ function convertNumber() {
                 explanation.textContent = `Число ${value} уже в десятичной системе.`;
             }
 
-            // Шаг 2: Перевод из десятичной в целевую систему (если целевая система не 10)
+
             if (to !== 10) {
                 let explanationText = from !== 10 
                     ? `Теперь переводим полученное десятичное число ${decimal} в систему с основанием ${to}.\nДелим число на ${to}, записываем остатки, пока частное не станет 0. Остатки в обратном порядке дают результат.`
@@ -97,7 +94,7 @@ function convertNumber() {
                 showStepsFromDecimal(decimal, to);
             }
 
-            // Показываем секцию результата с анимацией
+
             resultSection.classList.add('visible');
             expandCalculator();
         }, 1000);
@@ -111,25 +108,25 @@ function convertNumber() {
     }
 }
 
-// Функция для расширения калькулятора
+
 function expandCalculator() {
-    // Показываем панель результата
+
     calculator.classList.add('expanded');
 
-    // Даем время для рендеринга содержимого
+
     setTimeout(() => {
-        // Получаем элементы
+
         const numberPanel = document.querySelector('.number-panel');
         const resultSection = document.querySelector('.result-section');
 
-        // Сбрасываем ширину number-panel, чтобы она подстроилась под содержимое
-        numberPanel.style.width = 'auto';
-        numberPanel.style.minWidth = '350px'; // Минимальная ширина
 
-        // Получаем ширину number-panel на основе содержимого
+        numberPanel.style.width = 'auto';
+        numberPanel.style.minWidth = '350px'; 
+
+
         const numberPanelWidth = numberPanel.scrollWidth;
 
-        // Устанавливаем ширину number-panel
+
         numberPanel.style.width = `${numberPanelWidth}px`;
 
         // Получаем ширину содержимого панели результата
