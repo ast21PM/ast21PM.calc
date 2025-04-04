@@ -84,7 +84,7 @@ body.light {
     background: #2d2d44;
     padding: 15px;
     border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Усилил тень для глубины */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     width: 650px;
     height: 550px;
     display: flex;
@@ -115,7 +115,7 @@ body.light {
     justify-content: center;
     padding: 5px;
     user-select: none;
-    background: linear-gradient(135deg, #3b3b50, #2d2d44); /* Градиент для заголовка */
+    background: linear-gradient(135deg, #3b3b50, #2d2d44);
     color: #ffffff;
     opacity: 0.9;
     transition: background 0.3s ease, color 0.3s ease;
@@ -123,7 +123,7 @@ body.light {
 
 /* Светлая тема для заголовка */
 .calculator-header.light {
-    background: linear-gradient(135deg, #e0e0ea, #ffffff); /* Градиент для светлой темы */
+    background: linear-gradient(135deg, #e0e0ea, #ffffff);
     color: #333333;
     opacity: 1;
 }
@@ -144,7 +144,7 @@ body.light {
     font-family: 'Courier New', monospace;
     outline: none;
     transition: background 0.3s ease, color 0.3s ease, border 0.3s ease;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); /* Легкая тень для глубины */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Светлая тема для поля ввода */
@@ -204,7 +204,7 @@ body.light {
 
 /* Стили для кнопок вкладок */
 .tab-button {
-    background: linear-gradient(135deg, #4a4a66, #3b3b50); /* Градиент для вкладок */
+    background: linear-gradient(135deg, #4a4a66, #3b3b50);
     color: #ffffff;
     border: none;
     padding: 8px;
@@ -281,7 +281,7 @@ body.light {
 
 /* Стили для кнопок */
 button {
-    background: linear-gradient(135deg, #4a4a66, #3b3b50); /* Градиент для кнопок */
+    background: linear-gradient(135deg, #4a4a66, #3b3b50);
     color: #ffffff;
     border: none;
     padding: 10px;
@@ -290,7 +290,7 @@ button {
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: 'Arial', sans-serif;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Усилил тень */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -357,7 +357,7 @@ button[onclick*="="]:active {
 
 /* Кнопка очистки */
 .clear-btn {
-    background: linear-gradient(135deg, #ff6666, #ff4d4d); /* Градиент для кнопки AC */
+    background: linear-gradient(135deg, #ff6666, #ff4d4d);
     color: #ffffff;
     padding: 8px 20px;
     font-size: 14px;
@@ -392,6 +392,43 @@ button[onclick*="="]:active {
     background: linear-gradient(135deg, #ff3333, #cc3333);
 }
 
+/* Кнопка backspace */
+button[onclick="backspace()"] {
+    background: linear-gradient(135deg, #ffcc66, #ffbf00); /* Желтый градиент */
+    color: #ffffff;
+    padding: 8px 20px;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Светлая тема для кнопки backspace */
+button[onclick="backspace()"].light {
+    background: linear-gradient(135deg, #ffe066, #ffcc33);
+    color: #333333;
+}
+
+/* Наведение на кнопку backspace */
+button[onclick="backspace()"]:hover {
+    background: linear-gradient(135deg, #ffbf00, #e6ac00);
+}
+
+/* Наведение в светлой теме */
+button[onclick="backspace()"].light:hover {
+    background: linear-gradient(135deg, #ffcc33, #ffbf00);
+}
+
+/* Нажатие на кнопку backspace */
+button[onclick="backspace()"]:active {
+    background: linear-gradient(135deg, #e6ac00, #cc9900);
+}
+
+/* Нажатие в светлой теме */
+button[onclick="backspace()"].light:active {
+    background: linear-gradient(135deg, #ffbf00, #e6ac00);
+}
+
 /* Ручка изменения размера */
 .resize-handle {
     position: absolute;
@@ -421,7 +458,7 @@ button[onclick*="="]:active {
     margin-top: 10px;
     font-size: 14px;
     transition: background 0.3s ease, color 0.3s ease;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); /* Легкая тень */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Элемент истории */
@@ -482,7 +519,7 @@ button[onclick*="="]:active {
 }
 
 .navigation-tabs .nav-link {
-    background: linear-gradient(135deg, #4a4a66, #3b3b50); /* Градиент для навигации */
+    background: linear-gradient(135deg, #4a4a66, #3b3b50);
     color: #ffffff;
     text-decoration: none;
     padding: 10px 20px;

@@ -37,6 +37,15 @@ function clearDisplay() {
     display.value = '';
 }
 
+// Новая функция для удаления последнего символа
+function backspace() {
+    if (display.value === 'Ошибка') {
+        display.value = ''; // Если на экране ошибка, очищаем полностью
+    } else {
+        display.value = display.value.slice(0, -1); // Удаляем последний символ
+    }
+}
+
 function formatNumber(number) {
     let fixed = number.toFixed(5);
     let parsed = parseFloat(fixed);
@@ -115,7 +124,7 @@ function calculate(operation) {
                         case 'arcsin': return `(${toDegrees(Math.asin(number))})`;
                         case 'arccos': return `(${toDegrees(Math.acos(number))})`;
                         case 'arctan': return `(${toDegrees(Math.atan(number))})`;
-                        case 'ln': return `(${Math.log(number)})`; 
+                        case 'ln': return `(${Math.log(number)})`;
                         case 'log': return `(${Math.log10(number)})`;
                         default: return match;
                     }
@@ -210,7 +219,7 @@ function toggleTheme() {
     let navLinks = document.querySelectorAll('.nav-link');
 
     body.classList.toggle('light');
-    calc.classList.toggle('light Observations');
+    calc.classList.toggle('light');
     displayInput.classList.toggle('light');
     buttons.forEach(button => button.classList.toggle('light'));
     navLinks.forEach(link => link.classList.toggle('light'));
