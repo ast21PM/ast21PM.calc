@@ -57,8 +57,12 @@ function calculate(operation) {
 
             while (evalExpression.match(/([a-z]+)\(([^()]+)\)/i)) {
                 evalExpression = evalExpression.replace(/([a-z]+)\(([^()]+)\)/gi, (match, func, arg) => {
-                    let number = parseFloat(arg) || 0;
                     func = func.toLowerCase();
+                    if (func === 'abs') {
+                        let complex = parseExpression(arg);
+                        return Math.sqrt(complex.real * complex.real + complex.imag * complex.imag);
+                    }
+                    let number = parseFloat(arg) || 0;
                     switch (func) {
                         case 'sin': return Math.sin(toRadians(number));
                         case 'cos': return Math.cos(toRadians(number));
@@ -72,7 +76,6 @@ function calculate(operation) {
                         case 'arctan': return toDegrees(Math.atan(number));
                         case 'ln': return Math.log(number);
                         case 'log': return Math.log10(number);
-                        case 'abs': return Math.abs(number);
                         case 'factorial': return factorial(number);
                         default: return match;
                     }
