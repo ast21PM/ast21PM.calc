@@ -9,7 +9,7 @@ const DEFAULT_HEIGHT = 550;
 let history = [];
 
 function append(value) {
-    if (/[\d+\-*/.()πi]/.test(value) || ['sin', 'cos', 'tan', 'cot', 'sqrt', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs', 'e', 'e^x', 'a^n', 'factorial', 'square'].includes(value) || /^[a-z]$/i.test(value)) {
+    if (/[\d+\-*/.()πi%]/.test(value) || ['sin', 'cos', 'tan', 'cot', 'sqrt', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs', 'e', 'e^x', 'a^n', 'factorial', 'square'].includes(value) || /^[a-z]$/i.test(value)) {
         if (value === 'sqrt') {
             display.value += '√(';
         } else if (value === 'square') {
@@ -23,8 +23,10 @@ function append(value) {
             display.value += 'e^x(';
         } else if (value === 'a^n') {
             display.value += '^';
-        } else if (['sin', 'cos', 'tan', 'cot', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs', 'factorial'].includes(value)) {
+        } else if (['sin', 'cos', 'tan', 'cot', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs'].includes(value)) {
             display.value += value + '(';
+        } else if (value === 'factorial') {
+            display.value += '!';
         } else {
             display.value += value;
         }
@@ -47,42 +49,80 @@ function calculate(operation) {
 
     try {
         if (operation === '=') {
-            let evalExpression = expression
-                .replace(/√(\d+|\([^()]*\))/g, 'Math.sqrt($1)')
-                .replace(/²/g, '**2')
-                .replace(/e\^x(\d+|\([^()]*\))/g, 'Math.exp($1)')
-                .replace(/π/g, 'Math.PI')
-                .replace(/e/g, 'Math.E')
+            let evalExpression = expression;
+
+            // 1. Обработка возведения в квадрат (²)
+            evalExpression = evalExpression.replace(/(\d*\.?\d+(?:[+-]?\d*\.?\d*i)?)²/g, (match, num) => {
+                let complex = parseNumber(num);
+                return `(${complex.multiply(complex).toString()})`; // Оборачиваем в скобки
+            });
+
+            // 2. Обработка факториала (!)
+            evalExpression = evalExpression.replace(/(\d*\.?\d+)!/g, (match, num) => {
+                return `(${factorial(parseFloat(num))})`; // Оборачиваем в скобки
+            });
+
+            // 3. Обработка функций (√, e^x, π, e, ^)
+            evalExpression = evalExpression
+                .replace(/√(\d+|\([^()]*\))/g, (match, arg) => {
+                    let num = evaluateSimpleExpression(arg); // Вычисляем аргумент
+                    return `(${Math.sqrt(num.real)})`; // Только реальная часть
+                })
+                .replace(/e\^x(\d+|\([^()]*\))/g, (match, arg) => {
+                    let num = evaluateSimpleExpression(arg);
+                    return `(${Math.exp(num.real)})`; // Только реальная часть
+                })
+                .replace(/π/g, `(${Math.PI})`)
+                .replace(/e/g, `(${Math.E})`)
                 .replace(/\^/g, '**');
 
+            // 4. Обработка процентов (%)
+            evalExpression = evalExpression.replace(/(\d*\.?\d+)%/g, (match, num) => {
+                let percentage = parseFloat(num) / 100;
+                let before = evalExpression.slice(0, evalExpression.indexOf(match)).trim();
+                if (before && /[\+\-\*\/]$/.test(before)) {
+                    let lastNumMatch = before.match(/(\d*\.?\d+(?:[+-]?\d*\.?\d*i)?)$/);
+                    if (lastNumMatch) {
+                        let base = parseNumber(lastNumMatch[0]);
+                        let operator = before.slice(-1);
+                        if (operator === '+' || operator === '-') {
+                            return `(${base.toString()} * ${percentage})`;
+                        } else if (operator === '*' || operator === '/') {
+                            return `(${percentage})`;
+                        }
+                    }
+                }
+                return `(${percentage})`;
+            });
+
+            // 5. Обработка тригонометрических и других функций
             while (evalExpression.match(/([a-z]+)\(([^()]+)\)/i)) {
                 evalExpression = evalExpression.replace(/([a-z]+)\(([^()]+)\)/gi, (match, func, arg) => {
                     func = func.toLowerCase();
+                    let num = evaluateSimpleExpression(arg); // Вычисляем аргумент
                     if (func === 'abs') {
-                        let complex = parseExpression(arg);
-                        return Math.sqrt(complex.real * complex.real + complex.imag * complex.imag);
+                        return `(${Math.sqrt(num.real * num.real + num.imag * num.imag)})`;
                     }
-                    let number = parseFloat(arg) || 0;
+                    let number = num.real; // Используем только реальную часть для тригонометрии
                     switch (func) {
-                        case 'sin': return Math.sin(toRadians(number));
-                        case 'cos': return Math.cos(toRadians(number));
-                        case 'tan': return Math.tan(toRadians(number));
+                        case 'sin': return `(${Math.sin(toRadians(number))})`;
+                        case 'cos': return `(${Math.cos(toRadians(number))})`;
+                        case 'tan': return `(${Math.tan(toRadians(number))})`;
                         case 'cot': {
                             let tanValue = Math.tan(toRadians(number));
-                            return tanValue === 0 ? 'Infinity' : (Math.abs(tanValue) === Infinity ? 0 : 1 / tanValue);
+                            return tanValue === 0 ? '(Infinity)' : (Math.abs(tanValue) === Infinity ? '(0)' : `(${1 / tanValue})`);
                         }
-                        case 'arcsin': return toDegrees(Math.asin(number));
-                        case 'arccos': return toDegrees(Math.acos(number));
-                        case 'arctan': return toDegrees(Math.atan(number));
-                        case 'ln': return Math.log(number);
-                        case 'log': return Math.log10(number);
-                        case 'factorial': return factorial(number);
+                        case 'arcsin': return `(${toDegrees(Math.asin(number))})`;
+                        case 'arccos': return `(${toDegrees(Math.acos(number))})`;
+                        case 'arctan': return `(${toDegrees(Math.atan(number))})`;
+                        case 'ln': return `(${Math.log(number)})`; 
+                        case 'log': return `(${Math.log10(number)})`;
                         default: return match;
                     }
                 });
             }
 
-            result = parseExpression(evalExpression);
+            result = evaluateSimpleExpression(evalExpression);
             display.value = result.toString();
             updateHistory(expression, display.value);
         }
@@ -92,7 +132,8 @@ function calculate(operation) {
     }
 }
 
-function parseExpression(expr) {
+// Новая функция для вычисления простых выражений
+function evaluateSimpleExpression(expr) {
     expr = expr.replace(/\s/g, '');
     let terms = [];
     let current = '';
@@ -143,6 +184,7 @@ function parseTerm(term) {
 function parseNumber(str) {
     if (!str) return new Complex(0, 0);
     if (str === 'i') return new Complex(0, 1);
+    str = str.replace(/[()]/g, ''); // Убираем лишние скобки
     let real = 0, imag = 0;
     let match = str.match(/([+-]?)(\d*\.?\d*)(i?)/);
     if (match) {
@@ -168,7 +210,7 @@ function toggleTheme() {
     let navLinks = document.querySelectorAll('.nav-link');
 
     body.classList.toggle('light');
-    calc.classList.toggle('light');
+    calc.classList.toggle('light Observations');
     displayInput.classList.toggle('light');
     buttons.forEach(button => button.classList.toggle('light'));
     navLinks.forEach(link => link.classList.toggle('light'));
@@ -316,7 +358,7 @@ display.addEventListener('keydown', (event) => {
         return;
     } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
         return;
-    } else if (!/[0-9+\-*/.()πie]/.test(event.key)) {
+    } else if (!/[0-9+\-*/.()πie%!]/.test(event.key)) {
         event.preventDefault();
     }
 });

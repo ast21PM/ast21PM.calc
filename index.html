@@ -18,7 +18,7 @@
     <div class="theme-toggle" id="themeToggle">
         <label class="switch">
             <input type="checkbox" onclick="toggleTheme()">
-            <span class="slider">&nbsp;</span>
+            <span class="slider"> </span>
         </label>
     </div>
 
@@ -50,13 +50,13 @@
                 <button onclick="append('-')">-</button>
                 <button onclick="append('0')">0</button>
                 <button onclick="append('.')">.</button>
-                <button onclick="calculate('=')">=</button> <!-- Исправлено -->
+                <button onclick="calculate('=')">=</button>
                 <button onclick="append('+')">+</button>
             </div>
             <div class="function-panels">
                 <div class="panel-tabs">
-                    <button onclick="showPanel('basic')" class="tab-button active">ОСН.</button>
-                    <button onclick="showPanel('functions')" class="tab-button">ФУНК.</button>
+                    <button onclick="showPanel('basic')" class="tab-button active">осн.</button>
+                    <button onclick="showPanel('functions')" class="tab-button">функ.</button>
                     <button onclick="showPanel('alpha')" class="tab-button">abc</button>
                 </div>
                 <div class="panel basic-panel" style="display: grid;">
@@ -68,6 +68,7 @@
                     <button onclick="append('π')">π</button>
                     <button onclick="append('i')">i</button>
                     <button onclick="append('cot')">cot</button>
+                    <button onclick="append('%')">%</button>
                 </div>
                 <div class="panel functions-panel" style="display: none;">
                     <button onclick="append('ln')">ln</button>
@@ -90,7 +91,7 @@
                     <button onclick="append('f')">f</button>
                     <button onclick="append('g')">g</button>
                     <button onclick="append('h')">h</button>
-                    <button onclickids="append('i')">i</button>
+                    <button onclick="append('i')">i</button>
                     <button onclick="append('j')">j</button>
                     <button onclick="append('k')">k</button>
                     <button onclick="append('l')">l</button>
