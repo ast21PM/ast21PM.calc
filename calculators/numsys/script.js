@@ -1,4 +1,3 @@
-
 let calculator = document.getElementById('calculator');
 let themeToggle = document.getElementById('themeToggle');
 let resizeHandle = document.getElementById('resizeHandle');
@@ -12,10 +11,27 @@ let resultSection = document.getElementById('resultSection');
 let resultPanel = document.getElementById('resultPanel');
 let loadingSpinner = document.getElementById('loadingSpinner');
 
-
 const DEFAULT_WIDTH = 400;
 const DEFAULT_HEIGHT = 650;
 
+function validateInput(value, base) {
+    const validChars = {
+        2: '01',
+        8: '01234567',
+        10: '0123456789',
+        16: '0123456789ABCDEF'
+    };
+
+    const allowedChars = validChars[base];
+    if (!allowedChars) return { isValid: false, invalidChar: null };
+
+    for (let char of value.toUpperCase()) {
+        if (!allowedChars.includes(char)) {
+            return { isValid: false, invalidChar: char };
+        }
+    }
+    return { isValid: true, invalidChar: null };
+}
 
 function convertNumber() {
     let value = inputValue.value.trim().toUpperCase();
@@ -27,9 +43,7 @@ function convertNumber() {
     stepTableBody.innerHTML = '';
     resultSection.classList.remove('visible');
 
-
     loadingSpinner.classList.add('active');
-
 
     if (value === '') {
         setTimeout(() => {
@@ -41,8 +55,18 @@ function convertNumber() {
         return;
     }
 
-    try {
+    const validation = validateInput(value, from);
+    if (!validation.isValid) {
+        setTimeout(() => {
+            loadingSpinner.classList.remove('active');
+            resultValue.textContent = `Ошибка: символ ${validation.invalidChar} недопустим для системы с основанием ${from}`;
+            resultSection.classList.add('visible');
+            expandCalculator();
+        }, 1000);
+        return;
+    }
 
+    try {
         let decimal = parseInt(value, from);
         if (isNaN(decimal)) {
             setTimeout(() => {
@@ -64,19 +88,14 @@ function convertNumber() {
             return;
         }
 
-
         let result = decimal.toString(to).toUpperCase();
 
-
         setTimeout(() => {
-
             loadingSpinner.classList.remove('active');
-
 
             resultValue.textContent = `${value} (base ${from}) = ${result} (base ${to})`;
 
             stepTableBody.innerHTML = '';
-
 
             if (from !== 10) {
                 explanation.textContent = `Сначала переводим число ${value} из системы с основанием ${from} в десятичную систему.\nКаждый разряд числа умножаем на основание ${from} в степени n, где n — номер разряда (0 — младший разряд). Суммируем результаты.`;
@@ -85,7 +104,6 @@ function convertNumber() {
                 explanation.textContent = `Число ${value} уже в десятичной системе.`;
             }
 
-
             if (to !== 10) {
                 let explanationText = from !== 10 
                     ? `Теперь переводим полученное десятичное число ${decimal} в систему с основанием ${to}.\nДелим число на ${to}, записываем остатки, пока частное не станет 0. Остатки в обратном порядке дают результат.`
@@ -93,7 +111,6 @@ function convertNumber() {
                 explanation.textContent += `\n${explanationText}`;
                 showStepsFromDecimal(decimal, to);
             }
-
 
             resultSection.classList.add('visible');
             expandCalculator();
@@ -108,44 +125,32 @@ function convertNumber() {
     }
 }
 
-
 function expandCalculator() {
-
     calculator.classList.add('expanded');
 
-
     setTimeout(() => {
-
         const numberPanel = document.querySelector('.number-panel');
         const resultSection = document.querySelector('.result-section');
-
 
         numberPanel.style.width = 'auto';
         numberPanel.style.minWidth = '350px'; 
 
-
         const numberPanelWidth = numberPanel.scrollWidth;
-
 
         numberPanel.style.width = `${numberPanelWidth}px`;
 
-        // Получаем ширину содержимого панели результата
         const resultSectionWidth = resultSection.scrollWidth;
-        const minResultWidth = 350; // Минимальная ширина панели результата
-        const resultWidth = Math.max(resultSectionWidth + 20, minResultWidth); // Добавляем запас
+        const minResultWidth = 350;
+        const resultWidth = Math.max(resultSectionWidth + 20, minResultWidth);
 
-        // Вычисляем новую ширину калькулятора
-        const newCalculatorWidth = numberPanelWidth + resultWidth + 40; // 40px — padding и gap
+        const newCalculatorWidth = numberPanelWidth + resultWidth + 40;
 
-        // Устанавливаем новую ширину калькулятора
         calculator.style.width = `${newCalculatorWidth}px`;
 
-        // Устанавливаем ширину панели результата
         resultPanel.style.width = `${resultWidth}px`;
     }, 50);
 }
 
-// Функция для отображения шагов перевода в десятичную систему
 function showStepsToDecimal(value, fromBase) {
     let digits = value.split('').reverse();
     let decimal = 0;
@@ -176,7 +181,6 @@ function showStepsToDecimal(value, fromBase) {
     stepTableBody.appendChild(resultRow);
 }
 
-// Функция для отображения шагов перевода из десятичной системы
 function showStepsFromDecimal(decimal, targetBase) {
     let steps = [];
     let quotient = decimal;
@@ -205,7 +209,6 @@ function showStepsFromDecimal(decimal, targetBase) {
     stepTableBody.appendChild(resultRow);
 }
 
-// Функция для смены систем счисления местами
 function swapBases() {
     let fromValue = fromBase.value;
     let toValue = toBase.value;
@@ -213,7 +216,6 @@ function swapBases() {
     toBase.value = fromValue;
 }
 
-// Функция переключения темы
 function toggleTheme() {
     let body = document.body;
     let calc = document.querySelector('.calculator');
@@ -241,7 +243,6 @@ function toggleTheme() {
     localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
 }
 
-// Инициализация при загрузке страницы
 window.onload = function() {
     calculator.style.width = `${DEFAULT_WIDTH}px`;
     calculator.style.height = `${DEFAULT_HEIGHT}px`;
@@ -253,7 +254,6 @@ window.onload = function() {
     }
 };
 
-// Логика перетаскивания калькулятора
 let isDragging = false;
 let currentX;
 let currentY;
@@ -292,7 +292,6 @@ function stopDragging() {
     }
 }
 
-// Логика изменения размера калькулятора
 let isResizing = false;
 let initialXResize;
 let initialYResize;
@@ -306,7 +305,6 @@ document.addEventListener('mouseup', stopResizing);
 
 function startResizing(e) {
     e.preventDefault();
-    // Получаем текущие размеры калькулятора
     const rect = calculator.getBoundingClientRect();
     initialWidth = rect.width;
     initialHeight = rect.height;
@@ -318,15 +316,12 @@ function startResizing(e) {
 function resize(e) {
     if (isResizing) {
         e.preventDefault();
-        // Вычисляем смещение мыши
         const dx = e.clientX - initialXResize;
         const dy = e.clientY - initialYResize;
 
-        // Новые размеры с учетом минимальных ограничений
-        const newWidth = Math.max(initialWidth + dx, 350); // Минимальная ширина
-        const newHeight = Math.max(initialHeight + dy, 300); // Минимальная высота
+        const newWidth = Math.max(initialWidth + dx, 350);
+        const newHeight = Math.max(initialHeight + dy, 300);
 
-        // Применяем новые размеры
         calculator.style.width = `${newWidth}px`;
         calculator.style.height = `${newHeight}px`;
     }
@@ -335,7 +330,6 @@ function resize(e) {
 function stopResizing() {
     if (isResizing) {
         isResizing = false;
-        // Обновляем начальные размеры после изменения
         const rect = calculator.getBoundingClientRect();
         initialWidth = rect.width;
         initialHeight = rect.height;
@@ -343,28 +337,21 @@ function stopResizing() {
 }
 
 function resetSize() {
-    // Сбрасываем размеры калькулятора
     calculator.style.width = `${DEFAULT_WIDTH}px`;
     calculator.style.height = `${DEFAULT_HEIGHT}px`;
     
-    // Сбрасываем состояние расширения
     calculator.classList.remove('expanded');
     
-    // Полностью скрываем панель результата
     resultPanel.style.width = '0';
     
-    // Очищаем содержимое панели результата
     resultValue.textContent = '';
     explanation.textContent = '';
     stepTableBody.innerHTML = '';
     
-    // Скрываем секцию результата
     resultSection.classList.remove('visible');
     
-    // Сбрасываем ширину number-panel
     document.querySelector('.number-panel').style.width = '100%';
     
-    // Сбрасываем позицию
     initialWidth = DEFAULT_WIDTH;
     initialHeight = DEFAULT_HEIGHT;
     xOffset = 0;
