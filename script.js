@@ -37,12 +37,11 @@ function clearDisplay() {
     display.value = '';
 }
 
-// Новая функция для удаления последнего символа
 function backspace() {
     if (display.value === 'Ошибка') {
-        display.value = ''; // Если на экране ошибка, очищаем полностью
+        display.value = '';
     } else {
-        display.value = display.value.slice(0, -1); // Удаляем последний символ
+        display.value = display.value.slice(0, -1);
     }
 }
 
@@ -60,43 +59,41 @@ function calculate(operation) {
         if (operation === '=') {
             let evalExpression = expression;
 
-            // 1. Обработка возведения в квадрат (²)
             evalExpression = evalExpression.replace(/(\d*\.?\d+(?:[+-]?\d*\.?\d*i)?)²/g, (match, num) => {
                 let complex = parseNumber(num);
-                return `(${complex.multiply(complex).toString()})`; // Оборачиваем в скобки
+                return `(${complex.multiply(complex).toString()})`;
             });
 
-            // 2. Обработка факториала (!)
             evalExpression = evalExpression.replace(/(\d*\.?\d+)!/g, (match, num) => {
-                return `(${factorial(parseFloat(num))})`; // Оборачиваем в скобки
+                return `(${factorial(parseFloat(num))})`;
             });
 
-            // 3. Обработка функций (√, e^x, π, e, ^)
             evalExpression = evalExpression
                 .replace(/√(\d+|\([^()]*\))/g, (match, arg) => {
-                    let num = evaluateSimpleExpression(arg); // Вычисляем аргумент
-                    return `(${Math.sqrt(num.real)})`; // Только реальная часть
+                    let num = evaluateSimpleExpression(arg);
+                    return `(${Math.sqrt(num.real)})`;
                 })
                 .replace(/e\^x(\d+|\([^()]*\))/g, (match, arg) => {
                     let num = evaluateSimpleExpression(arg);
-                    return `(${Math.exp(num.real)})`; // Только реальная часть
+                    return `(${Math.exp(num.real)})`;
                 })
                 .replace(/π/g, `(${Math.PI})`)
                 .replace(/e/g, `(${Math.E})`)
                 .replace(/\^/g, '**');
 
-            // 4. Обработка процентов (%)
-            evalExpression = evalExpression.replace(/(\d*\.?\d+)%/g, (match, num) => {
-                let percentage = parseFloat(num) / 100;
+            evalExpression = evalExpression.replace(/(\([^()]*\)|\d*\.?\d+)%/g, (match, num) => {
+                let percentage = parseFloat(num.match(/\d*\.?\d+/)[0]) / 100;
                 let before = evalExpression.slice(0, evalExpression.indexOf(match)).trim();
-                if (before && /[\+\-\*\/]$/.test(before)) {
-                    let lastNumMatch = before.match(/(\d*\.?\d+(?:[+-]?\d*\.?\d*i)?)$/);
-                    if (lastNumMatch) {
-                        let base = parseNumber(lastNumMatch[0]);
-                        let operator = before.slice(-1);
-                        if (operator === '+' || operator === '-') {
+                if (before) {
+                    let lastOperator = before.slice(-1);
+                    let baseMatch = before.match(/(\([^()]*\)|\d*\.?\d+(?:[+-]?\d*\.?\d*i)?)$/);
+                    if (baseMatch) {
+                        let base = evaluateSimpleExpression(baseMatch[0]);
+                        if (lastOperator === '+') {
                             return `(${base.toString()} * ${percentage})`;
-                        } else if (operator === '*' || operator === '/') {
+                        } else if (lastOperator === '-') {
+                            return `(${base.toString()} * ${percentage})`;
+                        } else if (lastOperator === '*' || lastOperator === '/') {
                             return `(${percentage})`;
                         }
                     }
@@ -104,44 +101,53 @@ function calculate(operation) {
                 return `(${percentage})`;
             });
 
-            // 5. Обработка тригонометрических и других функций
-            while (evalExpression.match(/([a-z]+)\(([^()]+)\)/i)) {
-                evalExpression = evalExpression.replace(/([a-z]+)\(([^()]+)\)/gi, (match, func, arg) => {
-                    func = func.toLowerCase();
-                    let num = evaluateSimpleExpression(arg); // Вычисляем аргумент
-                    if (func === 'abs') {
-                        return `(${Math.sqrt(num.real * num.real + num.imag * num.imag)})`;
-                    }
-                    let number = num.real; // Используем только реальную часть для тригонометрии
-                    switch (func) {
-                        case 'sin': return `(${Math.sin(toRadians(number))})`;
-                        case 'cos': return `(${Math.cos(toRadians(number))})`;
-                        case 'tan': return `(${Math.tan(toRadians(number))})`;
-                        case 'cot': {
-                            let tanValue = Math.tan(toRadians(number));
-                            return tanValue === 0 ? '(Infinity)' : (Math.abs(tanValue) === Infinity ? '(0)' : `(${1 / tanValue})`);
+            if (expression.match(/(\([^()]*\)|\d*\.?\d+)-(\d*\.?\d+)%$/)) {
+                let parts = expression.split('-');
+                let base = evaluateSimpleExpression(parts[0]);
+                let percentage = parseFloat(parts[1].replace('%', '')) / 100;
+                result = base.multiply(new Complex(1 - percentage, 0));
+            } else if (expression.match(/(\d*\.?\d+)%$/)) {
+                result = evaluateSimpleExpression(evalExpression);
+            } else {
+                while (evalExpression.match(/([a-z]+)\(([^()]*)\)/i)) {
+                    evalExpression = evalExpression.replace(/([a-z]+)\(([^()]*)\)/gi, (match, func, arg) => {
+                        func = func.toLowerCase();
+                        if (!arg.trim()) {
+                            throw new Error('Пустой аргумент');
                         }
-                        case 'arcsin': return `(${toDegrees(Math.asin(number))})`;
-                        case 'arccos': return `(${toDegrees(Math.acos(number))})`;
-                        case 'arctan': return `(${toDegrees(Math.atan(number))})`;
-                        case 'ln': return `(${Math.log(number)})`;
-                        case 'log': return `(${Math.log10(number)})`;
-                        default: return match;
-                    }
-                });
+                        let num = evaluateSimpleExpression(arg);
+                        if (func === 'abs') {
+                            return `(${Math.sqrt(num.real * num.real + num.imag * num.imag)})`;
+                        }
+                        let number = num.real;
+                        switch (func) {
+                            case 'sin': return `(${Math.sin(toRadians(number))})`;
+                            case 'cos': return `(${Math.cos(toRadians(number))})`;
+                            case 'tan': return `(${Math.tan(toRadians(number))})`;
+                            case 'cot': {
+                                let tanValue = Math.tan(toRadians(number));
+                                return tanValue === 0 ? '(Infinity)' : (Math.abs(tanValue) === Infinity ? '(0)' : `(${1 / tanValue})`);
+                            }
+                            case 'arcsin': return `(${toDegrees(Math.asin(number))})`;
+                            case 'arccos': return `(${toDegrees(Math.acos(number))})`;
+                            case 'arctan': return `(${toDegrees(Math.atan(number))})`;
+                            case 'ln': return `(${Math.log(number)})`;
+                            case 'log': return `(${Math.log10(number)})`;
+                            default: return match;
+                        }
+                    });
+                }
+                result = evaluateSimpleExpression(evalExpression);
             }
-
-            result = evaluateSimpleExpression(evalExpression);
             display.value = result.toString();
             updateHistory(expression, display.value);
         }
     } catch (error) {
-        display.value = 'Ошибка';
-        updateHistory(expression, 'Ошибка');
+        display.value = error.message || 'Ошибка';
+        updateHistory(expression, display.value);
     }
 }
 
-// Новая функция для вычисления простых выражений
 function evaluateSimpleExpression(expr) {
     expr = expr.replace(/\s/g, '');
     let terms = [];
@@ -193,7 +199,7 @@ function parseTerm(term) {
 function parseNumber(str) {
     if (!str) return new Complex(0, 0);
     if (str === 'i') return new Complex(0, 1);
-    str = str.replace(/[()]/g, ''); // Убираем лишние скобки
+    str = str.replace(/[()]/g, '');
     let real = 0, imag = 0;
     let match = str.match(/([+-]?)(\d*\.?\d*)(i?)/);
     if (match) {
