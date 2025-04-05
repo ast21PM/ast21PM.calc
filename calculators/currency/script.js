@@ -1,4 +1,3 @@
-
 const themeSwitch = document.getElementById('themeSwitch');
 
 function applyTheme(isLight) {
@@ -46,7 +45,6 @@ themeSwitch.addEventListener('change', () => {
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
     applyTheme(isLight);
 });
-
 
 const converter = document.getElementById('converter');
 const header = document.querySelector('.converter-header');
@@ -115,7 +113,6 @@ document.addEventListener('mouseup', () => {
     isResizing = false;
 });
 
-
 document.getElementById('amount').addEventListener('input', (e) => {
     const value = e.target.value;
     if (!/^\d*\.?\d*$/.test(value)) {
@@ -135,7 +132,6 @@ function setAmount(value) {
         convertCurrency();
     }
 }
-
 
 let rates = {};
 let chart;
@@ -251,12 +247,10 @@ function populateCurrencies() {
         const selectedOption = selectElement.querySelector('.selected-option');
         const optionsList = selectElement.querySelector('.options-list');
 
-
         selectElement.dataset.value = defaultCurrency;
         selectedOption.querySelector('.flag').src = getFlagUrl(defaultCurrency);
         selectedOption.querySelector('.flag').alt = `Флаг ${defaultCurrency}`;
         selectedOption.querySelector('.currency-text').textContent = `${defaultCurrency} - ${getCurrencyName(defaultCurrency)}`;
-
 
         supportedCurrencies.forEach(currency => {
             if (rates[currency] !== undefined) {
@@ -282,14 +276,12 @@ function populateCurrencies() {
             }
         });
 
-
         selectedOption.addEventListener('click', (e) => {
             e.stopPropagation();
             const isOpen = optionsList.classList.contains('visible');
             document.querySelectorAll('.options-list').forEach(list => list.classList.remove('visible'));
             optionsList.classList.toggle('visible', !isOpen);
         });
-
 
         document.addEventListener('click', (e) => {
             if (!selectElement.contains(e.target)) {
@@ -314,11 +306,11 @@ function updateRateInfo() {
 
     let rate;
     if (fromCurrency === 'RUB') {
-        rate = (1 / rates[toCurrency]).toFixed(6);
+        rate = (1 / rates[toCurrency]).toFixed(2); // Округление до 2 знаков
     } else if (toCurrency === 'RUB') {
-        rate = rates[fromCurrency].toFixed(6);
+        rate = rates[fromCurrency].toFixed(2); // Округление до 2 знаков
     } else {
-        rate = (rates[fromCurrency] / rates[toCurrency]).toFixed(6);
+        rate = (rates[fromCurrency] / rates[toCurrency]).toFixed(2); // Округление до 2 знаков
     }
 
     document.getElementById('currentRate').textContent = `1 ${fromCurrency} = ${rate} ${toCurrency}`;
@@ -332,7 +324,7 @@ function updateRateInfo() {
         const previousRate = parseFloat(timeSeries[dates[1]]["4. close"]);
         const change = latestRate - previousRate;
         const percentage = ((change / previousRate) * 100).toFixed(2);
-        rateChange.textContent = `${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(6)} (${percentage}%)`;
+        rateChange.textContent = `${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(2)} (${percentage}%)`;
         rateChange.classList.remove('up', 'down');
         rateChange.classList.add(change >= 0 ? 'up' : 'down');
     } else {
@@ -607,6 +599,20 @@ async function updateChart(period) {
             }
         }
     });
+
+    // Добавляем пояснение о расчётах через RUB
+    const chartContainer = document.getElementById('chartContainer');
+    let note = chartContainer.querySelector('.chart-note');
+    if (!note) {
+        note = document.createElement('p');
+        note.classList.add('chart-note');
+        note.style.fontSize = '12px';
+        note.style.color = document.body.classList.contains('light') ? '#666666' : '#aaaaaa';
+        note.style.marginTop = '10px';
+        note.style.textAlign = 'center';
+        chartContainer.appendChild(note);
+    }
+    note.textContent = 'Примечание: Курсы для пар, не включающих RUB, рассчитываются через RUB.';
 }
 
 function updateChartColors() {
@@ -615,6 +621,12 @@ function updateChartColors() {
         chart.options.scales.y.ticks.color = document.body.classList.contains('light') ? '#333333' : '#ffffff';
         chart.options.scales.y.grid.color = document.body.classList.contains('light') ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
         chart.update();
+
+        // Обновляем цвет пояснения
+        const note = document.querySelector('.chart-note');
+        if (note) {
+            note.style.color = document.body.classList.contains('light') ? '#666666' : '#aaaaaa';
+        }
     }
 }
 
@@ -643,7 +655,7 @@ function convertCurrency() {
     }
 
     const convertedAmount = amount * rate;
-    const result = convertedAmount.toFixed(6);
+    const result = convertedAmount.toFixed(2); // Округление до 2 знаков
     document.getElementById('result').textContent = `${amount} ${fromCurrency} = ${result} ${toCurrency}`;
 
     const historyContent = document.querySelector('.history-content');
