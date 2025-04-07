@@ -536,7 +536,7 @@ button[onclick="backspace()"].light:active {
     color: #ffffff;
 }
 
-/* Светлая тема для навигации */
+
 .navigation-tabs .nav-link.light {
     background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
     color: #333333;
