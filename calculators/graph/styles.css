@@ -360,6 +360,11 @@ body.light {
     grid-template-rows: repeat(3, 1fr);
 }
 
+/* Новая панель для дополнительных функций */
+.advanced-panel {
+    grid-template-columns: repeat(3, 1fr);
+}
+
 /* Стили для кнопок */
 button {
     background: linear-gradient(135deg, #4a4a66, #3b3b50);
