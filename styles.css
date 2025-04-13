@@ -555,3 +555,13 @@ button[onclick="backspace()"].light:active {
 .navigation-tabs .nav-link.light:hover {
     background: linear-gradient(135deg, #d0d0d8, #c0c0c8);
 }
+.graph-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: #ffffff;
+    font-family: 'Arial', sans-serif;
+}
