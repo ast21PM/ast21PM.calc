@@ -16,10 +16,18 @@ let scale = 50; // Масштаб (пикселей на единицу)
 let targetScale = scale;
 let offsetX = 0; // Смещение по X
 let offsetY = 0; // Смещение по Y
+let targetOffsetX = offsetX;
+let targetOffsetY = offsetY;
 const initialState = { scale: 50, offsetX: 0, offsetY: 0 };
 
 let isDragging = false;
 let startX, startY;
+let lastFunctionState = null;
+let lastScale = scale;
+let lastOffsetX = offsetX;
+let lastOffsetY = offsetY;
+let lastFrameTime = 0;
+const minFrameInterval = 16; // ~60 FPS
 
 // Устанавливаем размеры canvas
 function resizeCanvas() {
@@ -30,6 +38,19 @@ function resizeCanvas() {
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
+
+// Функция debounce для оптимизации ввода
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
 // Функция для вычисления шага сетки
 function getGridStep(scale) {
@@ -123,7 +144,6 @@ function factorial(n) {
 // Парсим выражение
 function parseExpression(expr) {
     console.log('Parsing expression:', expr);
-    // Удаляем "y =" из начала выражения
     expr = expr.replace(/^y\s*=\s*/, '');
     return expr.toLowerCase()
         .replace(/pi/g, 'Math.PI')
@@ -145,7 +165,8 @@ function parseExpression(expr) {
         .replace(/arctan/g, 'Math.atan')
         .replace(/r=/g, '')
         .replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)))
-        .replace(/\^/g, '**');
+        .replace(/\^/g, '**')
+        .replace(/y/g, 'y');
 }
 
 // Определяем тип выражения
@@ -208,12 +229,12 @@ function evaluateFunction(funcStr, x, y = 0, t = 0) {
             return { x: px, y: py };
         }
 
-        // Для явных функций (explicit)
         const result = eval(`(function(x) { return ${expr}; })(${x})`);
         console.log('Evaluation result:', result);
         return Number.isFinite(result) ? result : NaN;
     } catch (e) {
         console.error('Ошибка в выражении:', funcStr, e);
+        alert(`Ошибка в выражении: ${funcStr}. Проверьте синтаксис.`);
         return NaN;
     }
 }
@@ -228,11 +249,30 @@ function hexToRgb(hex) {
 
 // Основная функция отрисовки графика
 function drawGraph() {
+    const functionInputs = document.querySelectorAll('.function-input');
+    const currentState = Array.from(functionInputs).map(input => ({
+        expr: input.querySelector('input[type="text"]').value.trim(),
+        color: input.querySelector('input[type="color"]').value,
+    }));
+
+    if (
+        JSON.stringify(currentState) === JSON.stringify(lastFunctionState) &&
+        lastScale === scale &&
+        lastOffsetX === offsetX &&
+        lastOffsetY === offsetY
+    ) {
+        console.log('Состояние не изменилось, пропускаем отрисовку');
+        return;
+    }
+
+    lastFunctionState = currentState;
+    lastScale = scale;
+    lastOffsetX = offsetX;
+    lastOffsetY = offsetY;
+
     console.log('Drawing graph...');
     drawAxes();
 
-    const functionInputs = document.querySelectorAll('.function-input');
-    console.log('Function inputs:', functionInputs.length);
     if (functionInputs.length === 0) {
         console.warn('Нет функций для отрисовки');
         return;
@@ -284,38 +324,32 @@ function drawGraph() {
     });
 }
 
-// Отрисовка явной функции (например, y = x^2)
+// Отрисовка явной функции
 function drawRegularFunction(funcStr, color, xAxis, yAxis, step) {
     console.log('Drawing regular function:', funcStr);
     const minX = (0 - yAxis) / scale;
     const maxX = (canvas.width - yAxis) / scale;
     let positions = [];
 
-    // Вычисляем точки графика
-    const optimizedStep = step * 2;
+    const optimizedStep = step * 4;
     for (let x = minX; x <= maxX; x += optimizedStep) {
         const y = evaluateFunction(funcStr, x);
-        if (!Number.isFinite(y)) {
-            console.warn('Invalid y value at x=', x, 'y=', y);
-            continue;
-        }
+        if (!Number.isFinite(y)) continue;
         positions.push(x, y);
     }
 
-    console.log('Positions:', positions);
     if (positions.length === 0) {
         console.warn('Нет валидных точек для отрисовки');
         return;
     }
 
-    // Рисуем график
     ctx.beginPath();
     ctx.strokeStyle = color.join ? `rgb(${color[0]*255},${color[1]*255},${color[2]*255})` : color;
     ctx.lineWidth = 3;
     let firstPoint = true;
     for (let i = 0; i < positions.length; i += 2) {
         const px = positions[i] * scale + yAxis;
-        const py = xAxis - positions[i + 1] * scale; // Учитываем, что ось Y направлена вниз
+        const py = xAxis - positions[i + 1] * scale;
         if (firstPoint) {
             ctx.moveTo(px, py);
             firstPoint = false;
@@ -328,20 +362,36 @@ function drawRegularFunction(funcStr, color, xAxis, yAxis, step) {
 
 // Отрисовка неявной функции
 function drawImplicitFunction(funcStr, color, xAxis, yAxis, step) {
-    ctx.fillStyle = color.join ? `rgb(${color[0]*255},${color[1]*255},${color[2]*255})` : color;
-    const minX = (0 - yAxis) / scale;
-    const maxX = (canvas.width - yAxis) / scale;
-    const minY = (0 - xAxis) / scale;
-    const maxY = (canvas.height - xAxis) / scale;
+    console.log('Drawing implicit function:', funcStr);
+    ctx.strokeStyle = color.join ? `rgb(${color[0]*255},${color[1]*255},${color[2]*255})` : color;
+    ctx.lineWidth = 2;
 
-    const optimizedStep = step * 4;
+    const margin = 2;
+    const minX = Math.max((0 - yAxis) / scale - margin, -10);
+    const maxX = Math.min((canvas.width - yAxis) / scale + margin, 10);
+    const minY = Math.max((0 - xAxis) / scale - margin, -10);
+    const maxY = Math.min((canvas.height - xAxis) / scale + margin, 10);
+
+    const optimizedStep = step * 2;
+    const tolerance = 0.05;
+
     for (let x = minX; x <= maxX; x += optimizedStep) {
         for (let y = minY; y <= maxY; y += optimizedStep) {
-            const value = evaluateFunction(funcStr, x, y);
-            if (Math.abs(value.implicit ? eval(value.implicit) : value) < 0.01) {
-                const px = x * scale + yAxis;
-                const py = xAxis - y * scale;
-                ctx.fillRect(px, py, 2, 2);
+            try {
+                let expr = parseExpression(funcStr);
+                const [left, right] = expr.split('=').map(s => s.trim());
+                const equation = `${left} - (${right})`;
+                const value = eval(`(function(x, y) { return ${equation}; })(${x}, ${y})`);
+
+                if (Math.abs(value) < tolerance) {
+                    const px = x * scale + yAxis;
+                    const py = xAxis - y * scale;
+                    if (px >= 0 && px <= canvas.width && py >= 0 && py <= canvas.height) {
+                        ctx.fillRect(px, py, 1, 1);
+                    }
+                }
+            } catch (e) {
+                console.warn('Ошибка при вычислении implicit функции:', e);
             }
         }
     }
@@ -474,8 +524,12 @@ function drawPoint(funcStr, color, xAxis, yAxis) {
 function animateScale() {
     const diff = targetScale - scale;
     if (Math.abs(diff) > 0.1) {
-        scale += diff * 0.2;
-        drawGraph();
+        scale += diff * 0.3;
+        const currentTime = performance.now();
+        if (currentTime - lastFrameTime >= minFrameInterval) {
+            drawGraph();
+            lastFrameTime = currentTime;
+        }
         requestAnimationFrame(animateScale);
     } else {
         scale = targetScale;
@@ -483,21 +537,38 @@ function animateScale() {
     }
 }
 
+function animateDrag() {
+    if (!isDragging) return;
+
+    offsetX += (targetOffsetX - offsetX) * 0.3;
+    offsetY += (targetOffsetY - offsetY) * 0.3;
+
+    const currentTime = performance.now();
+    if (currentTime - lastFrameTime >= minFrameInterval) {
+        drawGraph();
+        lastFrameTime = currentTime;
+    }
+
+    requestAnimationFrame(animateDrag);
+}
+
 // Функции управления масштабом
 function zoomIn() {
     targetScale = Math.min(targetScale * 1.2, 1000);
-    animateScale();
+    requestAnimationFrame(animateScale);
 }
 
 function zoomOut() {
     targetScale = Math.max(targetScale / 1.2, 5);
-    animateScale();
+    requestAnimationFrame(animateScale);
 }
 
 function resetView() {
     targetScale = initialState.scale;
     offsetX = initialState.offsetX;
     offsetY = initialState.offsetY;
+    targetOffsetX = offsetX;
+    targetOffsetY = offsetY;
     animateScale();
 }
 
@@ -506,37 +577,46 @@ canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     const factor = e.deltaY < 0 ? 1.1 : 0.9;
     targetScale = Math.max(5, Math.min(1000, targetScale * factor));
-    animateScale();
+    requestAnimationFrame(animateScale);
 });
 
 canvas.addEventListener('mousedown', (e) => {
     isDragging = true;
     startX = e.clientX;
     startY = e.clientY;
+    targetOffsetX = offsetX;
+    targetOffsetY = offsetY;
 });
 
 canvas.addEventListener('mousemove', (e) => {
     if (isDragging) {
-        offsetX += e.clientX - startX;
-        offsetY += e.clientY - startY;
+        targetOffsetX += e.clientX - startX;
+        targetOffsetY += e.clientY - startY;
         startX = e.clientX;
         startY = e.clientY;
-        drawGraph();
+        requestAnimationFrame(animateDrag);
     }
 });
 
-canvas.addEventListener('mouseup', () => isDragging = false);
-canvas.addEventListener('mouseleave', () => isDragging = false);
+canvas.addEventListener('mouseup', () => {
+    isDragging = false;
+});
+
+canvas.addEventListener('mouseleave', () => {
+    isDragging = false;
+});
 
 // Добавление новой функции
 function addFunctionInput(defaultValue = 'y = x^2') {
     const functionDiv = document.createElement('div');
     functionDiv.className = 'function-input';
     functionDiv.innerHTML = `
-        <input type="text" placeholder="Введите функцию (например, y = x^2)" value="${defaultValue}" oninput="drawGraph()" onfocus="showFunctionButtons(this)" onblur="hideFunctionButtons()">
+        <input type="text" placeholder="Например: y = x^2 или x^2 + y^2 = 1" value="${defaultValue}" onfocus="showFunctionButtons(this)" onblur="hideFunctionButtons()">
         <input type="color" value="#ff0000" onchange="drawGraph()">
         <button onclick="removeFunctionInput(this)" class="remove-btn">✖</button>
     `;
+    const textInput = functionDiv.querySelector('input[type="text"]');
+    textInput.addEventListener('input', debounce(drawGraph, 300));
     functionList.appendChild(functionDiv);
     console.log('Function input added:', defaultValue);
     drawGraph();
@@ -569,15 +649,16 @@ function moveCursor(direction) {
     if (lastActiveInput) {
         const pos = lastActiveInput.selectionStart;
         if (direction === 'left' && pos > 0) lastActiveInput.setSelectionRange(pos - 1, pos - 1);
-        else if (direction === 'right' && pos < lastActiveInput.value.length) lastActiveInput.setSelectionRange(pos + 1, pos + 1);
+        else if (direction === 'right' && pos < lastActiveInput.value.length)
+            lastActiveInput.setSelectionRange(pos + 1, pos + 1);
         lastActiveInput.focus();
     }
 }
 
 // Показ панели
 function showPanel(panelName) {
-    document.querySelectorAll('.panel').forEach(panel => panel.style.display = 'none');
-    document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach((panel) => (panel.style.display = 'none'));
+    document.querySelectorAll('.tab-button').forEach((button) => button.classList.remove('active'));
     document.querySelector(`.${panelName}-panel`).style.display = 'grid';
     document.querySelector(`button[onclick="showPanel('${panelName}')"]`).classList.add('active');
 }
@@ -600,8 +681,9 @@ function hideFunctionButtons() {
 // Переключение темы
 function toggleTheme() {
     document.body.classList.toggle('light');
-    document.querySelectorAll('.function-panel, .function-header, button, .tab-button, .nav-link')
-        .forEach(el => el.classList.toggle('light'));
+    document
+        .querySelectorAll('.function-panel, .function-header, button, .tab-button, .nav-link')
+        .forEach((el) => el.classList.toggle('light'));
     drawGraph();
 }
 
