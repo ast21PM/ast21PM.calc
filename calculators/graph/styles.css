@@ -1,12 +1,3 @@
-/* Стили для тела страницы */
-body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #1a1a2e, #2d2d44);
-    transition: background 0.3s ease;
-    overflow: hidden;
-}
-
 /* Светлая тема для тела */
 body.light {
     background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
@@ -191,18 +182,8 @@ body.light {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
-    background: transparent;
-    pointer-events: none;
-}
-
-/* Интерактивные элементы */
-.function-panel,
-.zoom-controls,
-.calculator-panels,
-.navigation-tabs,
-.theme-toggle {
-    pointer-events: auto;
+    z-index: 0;
+    background: #ffffff; /* Белый фон, как у Mathway */
 }
 
 /* Кнопки управления масштабом */
@@ -368,11 +349,6 @@ body.light {
 .alpha-panel {
     grid-template-columns: repeat(9, 1fr);
     grid-template-rows: repeat(3, 1fr);
-}
-
-/* Новая панель для дополнительных функций */
-.advanced-panel {
-    grid-template-columns: repeat(3, 1fr);
 }
 
 /* Стили для кнопок */
