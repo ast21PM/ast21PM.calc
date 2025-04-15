@@ -5,26 +5,48 @@ const functionButtons = document.getElementById('functionButtons');
 
 let lastActiveInput = null;
 
-
 let scale = 50;
 let targetScale = scale;
 let offsetX = 0;
 let offsetY = 0;
 const initialState = { scale: 50, offsetX: 0, offsetY: 0 };
 
-
 let isDragging = false;
 let startX, startY;
+let animationFrame = null;
+let lastDrawTime = 0;
+const DRAW_THROTTLE = 16; // ~60fps
 
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
+// Инициализация canvas
+function initCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawGraph();
+}
+
+// Обработчик изменения размера окна
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     drawGraph();
 }
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
 
+window.addEventListener('resize', resizeCanvas);
+window.addEventListener('load', initCanvas);
 
 function getGridStep(scale) {
     const steps = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100];
@@ -39,14 +61,13 @@ function getGridStep(scale) {
     return scale > 500 ? 0.01 : 100;
 }
 
-
 function drawAxes() {
     const xAxis = canvas.height / 2 + offsetY;
     const yAxis = canvas.width / 2 + offsetX;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-
+    // Сетка
     ctx.beginPath();
     ctx.strokeStyle = '#e0e0e0';
     ctx.lineWidth = 0.5;
@@ -54,25 +75,28 @@ function drawAxes() {
     const gridStep = getGridStep(scale);
     const stepSize = gridStep * scale;
 
+    // Вычисляем границы для отрисовки сетки
     const minX = Math.floor((-yAxis) / stepSize) * gridStep;
     const maxX = Math.ceil((canvas.width - yAxis) / stepSize) * gridStep;
     const minY = Math.floor((-xAxis) / stepSize) * gridStep;
     const maxY = Math.ceil((canvas.height - xAxis) / stepSize) * gridStep;
 
-    for (let i = minX; i <= maxX; i += gridStep) {
-        const x = yAxis + i * scale;
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-    }
-
+    // Горизонтальные линии сетки
     for (let i = minY; i <= maxY; i += gridStep) {
         const y = xAxis - i * scale;
         ctx.moveTo(0, y);
         ctx.lineTo(canvas.width, y);
     }
+
+    // Вертикальные линии сетки
+    for (let i = minX; i <= maxX; i += gridStep) {
+        const x = yAxis + i * scale;
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+    }
     ctx.stroke();
 
-
+    // Оси
     ctx.beginPath();
     ctx.strokeStyle = '#666';
     ctx.lineWidth = 1.5;
@@ -82,12 +106,13 @@ function drawAxes() {
     ctx.lineTo(yAxis, canvas.height);
     ctx.stroke();
 
-
+    // Подписи осей
     ctx.font = '12px Arial';
     ctx.fillStyle = '#333';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
+    // Подписи на оси X
     for (let i = minX; i <= maxX; i += gridStep) {
         if (Math.abs(i) < gridStep / 2) continue;
         const x = yAxis + i * scale;
@@ -100,25 +125,33 @@ function drawAxes() {
         ctx.fillText(label, x, xAxis + 15);
     }
 
-    for (let i = minY; i <= maxY; i += gridStep) {
-        if (Math.abs(i) < gridStep / 2) continue;
-        const y = xAxis - i * scale;
-        ctx.beginPath();
-        ctx.moveTo(yAxis - 5, y);
-        ctx.lineTo(yAxis + 5, y);
-        ctx.stroke();
-        const label = Number.isInteger(i) ? i.toString() : i.toFixed(2);
-        ctx.fillText(label, yAxis - 20, y);
+    // Подписи на оси Y
+    const visibleHeight = canvas.height;
+    const visibleSteps = Math.ceil(visibleHeight / (gridStep * scale));
+    const centerY = Math.floor(xAxis / (gridStep * scale)) * gridStep;
+    
+    for (let i = -visibleSteps; i <= visibleSteps; i++) {
+        const yValue = centerY + i * gridStep;
+        const y = xAxis - yValue * scale;
+        
+        if (y >= 0 && y <= canvas.height) {
+            ctx.beginPath();
+            ctx.moveTo(yAxis - 5, y);
+            ctx.lineTo(yAxis + 5, y);
+            ctx.stroke();
+
+            const label = Number.isInteger(yValue) ? yValue.toString() : yValue.toFixed(2);
+            ctx.textAlign = 'right';
+            ctx.fillText(label, yAxis - 10, y);
+        }
     }
 }
-
 
 function factorial(n) {
     if (n < 0 || !Number.isInteger(n)) return NaN;
     if (n === 0 || n === 1) return 1;
     return n * factorial(n - 1);
 }
-
 
 function evaluateFunction(funcStr, x) {
     try {
@@ -148,7 +181,6 @@ function evaluateFunction(funcStr, x) {
         return NaN;
     }
 }
-
 
 function drawGraph() {
     drawAxes();
@@ -196,57 +228,21 @@ function drawGraph() {
     });
 }
 
-
-let animationFrameId = null;
-function animateScale() {
-    if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    
-    const animate = () => {
-        const diff = targetScale - scale;
-        if (Math.abs(diff) > 0.1) {
-            scale += diff * 0.2;
-            drawGraph();
-            animationFrameId = requestAnimationFrame(animate);
-        } else {
-            scale = targetScale;
-            drawGraph();
-            animationFrameId = null;
-        }
-    };
-    animationFrameId = requestAnimationFrame(animate);
+function throttledDraw() {
+    const now = performance.now();
+    if (now - lastDrawTime >= DRAW_THROTTLE) {
+        drawGraph();
+        lastDrawTime = now;
+    }
 }
-
-
-function zoomIn() {
-    targetScale = Math.min(targetScale * 1.2, 1000);
-    animateScale();
-}
-
-function zoomOut() {
-    targetScale = Math.max(targetScale / 1.2, 5);
-    animateScale();
-}
-
-function resetView() {
-    targetScale = initialState.scale;
-    offsetX = initialState.offsetX;
-    offsetY = initialState.offsetY;
-    animateScale();
-}
-
-
-canvas.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const factor = e.deltaY < 0 ? 1.1 : 0.9;
-    targetScale = Math.max(5, Math.min(1000, targetScale * factor));
-    animateScale();
-});
-
 
 canvas.addEventListener('mousedown', (e) => {
     isDragging = true;
     startX = e.clientX;
     startY = e.clientY;
+    if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+    }
 });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -255,13 +251,100 @@ canvas.addEventListener('mousemove', (e) => {
         offsetY += e.clientY - startY;
         startX = e.clientX;
         startY = e.clientY;
+        
+        if (!animationFrame) {
+            animationFrame = requestAnimationFrame(() => {
+                throttledDraw();
+                animationFrame = null;
+            });
+        }
+    }
+});
+
+canvas.addEventListener('mouseup', () => {
+    isDragging = false;
+    if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
+    drawGraph(); // Финальная отрисовка после перетаскивания
+});
+
+canvas.addEventListener('mouseleave', () => {
+    isDragging = false;
+    if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
+    drawGraph(); // Финальная отрисовка при выходе за пределы canvas
+});
+
+// Добавляем обработчики touch-событий
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    isDragging = true;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (isDragging) {
+        offsetX += e.touches[0].clientX - startX;
+        offsetY += e.touches[0].clientY - startY;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
         drawGraph();
     }
 });
 
-canvas.addEventListener('mouseup', () => isDragging = false);
-canvas.addEventListener('mouseleave', () => isDragging = false);
+canvas.addEventListener('touchend', () => isDragging = false);
+canvas.addEventListener('touchcancel', () => isDragging = false);
 
+// Добавляем поддержку жестов масштабирования
+let initialDistance = 0;
+let initialScale = 0;
+
+canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+        initialDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialScale = scale;
+    }
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2) {
+        const currentDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+        );
+        const scaleFactor = currentDistance / initialDistance;
+        targetScale = Math.max(5, Math.min(1000, initialScale * scaleFactor));
+        drawGraph();
+    }
+});
+
+// Оптимизация для мобильных устройств
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+if (isMobileDevice()) {
+    // Увеличиваем размер кнопок для мобильных устройств
+    document.querySelectorAll('button').forEach(button => {
+        button.style.padding = '15px';
+        button.style.fontSize = '18px';
+    });
+    
+    // Увеличиваем размер полей ввода
+    document.querySelectorAll('input[type="text"]').forEach(input => {
+        input.style.padding = '12px';
+        input.style.fontSize = '16px';
+    });
+}
 
 function addFunctionInput(defaultValue = 'y = x') {
     const functionDiv = document.createElement('div');
@@ -335,6 +418,50 @@ function toggleTheme() {
         .forEach(el => el.classList.toggle('light'));
     drawGraph();
 }
+
+function animateScale() {
+    if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+    }
+    
+    const animate = () => {
+        const diff = targetScale - scale;
+        if (Math.abs(diff) > 0.1) {
+            scale += diff * 0.2;
+            throttledDraw();
+            animationFrame = requestAnimationFrame(animate);
+        } else {
+            scale = targetScale;
+            drawGraph();
+            animationFrame = null;
+        }
+    };
+    animationFrame = requestAnimationFrame(animate);
+}
+
+function zoomIn() {
+    targetScale = Math.min(targetScale * 1.2, 1000);
+    animateScale();
+}
+
+function zoomOut() {
+    targetScale = Math.max(targetScale / 1.2, 5);
+    animateScale();
+}
+
+function resetView() {
+    targetScale = initialState.scale;
+    offsetX = initialState.offsetX;
+    offsetY = initialState.offsetY;
+    animateScale();
+}
+
+canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.1 : 0.9;
+    targetScale = Math.max(5, Math.min(1000, targetScale * factor));
+    animateScale();
+});
 
 // Инициализация
 addFunctionInput('y = x');

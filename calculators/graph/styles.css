@@ -2,13 +2,22 @@
 body {
     margin: 0;
     font-family: 'Arial', sans-serif;
+    background: -webkit-linear-gradient(135deg, #1a1a2e, #2d2d44);
+    background: -moz-linear-gradient(135deg, #1a1a2e, #2d2d44);
+    background: -o-linear-gradient(135deg, #1a1a2e, #2d2d44);
     background: linear-gradient(135deg, #1a1a2e, #2d2d44);
+    -webkit-transition: background 0.3s ease;
+    -moz-transition: background 0.3s ease;
+    -o-transition: background 0.3s ease;
     transition: background 0.3s ease;
     overflow: hidden;
 }
 
 /* Светлая тема для тела */
 body.light {
+    background: -webkit-linear-gradient(135deg, #f0f0f5, #e0e0ea);
+    background: -moz-linear-gradient(135deg, #f0f0f5, #e0e0ea);
+    background: -o-linear-gradient(135deg, #f0f0f5, #e0e0ea);
     background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
 }
 
@@ -19,7 +28,7 @@ body.light {
     right: 20px;
     width: 80px;
     height: 40px;
-    z-index: 1000;
+    z-index: 2;
 }
 
 /* Стили для обертки переключателя */
@@ -84,7 +93,7 @@ body.light {
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     width: 250px;
-    z-index: 900;
+    z-index: 2;
     transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -191,8 +200,13 @@ body.light {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
+    z-index: 1;
     background: #ffffff; /* Белый фон, как у Mathway */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Кнопки управления масштабом */
@@ -203,7 +217,7 @@ body.light {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    z-index: 1000;
+    z-index: 2;
 }
 
 .zoom-btn {
@@ -239,7 +253,7 @@ body.light {
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
     display: flex;
     gap: 5px;
-    z-index: 900;
+    z-index: 2;
     transition: bottom 0.3s ease;
 }
 
@@ -362,6 +376,9 @@ body.light {
 
 /* Стили для кнопок */
 button {
+    background: -webkit-linear-gradient(135deg, #4a4a66, #3b3b50);
+    background: -moz-linear-gradient(135deg, #4a4a66, #3b3b50);
+    background: -o-linear-gradient(135deg, #4a4a66, #3b3b50);
     background: linear-gradient(135deg, #4a4a66, #3b3b50);
     color: #ffffff;
     border: none;
@@ -369,11 +386,24 @@ button {
     font-size: 16px;
     border-radius: 4px;
     cursor: pointer;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
     font-family: 'Arial', sans-serif;
+    -webkit-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
     display: flex;
+    -webkit-justify-content: center;
+    -moz-justify-content: center;
     justify-content: center;
+    -webkit-align-items: center;
+    -moz-align-items: center;
     align-items: center;
     min-width: 0;
 }
@@ -394,13 +424,15 @@ button.special {
 
 /* Наведение на кнопки */
 button:hover {
+    background: -webkit-linear-gradient(135deg, #5a5a80, #4a4a66);
+    background: -moz-linear-gradient(135deg, #5a5a80, #4a4a66);
+    background: -o-linear-gradient(135deg, #5a5a80, #4a4a66);
     background: linear-gradient(135deg, #5a5a80, #4a4a66);
+    -webkit-transform: scale(1.02);
+    -moz-transform: scale(1.02);
+    -ms-transform: scale(1.02);
+    -o-transform: scale(1.02);
     transform: scale(1.02);
-}
-
-/* Наведение в светлой теме */
-button.light:hover {
-    background: linear-gradient(135deg, #d0d0d8, #c0c0c8);
 }
 
 /* Нажатие на кнопки */
@@ -481,7 +513,7 @@ button[onclick*="="]:active {
     transform: translateX(-50%);
     display: flex;
     gap: 10px;
-    z-index: 1000;
+    z-index: 2;
 }
 
 .navigation-tabs .nav-link {
@@ -528,4 +560,23 @@ button[onclick*="="]:active {
 
 .graph-canvas:active {
     cursor: grabbing;
+}
+
+/* Добавляем поддержку touch-событий */
+@media (hover: none) {
+    .graph-canvas {
+        cursor: default;
+    }
+    
+    button {
+        min-height: 44px; /* Минимальный размер для touch-устройств */
+    }
+}
+
+/* Поддержка высокого DPI экранов */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .graph-canvas {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
 }
