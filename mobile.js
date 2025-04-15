@@ -1,42 +1,39 @@
-
+// Универсальная мобильная адаптация для всех калькуляторов и страниц сайта
 function isMobileDevice() {
     return window.innerWidth <= 768 || /Mobi|Android/i.test(navigator.userAgent);
 }
 
-
 function adaptForMobile() {
-    const calculator = document.getElementById('calculator');
-    const resizeHandle = document.getElementById('resizeHandle');
+    // Универсально ищем калькулятор или конвертер
+    const calculator = document.getElementById('calculator') || document.getElementById('converter');
+    const resizeHandle = document.getElementById('resizeHandle') || document.querySelector('.resize-handle');
+    const header = calculator ? calculator.querySelector('.calculator-header') || calculator.querySelector('.converter-header') : null;
+
+    if (!calculator) return; // Нет калькулятора — ничего не делаем
 
     if (isMobileDevice()) {
-        console.log("Мобильное устройство обнаружено, применяем адаптацию...");
-
         calculator.classList.add('mobile-mode');
-
-
-        calculator.querySelector('.calculator-header').removeEventListener('mousedown', startDragging);
-        calculator.querySelector('.calculator-header').removeEventListener('dblclick', resetSize);
-
-        resizeHandle.removeEventListener('mousedown', startResizing);
-        resizeHandle.removeEventListener('dblclick', resetSize);
-        resizeHandle.style.display = "none"; 
+        if (header) {
+            header.style.cursor = 'default';
+            header.onmousedown = null;
+            header.ondblclick = null;
+        }
+        if (resizeHandle) resizeHandle.style.display = "none";
+        calculator.style.position = 'static';
+        calculator.style.transform = 'none';
+        calculator.style.width = '100vw';
+        calculator.style.height = 'auto';
+        calculator.style.minWidth = '0';
+        calculator.style.margin = '0';
     } else {
-        console.log("Это не мобильное устройство, применяем стандартные настройки...");
-
         calculator.classList.remove('mobile-mode');
-
-
-        calculator.querySelector('.calculator-header').addEventListener('mousedown', startDragging);
-        calculator.querySelector('.calculator-header').addEventListener('dblclick', resetSize);
-        resizeHandle.addEventListener('mousedown', startResizing);
-        resizeHandle.addEventListener('dblclick', resetSize);
-        resizeHandle.style.display = "block";
+        if (resizeHandle) resizeHandle.style.display = "";
+        // Можно вернуть обработчики, если нужно
     }
 }
 
-
 document.addEventListener("DOMContentLoaded", adaptForMobile);
-
+window.addEventListener("resize", () => setTimeout(adaptForMobile, 200));
 
 function debounce(func, wait) {
     let timeout;
