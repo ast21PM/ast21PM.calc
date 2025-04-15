@@ -16,30 +16,37 @@
         <a href="index.html" class="nav-link active">График</a>
     </div>
 
+
     <div class="theme-toggle" id="themeToggle">
         <label class="switch">
             <input type="checkbox" onclick="toggleTheme()">
-            <span class="slider"> </span>
+            <span class="slider">&nbsp;</span>
         </label>
     </div>
+
 
     <div class="function-panel">
         <div class="function-header">
             <span>Функции</span>
         </div>
         <div class="function-inputs">
-            <div class="function-list" id="functionList"></div>
+            <div class="function-list" id="functionList">
+
+            </div>
             <button onclick="addFunctionInput()" class="add-function-btn">Добавить функцию</button>
         </div>
     </div>
 
+
     <canvas id="graphCanvas" class="graph-canvas"></canvas>
+
 
     <div class="zoom-controls">
         <button onclick="zoomIn()" class="zoom-btn">+</button>
         <button onclick="zoomOut()" class="zoom-btn">-</button>
         <button onclick="resetView()" class="zoom-btn">↺</button>
     </div>
+
 
     <div class="calculator-panels" id="functionButtons">
         <div class="number-panel">

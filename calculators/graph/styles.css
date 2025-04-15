@@ -1,3 +1,12 @@
+/* Стили для тела страницы */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e, #2d2d44);
+    transition: background 0.3s ease;
+    overflow: hidden;
+}
+
 /* Светлая тема для тела */
 body.light {
     background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
