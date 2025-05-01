@@ -1,142 +1,60 @@
-/* Стили для тела страницы */
+/* Основные стили */
 body {
     margin: 0;
     font-family: 'Arial', sans-serif;
-    background: -webkit-linear-gradient(135deg, #1a1a2e, #2d2d44);
-    background: -moz-linear-gradient(135deg, #1a1a2e, #2d2d44);
-    background: -o-linear-gradient(135deg, #1a1a2e, #2d2d44);
-    background: linear-gradient(135deg, #1a1a2e, #2d2d44);
-    -webkit-transition: background 0.3s ease;
-    -moz-transition: background 0.3s ease;
-    -o-transition: background 0.3s ease;
-    transition: background 0.3s ease;
-    overflow: hidden;
-}
-
-/* Светлая тема для тела */
-body.light {
-    background: -webkit-linear-gradient(135deg, #f0f0f5, #e0e0ea);
-    background: -moz-linear-gradient(135deg, #f0f0f5, #e0e0ea);
-    background: -o-linear-gradient(135deg, #f0f0f5, #e0e0ea);
-    background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
-}
-
-/* Стили для контейнера переключателя темы */
-.theme-toggle {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 80px;
-    height: 40px;
-    z-index: 2;
-}
-
-/* Стили для обертки переключателя */
-.switch {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background-color: #28292c;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-/* Скрываем стандартный checkbox */
-.switch input {
-    position: absolute;
-    display: none;
-}
-
-/* Стили для слайдера */
-.slider {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 20px;
-    transition: 0.3s;
-}
-
-/* Состояние при включении (светлая тема) */
-.switch input:checked ~ .slider {
-    background-color: #d8dbe0;
-}
-
-/* Круглый элемент слайдера */
-.slider:before {
-    content: "";
-    position: absolute;
-    top: 5px;
-    left: 6px;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    box-shadow: inset 12px -2px 0px 0px #d8dbe0;
-    background-color: #28292c;
-    transition: 0.3s;
-}
-
-/* Перемещение круга при включении */
-.switch input:checked ~ .slider:before {
-    transform: translateX(38px);
-    background-color: #28292c;
-    box-shadow: none;
-}
-
-/* Панель для ввода функций (слева) */
-.function-panel {
-    position: absolute;
-    top: 70px;
-    left: 20px;
-    background: #2d2d44;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    width: 250px;
-    z-index: 2;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Светлая тема для панели функций */
-.function-panel.light {
     background: #ffffff;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-}
-
-/* Стили для заголовка панели функций */
-.function-header {
-    width: 100%;
-    height: 20px;
-    border-radius: 8px 8px 0 0;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 5px;
-    user-select: none;
-    background: linear-gradient(135deg, #3b3b50, #2d2d44);
-    color: #ffffff;
-    opacity: 0.9;
-    transition: background 0.3s ease, color 0.3s ease;
-}
-
-/* Светлая тема для заголовка */
-.function-header.light {
-    background: linear-gradient(135deg, #e0e0ea, #ffffff);
     color: #333333;
-    opacity: 1;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Панель для ввода функций */
-.function-inputs {
+body.dark {
+    background: #1a1a2e;
+    color: #ffffff;
+}
+
+/* Контейнер */
+.main-container {
+    display: flex;
+    height: 100vh;
+    padding-top: 60px;
+}
+
+/* Левая панель */
+.left-panel {
+    width: 300px;
+    background: #f5f5f5;
+    border-right: 1px solid #e0e0e0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    max-height: 400px;
-    overflow-y: auto;
+    transition: background-color 0.3s ease;
 }
 
-.function-list {
+body.dark .left-panel {
+    background: #2d2d44;
+    border-right-color: #3d3d54;
+}
+
+/* Панель функций */
+.function-panel {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+body.dark .function-panel {
+    border-bottom-color: #3d3d54;
+}
+
+.function-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+body.dark .function-header {
+    color: #aaa;
+}
+
+.function-inputs {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -145,416 +63,105 @@ body.light {
 .function-input {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
+    background: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+}
+
+body.dark .function-input {
+    background: #3d3d54;
+    border-color: #4d4d64;
 }
 
 .function-input input[type="text"] {
     flex: 1;
-    padding: 8px;
+    border: none;
+    background: transparent;
+    color: inherit;
     font-size: 14px;
-    border: 1px solid #3b3b50;
-    border-radius: 4px;
-    background: #1f1f2e;
-    color: #ffffff;
-    transition: background 0.3s ease, color 0.3s ease, border 0.3s ease;
-}
-
-.function-input input[type="text"].light {
-    background: #f5f5fa;
-    color: #333333;
-    border: 1px solid #d0d0d8;
+    padding: 4px;
 }
 
 .function-input input[type="color"] {
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     border: none;
-    padding: 0;
+    border-radius: 4px;
     cursor: pointer;
 }
 
 .function-input .remove-btn {
-    background: linear-gradient(135deg, #ff6666, #ff4d4d);
-    padding: 5px;
-    font-size: 12px;
+    background: none;
+    border: none;
+    color: #ff4444;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 16px;
 }
 
-.function-input .remove-btn.light {
-    background: linear-gradient(135deg, #ff8080, #ff6666);
+/* Панель примеров */
+.examples-panel {
+    padding: 15px;
+    flex: 1;
+    overflow-y: auto;
 }
 
-.add-function-btn {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+.examples-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+body.dark .examples-header {
+    color: #aaa;
+}
+
+.examples-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.examples-list button {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
     padding: 8px;
-    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.add-function-btn.light {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+body.dark .examples-list button {
+    background: #3d3d54;
+    border-color: #4d4d64;
+    color: #fff;
 }
 
-/* Канвас для графика (на весь экран) */
+.examples-list button:hover {
+    background: #f0f0f0;
+}
+
+body.dark .examples-list button:hover {
+    background: #4d4d64;
+}
+
+/* График */
+.graph-container {
+    flex: 1;
+    position: relative;
+    background: #fff;
+}
+
+body.dark .graph-container {
+    background: #1a1a2e;
+}
+
 .graph-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
-    background: #ffffff; /* Белый фон, как у Mathway */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-}
-
-/* Кнопки управления масштабом */
-.zoom-controls {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 2;
-}
-
-.zoom-btn {
-    background: #007bff;
-    color: #ffffff;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-.zoom-btn:hover {
-    background: #0056b3;
-}
-
-.zoom-btn:active {
-    background: #003d7a;
-}
-
-/* Выезжающая панель кнопок */
-.calculator-panels {
-    position: absolute;
-    bottom: -300px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #2d2d44;
-    padding: 15px;
-    border-radius: 12px 12px 0 0;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
-    display: flex;
-    gap: 5px;
-    z-index: 2;
-    transition: bottom 0.3s ease;
-}
-
-.calculator-panels.visible {
-    bottom: 0;
-}
-
-.calculator-panels.light {
-    background: #ffffff;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.15);
-}
-
-/* Стили для панели цифр */
-.number-panel {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap: 5px;
-    padding: 5px;
-    width: 300px;
-    height: 250px;
-}
-
-/* Стили для кнопок курсора */
-.cursor-buttons {
-    grid-column: span 4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Стили для панели функций */
-.function-panels {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    max-height: 250px;
-    height: 100%;
-    width: 300px;
-}
-
-/* Стили для вкладок панелей */
-.panel-tabs {
-    display: flex;
-    gap: 5px;
-    margin-bottom: 5px;
-}
-
-/* Стили для кнопок вкладок */
-.tab-button {
-    background: linear-gradient(135deg, #4a4a66, #3b3b50);
-    color: #ffffff;
-    border: none;
-    padding: 8px;
-    font-size: 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex: 1;
-    text-align: center;
-    font-weight: bold;
-}
-
-/* Активная вкладка */
-.tab-button.active {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: #ffffff;
-}
-
-/* Светлая тема для вкладок */
-.tab-button.light {
-    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
-    color: #333333;
-}
-
-/* Активная вкладка в светлой теме */
-.tab-button.active.light {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: #ffffff;
-}
-
-/* Наведение на вкладки */
-.tab-button:hover {
-    background: linear-gradient(135deg, #5a5a80, #4a4a66);
-}
-
-/* Наведение в светлой теме */
-.tab-button.light:hover {
-    background: linear-gradient(135deg, #d0d0d8, #c0c0c8);
-}
-
-/* Стили для панелей */
-.panel {
-    display: grid;
-    gap: 5px;
-    padding: 5px;
-    transition: all 0.3s ease;
-    flex: 1;
-    overflow: hidden;
-    max-height: 100%;
-    height: 100%;
-}
-
-/* Панель базовых операций */
-.basic-panel {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-/* Панель функций */
-.functions-panel {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-/* Панель алфавита */
-.alpha-panel {
-    grid-template-columns: repeat(9, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-}
-
-/* Стили для кнопок */
-button {
-    background: -webkit-linear-gradient(135deg, #4a4a66, #3b3b50);
-    background: -moz-linear-gradient(135deg, #4a4a66, #3b3b50);
-    background: -o-linear-gradient(135deg, #4a4a66, #3b3b50);
-    background: linear-gradient(135deg, #4a4a66, #3b3b50);
-    color: #ffffff;
-    border: none;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    -webkit-transition: all 0.2s ease;
-    -moz-transition: all 0.2s ease;
-    -o-transition: all 0.2s ease;
-    transition: all 0.2s ease;
-    font-family: 'Arial', sans-serif;
-    -webkit-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-justify-content: center;
-    -moz-justify-content: center;
-    justify-content: center;
-    -webkit-align-items: center;
-    -moz-align-items: center;
-    align-items: center;
-    min-width: 0;
-}
-
-/* Светлая тема для кнопок */
-button.light {
-    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
-    color: #333333;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-/* Специальные кнопки */
-button.special {
-    font-size: 14px;
-    padding: 8px;
-    line-height: 1;
-}
-
-/* Наведение на кнопки */
-button:hover {
-    background: -webkit-linear-gradient(135deg, #5a5a80, #4a4a66);
-    background: -moz-linear-gradient(135deg, #5a5a80, #4a4a66);
-    background: -o-linear-gradient(135deg, #5a5a80, #4a4a66);
-    background: linear-gradient(135deg, #5a5a80, #4a4a66);
-    -webkit-transform: scale(1.02);
-    -moz-transform: scale(1.02);
-    -ms-transform: scale(1.02);
-    -o-transform: scale(1.02);
-    transform: scale(1.02);
-}
-
-/* Нажатие на кнопки */
-button:active {
-    background: linear-gradient(135deg, #3b3b50, #2d2d44);
-    transform: scale(0.98);
-}
-
-/* Нажатие в светлой теме */
-button.light:active {
-    background: linear-gradient(135deg, #c0c0c8, #b0b0b8);
-}
-
-/* Кнопка равенства */
-button[onclick*="="] {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: #ffffff;
-}
-
-/* Кнопка равенства в светлой теме */
-button[onclick*="="].light {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: #ffffff;
-}
-
-/* Наведение на кнопку равенства */
-button[onclick*="="]:hover {
-    background: linear-gradient(135deg, #0056b3, #003d7a);
-}
-
-/* Нажатие на кнопку равенства */
-button[onclick*="="]:active {
-    background: linear-gradient(135deg, #003d7a, #002b55);
-}
-
-/* Кнопка очистки */
-.clear-btn {
-    background: linear-gradient(135deg, #ff6666, #ff4d4d);
-    color: #ffffff;
-    padding: 8px 20px;
-    font-size: 14px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-/* Светлая тема для кнопки очистки */
-.clear-btn.light {
-    background: linear-gradient(135deg, #ff8080, #ff6666);
-    color: #ffffff;
-}
-
-/* Наведение на кнопку очистки */
-.clear-btn:hover {
-    background: linear-gradient(135deg, #ff4d4d, #e60000);
-}
-
-/* Наведение в светлой теме */
-.clear-btn.light:hover {
-    background: linear-gradient(135deg, #ff6666, #ff3333);
-}
-
-/* Нажатие на кнопку очистки */
-.clear-btn:active {
-    background: linear-gradient(135deg, #e60000, #cc0000);
-}
-
-/* Нажатие в светлой теме */
-.clear-btn.light:active {
-    background: linear-gradient(135deg, #ff3333, #cc3333);
-}
-
-/* Навигация */
-.navigation-tabs {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-    z-index: 2;
-}
-
-.navigation-tabs .nav-link {
-    background: linear-gradient(135deg, #4a4a66, #3b3b50);
-    color: #ffffff;
-    text-decoration: none;
-    padding: 10px 20px;
-    font-size: 14px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    font-weight: bold;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.navigation-tabs .nav-link.active {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: #ffffff;
-}
-
-/* Светлая тема для навигации */
-.navigation-tabs .nav-link.light {
-    background: linear-gradient(135deg, #e0e0ea, #d0d0d8);
-    color: #333333;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-.navigation-tabs .nav-link.active.light {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: #ffffff;
-}
-
-.navigation-tabs .nav-link:hover {
-    background: linear-gradient(135deg, #5a5a80, #4a4a66);
-}
-
-.navigation-tabs .nav-link.light:hover {
-    background: linear-gradient(135deg, #d0d0d8, #c0c0c8);
-}
-
-.graph-canvas {
     cursor: grab;
 }
 
@@ -562,21 +169,234 @@ button[onclick*="="]:active {
     cursor: grabbing;
 }
 
-/* Добавляем поддержку touch-событий */
-@media (hover: none) {
-    .graph-canvas {
-        cursor: default;
-    }
-    
-    button {
-        min-height: 44px; /* Минимальный размер для touch-устройств */
-    }
+/* Кнопки масштабирования */
+.zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-/* Поддержка высокого DPI экранов */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .graph-canvas {
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
+.zoom-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+body.dark .zoom-btn {
+    background: #3d3d54;
+    border-color: #4d4d64;
+    color: #fff;
+}
+
+.zoom-btn:hover {
+    background: #f0f0f0;
+}
+
+body.dark .zoom-btn:hover {
+    background: #4d4d64;
+}
+
+/* Панель калькулятора */
+.calculator-panels {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #e0e0e0;
+    padding: 10px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+body.dark .calculator-panels {
+    background: #2d2d44;
+    border-top-color: #3d3d54;
+}
+
+.calculator-panels.visible {
+    transform: translateY(0);
+}
+
+.panel-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    background: #f5f5f5;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+body.dark .tab-button {
+    background: #3d3d54;
+    color: #fff;
+}
+
+.tab-button.active {
+    background: #007bff;
+    color: #fff;
+}
+
+.panel {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+}
+
+.panel button {
+    padding: 8px;
+    border: none;
+    background: #f5f5f5;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+body.dark .panel button {
+    background: #3d3d54;
+    color: #fff;
+}
+
+.panel button:hover {
+    background: #e0e0e0;
+}
+
+body.dark .panel button:hover {
+    background: #4d4d64;
+}
+
+/* Навигация */
+.navigation-tabs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 1000;
+}
+
+body.dark .navigation-tabs {
+    background: #2d2d44;
+    border-bottom-color: #3d3d54;
+}
+
+.nav-link {
+    color: #666;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+body.dark .nav-link {
+    color: #aaa;
+}
+
+.nav-link:hover {
+    background: #f0f0f0;
+}
+
+body.dark .nav-link:hover {
+    background: #3d3d54;
+}
+
+.nav-link.active {
+    background: #007bff;
+    color: #fff;
+}
+
+/* Переключатель темы */
+.theme-toggle {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    z-index: 1001;
+}
+
+.switch {
+    position: relative;
+    width: 60px;
+    height: 30px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 30px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #007bff;
+}
+
+input:checked + .slider:before {
+    transform: translateX(30px);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+    }
+    
+    .left-panel {
+        width: 100%;
+        height: 300px;
+    }
+    
+    .graph-container {
+        height: calc(100vh - 360px);
+    }
+    
+    .calculator-panels {
+        height: 200px;
     }
 }
