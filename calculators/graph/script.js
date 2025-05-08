@@ -62,20 +62,17 @@ function drawAxes() {
     const gridStep = getGridStep(scale);
     const stepSize = gridStep * scale;
 
-    // Вычисляем границы для отрисовки сетки
     const minX = Math.floor((-yAxis) / stepSize) * gridStep;
     const maxX = Math.ceil((canvas.width - yAxis) / stepSize) * gridStep;
     const minY = Math.floor((-xAxis) / stepSize) * gridStep;
     const maxY = Math.ceil((canvas.height - xAxis) / stepSize) * gridStep;
 
-    // Горизонтальные линии сетки
     for (let i = minY; i <= maxY; i += gridStep) {
         const y = xAxis - i * scale;
         ctx.moveTo(0, y);
         ctx.lineTo(canvas.width, y);
     }
 
-    // Вертикальные линии сетки
     for (let i = minX; i <= maxX; i += gridStep) {
         const x = yAxis + i * scale;
         ctx.moveTo(x, 0);
@@ -99,7 +96,6 @@ function drawAxes() {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Подписи на оси X
     for (let i = minX; i <= maxX; i += gridStep) {
         if (Math.abs(i) < gridStep / 2) continue;
         const x = yAxis + i * scale;
@@ -112,7 +108,6 @@ function drawAxes() {
         ctx.fillText(label, x, xAxis + 15);
     }
 
-    // Подписи на оси Y
     for (let i = minY; i <= maxY; i += gridStep) {
         if (Math.abs(i) < gridStep / 2) continue;
         const y = xAxis - i * scale;
@@ -134,48 +129,96 @@ function factorial(n) {
     return n * factorial(n - 1);
 }
 
-// Функция для вычисления значения функции
-function evaluateFunction(funcStr, x) {
-    try {
-        let expr = funcStr.toLowerCase()
-            .replace(/pi/g, 'Math.PI')
-            .replace(/e(?!\^)/g, 'Math.E')
-            .replace(/sin/g, 'Math.sin')
-            .replace(/cos/g, 'Math.cos')
-            .replace(/tan/g, 'Math.tan')
-            .replace(/cot/g, '(1/Math.tan)')
-            .replace(/sec/g, '(1/Math.cos)')
-            .replace(/csc/g, '(1/Math.sin)')
-            .replace(/ln/g, 'Math.log')
-            .replace(/log/g, 'Math.log10')
-            .replace(/abs/g, 'Math.abs')
-            .replace(/sqrt/g, 'Math.sqrt')
-            .replace(/e\^/g, 'Math.exp')
-            .replace(/arcsin/g, 'Math.asin')
-            .replace(/arccos/g, 'Math.acos')
-            .replace(/arctan/g, 'Math.atan')
-            .replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)))
-            .replace(/\^/g, '**')
-            .replace(/y\s*=\s*/, '');
+// Парсинг функции
+function parseFunction(funcStr) {
+    let originalExpr = funcStr.trim().toLowerCase();
+    let expr;
 
-        // Проверяем, является ли функция неявной (содержит y)
-        if (expr.includes('y')) {
-            // Для неявных функций (например, x^2 + y^2 = 1)
-            // Решаем уравнение относительно y
-            const parts = expr.split('=');
-            if (parts.length === 2) {
-                const leftSide = parts[0].trim();
-                const rightSide = parts[1].trim();
-                expr = `${rightSide} - (${leftSide})`;
+    // Удаляем "y =" для явных функций
+    if (originalExpr.startsWith('y =')) {
+        originalExpr = originalExpr.replace('y =', '').trim();
+    }
+
+    if (originalExpr.includes('=')) {
+        const parts = originalExpr.split('=');
+        if (parts.length === 2) {
+            let left = parts[0].trim();
+            let right = parts[1].trim();
+            if (left.includes('y') || right.includes('y')) {
+                // Неявная функция: f(x,y) = g(x,y)
+                expr = `(${left}) - (${right})`;
+                expr = processExpr(expr);
+                try {
+                    const func = new Function('x', 'y', `return ${expr};`);
+                    return { type: 'implicit', evaluator: func };
+                } catch (e) {
+                    console.error('Ошибка парсинга неявной функции:', e);
+                    return { type: 'error', message: 'Неверное выражение' };
+                }
+            } else {
+                return { type: 'error', message: 'Неверное выражение' };
+            }
+        } else {
+            return { type: 'error', message: 'Неверное выражение' };
+        }
+    } else {
+        if (originalExpr.includes('y')) {
+            // Неявная функция: f(x,y) = 0
+            expr = originalExpr;
+            expr = processExpr(expr);
+            try {
+                const func = new Function('x', 'y', `return ${expr};`);
+                return { type: 'implicit', evaluator: func };
+            } catch (e) {
+                console.error('Ошибка парсинга неявной функции:', e);
+                return { type: 'error', message: 'Неверное выражение' };
+            }
+        } else {
+            // Явная функция: y = f(x)
+            expr = originalExpr;
+            expr = processExpr(expr);
+            try {
+                const func = new Function('x', `return ${expr};`);
+                const domain = getFunctionDomain(originalExpr);
+                return { type: 'explicit', evaluator: func, domain };
+            } catch (e) {
+                console.error('Ошибка парсинга явной функции:', e);
+                return { type: 'error', message: 'Неверное выражение' };
             }
         }
-
-        const result = eval(`(function(x) { return ${expr}; })(${x})`);
-        return Number.isFinite(result) ? result : NaN;
-    } catch (e) {
-        console.error('Ошибка в выражении:', funcStr, e);
-        return NaN;
     }
+}
+
+function processExpr(expr) {
+    // Обрабатываем e^x корректно
+    expr = expr.replace(/e\^x/g, 'Math.exp(x)')
+               .replace(/e\^(\([^)]+\))/g, 'Math.exp$1')
+               .replace(/pi/g, 'Math.PI')
+               .replace(/e\b/g, 'Math.E') // Обрабатываем e как константу
+               .replace(/sin/g, 'Math.sin')
+               .replace(/cos/g, 'Math.cos')
+               .replace(/tan/g, 'Math.tan')
+               .replace(/cot/g, '(1/Math.tan)')
+               .replace(/sec/g, '(1/Math.cos)')
+               .replace(/csc/g, '(1/Math.sin)')
+               .replace(/ln/g, 'Math.log')
+               .replace(/log/g, 'Math.log10')
+               .replace(/abs/g, 'Math.abs')
+               .replace(/sqrt/g, 'Math.sqrt')
+               .replace(/arcsin/g, 'Math.asin')
+               .replace(/arccos/g, 'Math.acos')
+               .replace(/arctan/g, 'Math.atan')
+               .replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)))
+               .replace(/\^/g, '**');
+    return expr;
+}
+
+// Определение области определения функции
+function getFunctionDomain(expr) {
+    if (expr.includes('ln') || expr.includes('log')) {
+        return { min: 0.0001, max: Infinity }; // ln(x) и log(x) определены для x > 0
+    }
+    return { min: -Infinity, max: Infinity }; // По умолчанию вся числовая ось
 }
 
 // Отрисовка графика
@@ -186,43 +229,126 @@ function drawGraph() {
     functionInputs.forEach(input => {
         const funcStr = input.querySelector('input[type="text"]').value.trim();
         const color = input.querySelector('input[type="color"]').value;
-
         if (!funcStr) return;
+        const parsed = parseFunction(funcStr);
+        if (parsed.type === 'error') {
+            console.error(parsed.message);
+            return;
+        }
+        if (parsed.type === 'explicit') {
+            drawExplicitFunction(parsed.evaluator, parsed.domain, color);
+        } else if (parsed.type === 'implicit') {
+            drawImplicitFunction(parsed.evaluator, color);
+        }
+    });
+}
 
-        const xAxis = canvas.height / 2 + offsetY;
-        const yAxis = canvas.width / 2 + offsetX;
-        
-        ctx.beginPath();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
+function drawExplicitFunction(evaluator, domain, color) {
+    const xAxis = canvas.height / 2 + offsetY;
+    const yAxis = canvas.width / 2 + offsetX;
+    
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
 
-        const step = Math.max(1, Math.floor(1 / scale * 50));
-        let previousY = null;
-        let firstPoint = true;
+    // Определяем диапазон x в координатах canvas
+    const minXCanvas = (-yAxis) / scale;
+    const maxXCanvas = (canvas.width - yAxis) / scale;
+    const minX = Math.max(domain.min, minXCanvas);
+    const maxX = Math.min(domain.max, maxXCanvas);
+    const step = 0.01 / scale; // Очень маленький шаг для точности
 
-        for (let px = 0; px < canvas.width; px += step) {
-            const x = (px - yAxis) / scale;
-            const y = evaluateFunction(funcStr, x);
-            
-            if (!Number.isFinite(y)) {
+    let firstPoint = true;
+    let previousY = null;
+
+    for (let x = minX; x <= maxX; x += step) {
+        let y;
+        try {
+            y = evaluator(x);
+            if (!Number.isFinite(y) || Math.abs(y) > 1e6) {
                 firstPoint = true;
+                previousY = null;
                 continue;
             }
-
-            const py = xAxis - y * scale;
-            
-            if (firstPoint) {
-                ctx.moveTo(px, py);
-                firstPoint = false;
-            } else if (previousY !== null && Math.abs(py - previousY) < canvas.height) {
-                ctx.lineTo(px, py);
-            } else {
-                ctx.moveTo(px, py);
-            }
-            previousY = py;
+        } catch (e) {
+            console.warn(`Ошибка вычисления для x=${x}:`, e);
+            firstPoint = true;
+            previousY = null;
+            continue;
         }
+
+        const px = yAxis + x * scale;
+        const py = xAxis - y * scale;
+
+        if (firstPoint) {
+            ctx.moveTo(px, py);
+            firstPoint = false;
+        } else if (previousY !== null && Math.abs(py - previousY) < canvas.height) {
+            ctx.lineTo(px, py);
+        } else {
+            ctx.moveTo(px, py);
+        }
+        previousY = py;
+    }
+    ctx.stroke();
+}
+
+function drawImplicitFunction(evaluator, color) {
+    const gridStepPixels = 10;
+    const yAxis = canvas.width / 2 + offsetX;
+    const xAxis = canvas.height / 2 + offsetY;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    for (let px = 0; px < canvas.width; px += gridStepPixels) {
+        for (let py = 0; py < canvas.height; py += gridStepPixels) {
+            const x0 = (px - yAxis) / scale;
+            const y0 = (xAxis - py) / scale;
+            const x1 = (px + gridStepPixels - yAxis) / scale;
+            const y1 = (xAxis - (py + gridStepPixels)) / scale;
+            const f00 = evaluator(x0, y0);
+            const f10 = evaluator(x1, y0);
+            const f01 = evaluator(x0, y1);
+            const f11 = evaluator(x1, y1);
+            if (isNaN(f00) || isNaN(f10) || isNaN(f01) || isNaN(f11)) continue;
+            const config = (f00 < 0 ? 1 : 0) + (f10 < 0 ? 2 : 0) + (f01 < 0 ? 4 : 0) + (f11 < 0 ? 8 : 0);
+            drawMarchingSquare(config, px, py, gridStepPixels, f00, f10, f01, f11);
+        }
+    }
+}
+
+function drawMarchingSquare(config, px, py, step, f00, f10, f01, f11) {
+    const edges = [];
+    if ((f00 < 0) !== (f01 < 0)) {
+        const t = f00 / (f00 - f01);
+        edges.push({x: px, y: py + t * step});
+    }
+    if ((f10 < 0) !== (f11 < 0)) {
+        const t = f10 / (f10 - f11);
+        edges.push({x: px + step, y: py + t * step});
+    }
+    if ((f00 < 0) !== (f10 < 0)) {
+        const t = f00 / (f00 - f10);
+        edges.push({x: px + t * step, y: py});
+    }
+    if ((f01 < 0) !== (f11 < 0)) {
+        const t = f01 / (f01 - f11);
+        edges.push({x: px + t * step, y: py + step});
+    }
+    if (edges.length === 2) {
+        ctx.beginPath();
+        ctx.moveTo(edges[0].x, edges[0].y);
+        ctx.lineTo(edges[1].x, edges[1].y);
         ctx.stroke();
-    });
+    } else if (edges.length === 4) {
+        ctx.beginPath();
+        ctx.moveTo(edges[0].x, edges[0].y);
+        ctx.lineTo(edges[1].x, edges[1].y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(edges[2].x, edges[2].y);
+        ctx.lineTo(edges[3].x, edges[3].y);
+        ctx.stroke();
+    }
 }
 
 // Функция для добавления примера
@@ -375,7 +501,6 @@ canvas.addEventListener('mouseleave', () => {
     canvas.style.cursor = 'grab';
 });
 
-// Обработчик колесика мыши
 canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     const factor = e.deltaY < 0 ? 1.1 : 0.9;
