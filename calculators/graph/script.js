@@ -15,6 +15,10 @@ let startX, startY;
 let animationFrame = null;
 let lastDrawTime = 0;
 const DRAW_THROTTLE = 16; // ~60fps
+let lastFunctions = []; // Сохраняем последние функции для оптимизации
+let debounceTimer = null; // Таймер для debounce
+let lastWheelTime = 0;
+const WHEEL_THROTTLE = 16; // Уменьшаем до 16мс для более плавного масштабирования
 
 // Инициализация canvas
 function initCanvas() {
@@ -56,7 +60,7 @@ function drawAxes() {
 
     // Сетка
     ctx.beginPath();
-    ctx.strokeStyle = document.body.classList.contains('dark') ? '#3d3d54' : '#e0e0e0';
+    ctx.strokeStyle = document.body.classList.contains('light') ? '#e0e0e0' : '#3d3d54';
     ctx.lineWidth = 0.5;
 
     const gridStep = getGridStep(scale);
@@ -82,7 +86,7 @@ function drawAxes() {
 
     // Оси
     ctx.beginPath();
-    ctx.strokeStyle = document.body.classList.contains('dark') ? '#666' : '#333';
+    ctx.strokeStyle = document.body.classList.contains('light') ? '#333' : '#666';
     ctx.lineWidth = 1.5;
     ctx.moveTo(0, xAxis);
     ctx.lineTo(canvas.width, xAxis);
@@ -92,7 +96,7 @@ function drawAxes() {
 
     // Подписи осей
     ctx.font = '12px Arial';
-    ctx.fillStyle = document.body.classList.contains('dark') ? '#aaa' : '#666';
+    ctx.fillStyle = document.body.classList.contains('light') ? '#666' : '#aaa';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -222,25 +226,71 @@ function getFunctionDomain(expr) {
 }
 
 // Отрисовка графика
-function drawGraph() {
-    drawAxes();
-    const functionInputs = document.querySelectorAll('.function-input');
+function drawGraph(forceRedraw = false, isScaling = false) {
+    const currentTime = Date.now();
     
-    functionInputs.forEach(input => {
-        const funcStr = input.querySelector('input[type="text"]').value.trim();
-        const color = input.querySelector('input[type="color"]').value;
-        if (!funcStr) return;
-        const parsed = parseFunction(funcStr);
-        if (parsed.type === 'error') {
-            console.error(parsed.message);
-            return;
+    // Применяем троттлинг при перетаскивании или масштабировании
+    if ((isDragging || isScaling) && !forceRedraw && currentTime - lastDrawTime < DRAW_THROTTLE) {
+        if (!animationFrame) {
+            animationFrame = requestAnimationFrame(() => {
+                drawGraph(false, isScaling);
+                animationFrame = null;
+            });
         }
-        if (parsed.type === 'explicit') {
-            drawExplicitFunction(parsed.evaluator, parsed.domain, color);
-        } else if (parsed.type === 'implicit') {
-            drawImplicitFunction(parsed.evaluator, color);
-        }
+        return;
+    }
+    
+    lastDrawTime = currentTime;
+    drawAxes();
+    
+    // Получаем текущие функции
+    const functionInputs = document.querySelectorAll('.function-input');
+    const currentFunctions = Array.from(functionInputs).map(input => {
+        return {
+            funcStr: input.querySelector('input[type="text"]').value.trim(),
+            color: input.querySelector('input[type="color"]').value
+        };
     });
+    
+    // Если функции не изменились и мы просто перетаскиваем график или масштабируем, используем оптимизированную отрисовку
+    const functionsChanged = JSON.stringify(currentFunctions) !== JSON.stringify(lastFunctions);
+    
+    if (!functionsChanged && (isDragging || isScaling) && !forceRedraw) {
+        // Оптимизированная отрисовка при перетаскивании или масштабировании
+        currentFunctions.forEach(({ funcStr, color }) => {
+            if (!funcStr) return;
+            const parsed = parseFunction(funcStr);
+            if (parsed.type === 'error') {
+                console.error(parsed.message);
+                return;
+            }
+            
+            if (parsed.type === 'explicit') {
+                drawExplicitFunctionOptimized(parsed.evaluator, parsed.domain, color);
+            } else if (parsed.type === 'implicit') {
+                drawImplicitFunctionOptimized(parsed.evaluator, color);
+            }
+        });
+    } else {
+        // Полная отрисовка при изменении функций или других случаях
+        currentFunctions.forEach(({ funcStr, color }) => {
+            if (!funcStr) return;
+            const parsed = parseFunction(funcStr);
+            if (parsed.type === 'error') {
+                console.error(parsed.message);
+                return;
+            }
+            
+            if (parsed.type === 'explicit') {
+                drawExplicitFunction(parsed.evaluator, parsed.domain, color);
+            } else if (parsed.type === 'implicit') {
+                drawImplicitFunction(parsed.evaluator, color);
+            }
+        });
+        
+        // Сохраняем текущие функции
+        lastFunctions = currentFunctions;
+    }
 }
 
 function drawExplicitFunction(evaluator, domain, color) {
@@ -294,22 +344,39 @@ function drawExplicitFunction(evaluator, domain, color) {
 }
 
 function drawImplicitFunction(evaluator, color) {
+    // Выбираем размер сетки в зависимости от масштаба
     const gridStepPixels = 10;
     const yAxis = canvas.width / 2 + offsetX;
     const xAxis = canvas.height / 2 + offsetY;
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
+    
+    // Рассчитываем видимую область графика
+    const minXCanvas = Math.floor((-yAxis) / scale);
+    const maxXCanvas = Math.ceil((canvas.width - yAxis) / scale);
+    const minYCanvas = Math.floor((-xAxis) / scale);
+    const maxYCanvas = Math.ceil((canvas.height - xAxis) / scale);
+    
     for (let px = 0; px < canvas.width; px += gridStepPixels) {
         for (let py = 0; py < canvas.height; py += gridStepPixels) {
             const x0 = (px - yAxis) / scale;
             const y0 = (xAxis - py) / scale;
             const x1 = (px + gridStepPixels - yAxis) / scale;
             const y1 = (xAxis - (py + gridStepPixels)) / scale;
+            
+            // Пропускаем расчеты за пределами видимой области
+            if (x0 < minXCanvas - 1 || x0 > maxXCanvas + 1 || 
+                y0 < minYCanvas - 1 || y0 > maxYCanvas + 1) {
+                continue;
+            }
+            
             const f00 = evaluator(x0, y0);
             const f10 = evaluator(x1, y0);
             const f01 = evaluator(x0, y1);
             const f11 = evaluator(x1, y1);
+            
             if (isNaN(f00) || isNaN(f10) || isNaN(f01) || isNaN(f11)) continue;
+            
             const config = (f00 < 0 ? 1 : 0) + (f10 < 0 ? 2 : 0) + (f01 < 0 ? 4 : 0) + (f11 < 0 ? 8 : 0);
             drawMarchingSquare(config, px, py, gridStepPixels, f00, f10, f01, f11);
         }
@@ -356,12 +423,12 @@ function addExample(funcStr) {
     addFunctionInput(funcStr);
 }
 
-// Функция для добавления поля ввода функции
+// Функция для добавления поля ввода функции с дебаунсингом
 function addFunctionInput(defaultValue = 'y = x') {
     const functionDiv = document.createElement('div');
     functionDiv.className = 'function-input';
     functionDiv.innerHTML = `
-        <input type="text" placeholder="Введите функцию (например, y = x + 1)" value="${defaultValue}" oninput="drawGraph()" onfocus="showFunctionButtons(this)" onblur="hideFunctionButtons()">
+        <input type="text" placeholder="Введите функцию (например, y = x + 1)" value="${defaultValue}" oninput="debouncedDrawGraph()" onfocus="showFunctionButtons(this)" onblur="hideFunctionButtons()">
         <input type="color" value="#${Math.floor(Math.random()*16777215).toString(16)}" onchange="drawGraph()">
         <button onclick="removeFunctionInput(this)" class="remove-btn">✖</button>
     `;
@@ -369,18 +436,21 @@ function addFunctionInput(defaultValue = 'y = x') {
     drawGraph();
 }
 
-// Функция для удаления поля ввода функции
+// Функция для удаления поля ввода функции с оптимизацией
 function removeFunctionInput(button) {
     button.parentElement.remove();
-    drawGraph();
+    // Форсируем перерисовку после удаления функции
+    setTimeout(() => {
+        drawGraph(true);
+    }, 0);
 }
 
-// Функция для добавления символа в поле ввода
+// Функция для добавления символа в поле ввода с дебаунсингом
 function appendToFunction(char) {
     if (lastActiveInput && lastActiveInput.tagName === 'INPUT' && lastActiveInput.type === 'text') {
         lastActiveInput.value += char;
         lastActiveInput.focus();
-        drawGraph();
+        debouncedDrawGraph();
     }
 }
 
@@ -430,11 +500,15 @@ function hideFunctionButtons() {
 
 // Функция для переключения темы
 function toggleTheme() {
-    document.body.classList.toggle('dark');
+    document.body.classList.toggle('light');
     drawGraph();
+    
+    // Сохраняем выбранную тему в localStorage
+    const isLightTheme = document.body.classList.contains('light');
+    localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
 }
 
-// Функция для анимации масштаба
+// Функция для анимации масштаба c оптимизацией
 function animateScale() {
     if (animationFrame) {
         cancelAnimationFrame(animationFrame);
@@ -443,12 +517,15 @@ function animateScale() {
     const animate = () => {
         const diff = targetScale - scale;
         if (Math.abs(diff) > 0.1) {
-            scale += diff * 0.2;
-            drawGraph();
+            // Более плавное изменение масштаба
+            scale += diff * 0.15;
+            // Используем оптимизированный рендеринг во время анимации масштаба
+            drawGraph(false, true);
             animationFrame = requestAnimationFrame(animate);
         } else {
             scale = targetScale;
-            drawGraph();
+            // Финальная отрисовка с полным качеством
+            drawGraph(true);
             animationFrame = null;
         }
     };
@@ -473,7 +550,14 @@ function resetView() {
     animateScale();
 }
 
-// Обработчики событий мыши
+// Функция для центрирования вида (сброс смещения без изменения масштаба)
+function centerView() {
+    offsetX = initialState.offsetX;
+    offsetY = initialState.offsetY;
+    drawGraph(true);
+}
+
+// Обработчики событий мыши с оптимизацией
 canvas.addEventListener('mousedown', (e) => {
     isDragging = true;
     startX = e.clientX;
@@ -494,17 +578,43 @@ canvas.addEventListener('mousemove', (e) => {
 canvas.addEventListener('mouseup', () => {
     isDragging = false;
     canvas.style.cursor = 'grab';
+    // Форсируем высококачественную перерисовку после завершения перетаскивания
+    setTimeout(() => {
+        drawGraph(true);
+    }, 0);
 });
 
 canvas.addEventListener('mouseleave', () => {
-    isDragging = false;
-    canvas.style.cursor = 'grab';
+    if (isDragging) {
+        isDragging = false;
+        canvas.style.cursor = 'grab';
+        // Форсируем высококачественную перерисовку после завершения перетаскивания
+        setTimeout(() => {
+            drawGraph(true);
+        }, 0);
+    }
 });
 
+// Обработчик колесика мыши с троттлингом
 canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
+    
+    const currentTime = Date.now();
+    if (currentTime - lastWheelTime < WHEEL_THROTTLE) {
+        return;
+    }
+    lastWheelTime = currentTime;
+    
+    // Упрощенное масштабирование без сложных вычислений смещения
     const factor = e.deltaY < 0 ? 1.1 : 0.9;
-    targetScale = Math.max(5, Math.min(1000, targetScale * factor));
+    
+    // Если уже находимся в процессе масштабирования, просто меняем targetScale
+    if (animationFrame) {
+        targetScale = Math.max(5, Math.min(1000, targetScale * factor));
+        return;
+    }
+    
+    targetScale = Math.max(5, Math.min(1000, scale * factor));
     animateScale();
 });
 
@@ -530,6 +640,127 @@ canvas.addEventListener('touchmove', (e) => {
 canvas.addEventListener('touchend', () => isDragging = false);
 canvas.addEventListener('touchcancel', () => isDragging = false);
 
+// Функция для дебаунсинга отрисовки графика при вводе
+function debouncedDrawGraph() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        drawGraph(true);
+    }, 300);
+}
+
+// Оптимизированная функция отрисовки явных функций при перетаскивании
+function drawExplicitFunctionOptimized(evaluator, domain, color) {
+    const xAxis = canvas.height / 2 + offsetY;
+    const yAxis = canvas.width / 2 + offsetX;
+    
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+
+    // Определяем диапазон x в координатах canvas
+    const minXCanvas = (-yAxis) / scale;
+    const maxXCanvas = (canvas.width - yAxis) / scale;
+    const minX = Math.max(domain.min, minXCanvas);
+    const maxX = Math.min(domain.max, maxXCanvas);
+    
+    // Увеличиваем шаг при перетаскивании для повышения производительности
+    const step = 0.5 / scale;
+    
+    let firstPoint = true;
+    let previousY = null;
+
+    for (let x = minX; x <= maxX; x += step) {
+        let y;
+        try {
+            y = evaluator(x);
+            if (!Number.isFinite(y) || Math.abs(y) > 1e6) {
+                firstPoint = true;
+                previousY = null;
+                continue;
+            }
+        } catch (e) {
+            firstPoint = true;
+            previousY = null;
+            continue;
+        }
+
+        const px = yAxis + x * scale;
+        const py = xAxis - y * scale;
+
+        if (firstPoint) {
+            ctx.moveTo(px, py);
+            firstPoint = false;
+        } else if (previousY !== null && Math.abs(py - previousY) < canvas.height) {
+            ctx.lineTo(px, py);
+        } else {
+            ctx.moveTo(px, py);
+        }
+        previousY = py;
+    }
+    ctx.stroke();
+}
+
+// Оптимизированная функция отрисовки неявных функций при перетаскивании
+function drawImplicitFunctionOptimized(evaluator, color) {
+    // Подстраиваем шаг сетки в зависимости от масштаба
+    let gridStepPixels;
+    
+    if (scale < 20) {
+        gridStepPixels = 15; // Меньше шаг при большом отдалении
+    } else if (scale < 50) {
+        gridStepPixels = 20;
+    } else {
+        gridStepPixels = 25;
+    }
+    
+    const yAxis = canvas.width / 2 + offsetX;
+    const xAxis = canvas.height / 2 + offsetY;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    
+    // Рассчитываем видимую область графика
+    const minXCanvas = Math.floor((-yAxis) / scale);
+    const maxXCanvas = Math.ceil((canvas.width - yAxis) / scale);
+    const minYCanvas = Math.floor((-xAxis) / scale);
+    const maxYCanvas = Math.ceil((canvas.height - xAxis) / scale);
+    
+    for (let px = 0; px < canvas.width; px += gridStepPixels) {
+        for (let py = 0; py < canvas.height; py += gridStepPixels) {
+            const x0 = (px - yAxis) / scale;
+            const y0 = (xAxis - py) / scale;
+            
+            // Пропускаем расчеты за пределами видимой области
+            if (x0 < minXCanvas - 1 || x0 > maxXCanvas + 1 || 
+                y0 < minYCanvas - 1 || y0 > maxYCanvas + 1) {
+                continue;
+            }
+            
+            const x1 = (px + gridStepPixels - yAxis) / scale;
+            const y1 = (xAxis - (py + gridStepPixels)) / scale;
+            
+            const f00 = evaluator(x0, y0);
+            const f10 = evaluator(x1, y0);
+            const f01 = evaluator(x0, y1);
+            const f11 = evaluator(x1, y1);
+            
+            if (isNaN(f00) || isNaN(f10) || isNaN(f01) || isNaN(f11)) continue;
+            
+            const config = (f00 < 0 ? 1 : 0) + (f10 < 0 ? 2 : 0) + (f01 < 0 ? 4 : 0) + (f11 < 0 ? 8 : 0);
+            drawMarchingSquare(config, px, py, gridStepPixels, f00, f10, f01, f11);
+        }
+    }
+}
+
 // Инициализация
-addFunctionInput('y = x');
-drawGraph();
+window.addEventListener('load', () => {
+    addFunctionInput('y = x');
+    drawGraph();
+    
+    // Загружаем сохраненную тему
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.querySelector('.switch input').checked = true;
+        document.body.classList.add('light');
+        drawGraph();
+    }
+});

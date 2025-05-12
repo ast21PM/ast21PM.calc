@@ -2,14 +2,14 @@
 body {
     margin: 0;
     font-family: 'Arial', sans-serif;
-    background: #ffffff;
-    color: #333333;
+    background: #1a1a2e;
+    color: #ffffff;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-body.dark {
-    background: #1a1a2e;
-    color: #ffffff;
+body.light {
+    background: #ffffff;
+    color: #333333;
 }
 
 /* Контейнер */
@@ -22,36 +22,36 @@ body.dark {
 /* Левая панель */
 .left-panel {
     width: 300px;
-    background: #f5f5f5;
-    border-right: 1px solid #e0e0e0;
+    background: #2d2d44;
+    border-right: 1px solid #3d3d54;
     display: flex;
     flex-direction: column;
     transition: background-color 0.3s ease;
 }
 
-body.dark .left-panel {
-    background: #2d2d44;
-    border-right-color: #3d3d54;
+body.light .left-panel {
+    background: #f5f5f5;
+    border-right-color: #e0e0e0;
 }
 
 /* Панель функций */
 .function-panel {
     padding: 15px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #3d3d54;
 }
 
-body.dark .function-panel {
-    border-bottom-color: #3d3d54;
+body.light .function-panel {
+    border-bottom-color: #e0e0e0;
 }
 
 .function-header {
     font-weight: bold;
     margin-bottom: 10px;
-    color: #666;
+    color: #aaa;
 }
 
-body.dark .function-header {
-    color: #aaa;
+body.light .function-header {
+    color: #666;
 }
 
 .function-inputs {
@@ -64,15 +64,15 @@ body.dark .function-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #fff;
+    background: #3d3d54;
     padding: 8px;
     border-radius: 4px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #4d4d64;
 }
 
-body.dark .function-input {
-    background: #3d3d54;
-    border-color: #4d4d64;
+body.light .function-input {
+    background: #fff;
+    border-color: #e0e0e0;
 }
 
 .function-input input[type="text"] {
@@ -111,11 +111,11 @@ body.dark .function-input {
 .examples-header {
     font-weight: bold;
     margin-bottom: 10px;
-    color: #666;
+    color: #aaa;
 }
 
-body.dark .examples-header {
-    color: #aaa;
+body.light .examples-header {
+    color: #666;
 }
 
 .examples-list {
@@ -125,38 +125,39 @@ body.dark .examples-header {
 }
 
 .examples-list button {
-    background: #fff;
-    border: 1px solid #e0e0e0;
+    background: #3d3d54;
+    border: 1px solid #4d4d64;
     border-radius: 4px;
     padding: 8px;
     text-align: left;
     cursor: pointer;
     transition: all 0.2s ease;
-}
-
-body.dark .examples-list button {
-    background: #3d3d54;
-    border-color: #4d4d64;
     color: #fff;
 }
 
-.examples-list button:hover {
-    background: #f0f0f0;
+body.light .examples-list button {
+    background: #fff;
+    border-color: #e0e0e0;
+    color: #333;
 }
 
-body.dark .examples-list button:hover {
+.examples-list button:hover {
     background: #4d4d64;
+}
+
+body.light .examples-list button:hover {
+    background: #f0f0f0;
 }
 
 /* График */
 .graph-container {
     flex: 1;
     position: relative;
-    background: #fff;
+    background: #1a1a2e;
 }
 
-body.dark .graph-container {
-    background: #1a1a2e;
+body.light .graph-container {
+    background: #fff;
 }
 
 .graph-canvas {
@@ -183,28 +184,29 @@ body.dark .graph-container {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #fff;
-    border: 1px solid #e0e0e0;
+    background: #3d3d54;
+    border: 1px solid #4d4d64;
     font-size: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-}
-
-body.dark .zoom-btn {
-    background: #3d3d54;
-    border-color: #4d4d64;
     color: #fff;
 }
 
-.zoom-btn:hover {
-    background: #f0f0f0;
+body.light .zoom-btn {
+    background: #fff;
+    border-color: #e0e0e0;
+    color: #333;
 }
 
-body.dark .zoom-btn:hover {
+.zoom-btn:hover {
     background: #4d4d64;
+}
+
+body.light .zoom-btn:hover {
+    background: #f0f0f0;
 }
 
 /* Панель калькулятора */
@@ -213,16 +215,16 @@ body.dark .zoom-btn:hover {
     bottom: 0;
     left: 50%;
     width: 300px;
-    background: #fff;
-    border-top: 1px solid #e0e0e0;
+    background: #2d2d44;
+    border-top: 1px solid #3d3d54;
     padding: 10px;
     transform: translateX(-50%) translateY(100%);
     transition: transform 0.3s ease;
 }
 
-body.dark .calculator-panels {
-    background: #2d2d44;
-    border-top-color: #3d3d54;
+body.light .calculator-panels {
+    background: #fff;
+    border-top-color: #e0e0e0;
 }
 
 .calculator-panels.visible {
@@ -239,48 +241,48 @@ body.dark .calculator-panels {
     flex: 1;
     padding: 8px;
     border: none;
-    background: #f5f5f5;
+    background: #3d3d54;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
+    color: #fff;
 }
 
-body.dark .tab-button {
-    background: #3d3d54;
-    color: #fff;
+body.light .tab-button {
+    background: #f5f5f5;
+    color: #333;
 }
 
 .tab-button.active {
     background: #007bff;
-    color: #fff;
 }
 
 .panel {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-    gap: 4px;
+    display: none;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
 }
 
 .panel button {
     padding: 8px;
+    background: #3d3d54;
     border: none;
-    background: #f5f5f5;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-body.dark .panel button {
-    background: #3d3d54;
     color: #fff;
 }
 
-.panel button:hover {
-    background: #e0e0e0;
+body.light .panel button {
+    background: #f5f5f5;
+    color: #333;
 }
 
-body.dark .panel button:hover {
+.panel button:hover {
     background: #4d4d64;
+}
+
+body.light .panel button:hover {
+    background: #e0e0e0;
 }
 
 /* Навигация */
@@ -288,97 +290,117 @@ body.dark .panel button:hover {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    height: 50px;
-    background: #fff;
-    border-bottom: 1px solid #e0e0e0;
+    width: 100%;
+    background: #2d2d44;
     display: flex;
-    align-items: center;
     justify-content: center;
     gap: 20px;
+    padding: 15px 0;
     z-index: 1000;
 }
 
-body.dark .navigation-tabs {
-    background: #2d2d44;
-    border-bottom-color: #3d3d54;
-}
-
-.nav-link {
-    color: #666;
+/* Стили для ссылок в панели навигации */
+.navigation-tabs .nav-link {
+    color: #ffffff;
     text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 5px;
+    transition: background 0.3s ease, color 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
 }
 
-body.dark .nav-link {
-    color: #aaa;
+/* Активная ссылка */
+.navigation-tabs .nav-link.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
 }
 
-.nav-link:hover {
-    background: #f0f0f0;
+/* Светлая тема для ссылок */
+body.light .navigation-tabs {
+    background: #f0f0f5;
 }
 
-body.dark .nav-link:hover {
-    background: #3d3d54;
+body.light .navigation-tabs .nav-link {
+    color: #333333;
+    background: rgba(0, 0, 0, 0.05);
 }
 
-.nav-link.active {
-    background: #007bff;
-    color: #fff;
+body.light .navigation-tabs .nav-link.active {
+    background: rgba(0, 0, 0, 0.1);
+    color: #333333;
+}
+
+/* Эффект наведения */
+.navigation-tabs .nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+body.light .navigation-tabs .nav-link:hover {
+    background: rgba(0, 0, 0, 0.08);
 }
 
 /* Переключатель темы */
 .theme-toggle {
-    position: fixed;
-    top: 10px;
+    position: absolute;
+    top: 20px;
     right: 20px;
-    z-index: 1001;
+    width: 80px;
+    height: 40px;
+    z-index: 1000;
 }
 
+/* Стили для обертки переключателя */
 .switch {
     position: relative;
-    width: 60px;
-    height: 30px;
+    width: 100%;
+    height: 100%;
+    background-color: #28292c;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
+/* Скрываем стандартный checkbox */
 .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+    position: absolute;
+    display: none;
 }
 
+/* Стили для слайдера */
 .slider {
     position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 30px;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    transition: 0.3s;
 }
 
+/* Состояние при включении (светлая тема) */
+.switch input:checked ~ .slider {
+    background-color: #d8dbe0;
+}
+
+/* Круглый элемент слайдера */
 .slider:before {
-    position: absolute;
     content: "";
-    height: 22px;
-    width: 22px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
+    position: absolute;
+    top: 5px;
+    left: 6px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
+    box-shadow: inset 12px -2px 0px 0px #d8dbe0;
+    background-color: #28292c;
+    transition: 0.3s;
 }
 
-input:checked + .slider {
-    background-color: #007bff;
-}
-
-input:checked + .slider:before {
-    transform: translateX(30px);
+/* Перемещение круга при включении */
+.switch input:checked ~ .slider:before {
+    transform: translateX(38px);
+    background-color: #28292c;
+    box-shadow: none;
 }
 
 /* Адаптивность */
