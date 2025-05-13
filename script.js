@@ -97,13 +97,14 @@ function calculatePostfix(postfix) {
     return stack[0];
 }
 
-// Новая функция evaluateSimpleExpression
+// Вычисление простого выражения
 function evaluateSimpleExpression(expr) {
     expr = expr.replace(/\s/g, ''); // Удаляем пробелы
     const postfix = toPostfix(expr);
     return calculatePostfix(postfix);
 }
 
+// Добавление символов в поле ввода
 function append(value) {
     if (/[\d+\-*/.()πi%]/.test(value) || ['sin', 'cos', 'tan', 'cot', 'sqrt', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs', 'e', 'e^x', 'a^n', 'factorial', 'square'].includes(value) || /^[a-z]$/i.test(value)) {
         if (value === 'sqrt') {
@@ -111,7 +112,7 @@ function append(value) {
         } else if (value === 'square') {
             let lastChar = display.value.slice(-1);
             if (display.value === '' || !/[\d)]/.test(lastChar)) {
-                display.value += '2²';
+                display.value += '²';
             } else {
                 display.value += '²';
             }
@@ -129,24 +130,24 @@ function append(value) {
     }
 }
 
+// Очистка поля ввода
 function clearDisplay() {
     display.value = '';
 }
 
+// Удаление последнего символа
 function backspace() {
-    if (display.value === 'Ошибка') {
-        display.value = '';
-    } else {
-        display.value = display.value.slice(0, -1);
-    }
+    display.value = display.value.slice(0, -1);
 }
 
+// Форматирование числа
 function formatNumber(number) {
     let fixed = number.toFixed(5);
     let parsed = parseFloat(fixed);
     return Number.isInteger(parsed) ? parsed.toString() : parsed.toFixed(5);
 }
 
+// Вычисление выражения
 function calculate(operation) {
     let expression = display.value.trim();
     let result;
@@ -181,11 +182,12 @@ function calculate(operation) {
             updateHistory(expression, display.value);
         }
     } catch (error) {
-        display.value = error.message || 'Ошибка';
-        updateHistory(expression, display.value);
+        // Не меняем display.value, добавляем ошибку в историю
+        updateHistory(expression, error.message || 'Некорректное выражение');
     }
 }
 
+// Парсинг комплексного числа
 function parseNumber(str) {
     if (!str) return new Complex(0, 0);
     if (str === 'i') return new Complex(0, 1);
@@ -201,12 +203,14 @@ function parseNumber(str) {
     return new Complex(real, imag);
 }
 
+// Обновление истории
 function updateHistory(expression, result) {
     const historyDiv = document.getElementById('history');
     history.push({ expr: expression, res: result });
     historyDiv.innerHTML = history.map(item => `<div><span class="expression">${item.expr}</span><span class="equals">=</span><span class="result">${item.res}</span></div>`).join('');
 }
 
+// Переключение темы
 function toggleTheme() {
     let body = document.body;
     let calc = document.querySelector('.calculator');
@@ -224,6 +228,7 @@ function toggleTheme() {
     localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
 }
 
+// Показ панели
 function showPanel(panel) {
     let panels = document.querySelectorAll('.panel');
     let tabButtons = document.querySelectorAll('.tab-button');
@@ -243,6 +248,7 @@ function showPanel(panel) {
     }
 }
 
+// Инициализация при загрузке
 window.onload = function() {
     showPanel('basic');
     calculator.style.width = `${DEFAULT_WIDTH}px`;
@@ -255,6 +261,7 @@ window.onload = function() {
     }
 };
 
+// Перемещение курсора
 function moveCursor(direction) {
     const input = display;
     const cursorPos = input.selectionStart || 0;
@@ -267,11 +274,14 @@ function moveCursor(direction) {
     input.focus();
 }
 
+// Перетаскивание калькулятора
 let isDragging = false;
 let currentX;
 let currentY;
 let xOffset = 0;
 let yOffset = 0;
+let initialX;
+let initialY;
 
 calculator.querySelector('.calculator-header').addEventListener('mousedown', startDragging);
 calculator.querySelector('.calculator-header').addEventListener('dblclick', resetSize);
@@ -305,6 +315,7 @@ function stopDragging() {
     }
 }
 
+// Изменение размера калькулятора
 let isResizing = false;
 let initialXResize;
 let initialYResize;
@@ -341,6 +352,7 @@ function stopResizing() {
     }
 }
 
+// Сброс размера
 function resetSize() {
     calculator.style.width = `${DEFAULT_WIDTH}px`;
     calculator.style.height = `${DEFAULT_HEIGHT}px`;
@@ -351,16 +363,14 @@ function resetSize() {
     setTranslate(0, 0, calculator);
 }
 
+// Обработка клавиш
 display.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         event.preventDefault();
         calculate('=');
     } else if (event.key === 'Backspace') {
-        if (display.value === 'Ошибка') {
-            display.value = '';
-            event.preventDefault();
-        }
-        return;
+        display.value = display.value.slice(0, -1);
+        event.preventDefault();
     } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
         return;
     } else if (!/[0-9+\-*/.()πie%!]/.test(event.key)) {
@@ -368,20 +378,24 @@ display.addEventListener('keydown', (event) => {
     }
 });
 
+// Преобразование градусов в радианы
 function toRadians(degrees) {
     return degrees * Math.PI / 180;
 }
 
+// Преобразование радиан в градусы
 function toDegrees(radians) {
     return radians * 180 / Math.PI;
 }
 
+// Вычисление факториала
 function factorial(n) {
-    if (!Number.isInteger(n) || n < 0) return 'Ошибка';
+    if (!Number.isInteger(n) || n < 0) throw new Error('Факториал определен только для неотрицательных целых чисел');
     if (n === 0) return 1;
     return n * factorial(n - 1);
 }
 
+// Класс для комплексных чисел
 class Complex {
     constructor(real, imag) {
         this.real = real || 0;
@@ -404,7 +418,7 @@ class Complex {
 
     divide(other) {
         const denominator = other.real * other.real + other.imag * other.imag;
-        if (denominator === 0) throw new Error('Division by zero');
+        if (denominator === 0) throw new Error('Деление на ноль');
         const real = (this.real * other.real + this.imag * other.imag) / denominator;
         const imag = (this.imag * other.real - this.real * other.imag) / denominator;
         return new Complex(real, imag);
@@ -421,7 +435,7 @@ class Complex {
             if (exp.real < 0) return new Complex(1, 0).divide(result);
             return result;
         }
-        throw new Error('Complex exponentiation not implemented');
+        throw new Error('Возведение в комплексную степень не поддерживается');
     }
 
     toString() {
