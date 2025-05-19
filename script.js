@@ -8,126 +8,9 @@ const DEFAULT_HEIGHT = 550;
 
 let history = [];
 
-// Приоритеты операций
-const precedence = {
-    '+': 1,
-    '-': 1,
-    '*': 2,
-    '/': 2,
-    '^': 3
-};
-
-// Проверка, является ли токен числом
-function isNumber(token) {
-    return !isNaN(parseFloat(token)) && isFinite(token);
-}
-
-// Преобразование в постфиксную запись (ОПЗ)
-function toPostfix(expression) {
-    const output = [];
-    const stack = [];
-    const tokens = expression.match(/(\d+\.?\d*(?:[+-]?\d*\.?\d*i)?|\w+\(|\)|[+\-*/^])/g) || [];
-
-    tokens.forEach(token => {
-        if (isNumber(token) || token.match(/^[a-z]+$/i) || token.match(/\d*\.?\d*[+-]?\d*\.?\d*i/)) {
-            output.push(token);
-        } else if (token === '(' || token.endsWith('(')) {
-            stack.push(token);
-        } else if (token === ')') {
-            while (stack.length && stack[stack.length - 1] !== '(' && !stack[stack.length - 1].endsWith('(')) {
-                output.push(stack.pop());
-            }
-            stack.pop(); // Удаляем '(' или функцию
-        } else if (token in precedence) {
-            while (stack.length && precedence[stack[stack.length - 1]] >= precedence[token]) {
-                output.push(stack.pop());
-            }
-            stack.push(token);
-        }
-    });
-
-    while (stack.length) {
-        output.push(stack.pop());
-    }
-
-    return output;
-}
-
-// Вычисление постфиксного выражения
-function calculatePostfix(postfix) {
-    const stack = [];
-
-    postfix.forEach(token => {
-        if (isNumber(token)) {
-            stack.push(new Complex(parseFloat(token), 0));
-        } else if (token.match(/\d*\.?\d*[+-]?\d*\.?\d*i/)) {
-            stack.push(parseNumber(token));
-        } else if (token in precedence) {
-            const b = stack.pop();
-            const a = stack.pop();
-            switch (token) {
-                case '+': stack.push(a.add(b)); break;
-                case '-': stack.push(a.subtract(b)); break;
-                case '*': stack.push(a.multiply(b)); break;
-                case '/': stack.push(a.divide(b)); break;
-                case '^': stack.push(a.pow(b)); break;
-            }
-        } else if (token.match(/^[a-z]+$/i)) {
-            const arg = stack.pop();
-            switch (token.toLowerCase()) {
-                case 'sin': stack.push(new Complex(Math.sin(toRadians(arg.real)), 0)); break;
-                case 'cos': stack.push(new Complex(Math.cos(toRadians(arg.real)), 0)); break;
-                case 'tan': stack.push(new Complex(Math.tan(toRadians(arg.real)), 0)); break;
-                case 'cot': {
-                    const tanValue = Math.tan(toRadians(arg.real));
-                    stack.push(new Complex(tanValue === 0 ? Infinity : 1 / tanValue, 0));
-                    break;
-                }
-                case 'arcsin': stack.push(new Complex(toDegrees(Math.asin(arg.real)), 0)); break;
-                case 'arccos': stack.push(new Complex(toDegrees(Math.acos(arg.real)), 0)); break;
-                case 'arctan': stack.push(new Complex(toDegrees(Math.atan(arg.real)), 0)); break;
-                case 'ln': stack.push(new Complex(Math.log(arg.real), 0)); break;
-                case 'log': stack.push(new Complex(Math.log10(arg.real), 0)); break;
-                case 'abs': stack.push(new Complex(Math.sqrt(arg.real * arg.real + arg.imag * arg.imag), 0)); break;
-                case 'sqrt': stack.push(new Complex(Math.sqrt(arg.real), 0)); break;
-            }
-        }
-    });
-
-    return stack[0];
-}
-
-// Вычисление простого выражения
-function evaluateSimpleExpression(expr) {
-    expr = expr.replace(/\s/g, ''); // Удаляем пробелы
-    const postfix = toPostfix(expr);
-    return calculatePostfix(postfix);
-}
-
 // Добавление символов в поле ввода
 function append(value) {
-    if (/[\d+\-*/.()πi%]/.test(value) || ['sin', 'cos', 'tan', 'cot', 'sqrt', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs', 'e', 'e^x', 'a^n', 'factorial', 'square'].includes(value) || /^[a-z]$/i.test(value)) {
-        if (value === 'sqrt') {
-            display.value += '√(';
-        } else if (value === 'square') {
-            let lastChar = display.value.slice(-1);
-            if (display.value === '' || !/[\d)]/.test(lastChar)) {
-                display.value += '²';
-            } else {
-                display.value += '²';
-            }
-        } else if (value === 'e^x') {
-            display.value += 'e^x(';
-        } else if (value === 'a^n') {
-            display.value += '^';
-        } else if (['sin', 'cos', 'tan', 'cot', 'arcsin', 'arccos', 'arctan', 'ln', 'log', 'abs'].includes(value)) {
-            display.value += value + '(';
-        } else if (value === 'factorial') {
-            display.value += '!';
-        } else {
-            display.value += value;
-        }
-    }
+    display.value += value;
 }
 
 // Очистка поля ввода
@@ -142,72 +25,41 @@ function backspace() {
 
 // Форматирование числа
 function formatNumber(number) {
-    let fixed = number.toFixed(5);
-    let parsed = parseFloat(fixed);
-    return Number.isInteger(parsed) ? parsed.toString() : parsed.toFixed(5);
+    if (typeof number === 'number') {
+        return math.format(number, { precision: 14 });
+    }
+    return number.toString();
 }
 
 // Вычисление выражения
 function calculate(operation) {
     let expression = display.value.trim();
-    let result;
-
+    
     try {
         if (operation === '=') {
-            let evalExpression = expression;
+            // Заменяем специальные символы на их эквиваленты в Math.js
+            expression = expression
+                .replace(/π/g, 'pi')
+                .replace(/\^2/g, '^2')
+                .replace(/%/g, '/100');
 
-            // Обработка специальных символов и функций
-            evalExpression = evalExpression
-                .replace(/(\d*\.?\d+(?:[+-]?\d*\.?\d*i)?)²/g, (match, num) => {
-                    let complex = parseNumber(num);
-                    return `(${complex.multiply(complex).toString()})`;
-                })
-                .replace(/(\d*\.?\d+)!/g, (match, num) => {
-                    return `(${factorial(parseFloat(num))})`;
-                })
-                .replace(/√/g, 'sqrt(')
-                .replace(/e\^x/g, 'exp(')
-                .replace(/π/g, 'Math.PI')
-                .replace(/e/g, 'Math.E')
-                .replace(/\^/g, '^');
-
-            // Преобразование процентов
-            evalExpression = evalExpression.replace(/(\d+)%/g, (match, num) => {
-                return `(${num / 100})`;
-            });
-
-            // Вычисление выражения
-            result = evaluateSimpleExpression(evalExpression);
-            display.value = result.toString();
+            // Вычисляем выражение
+            const result = math.evaluate(expression);
+            display.value = formatNumber(result);
             updateHistory(expression, display.value);
         }
     } catch (error) {
-        // Не меняем display.value, добавляем ошибку в историю
-        updateHistory(expression, error.message || 'Некорректное выражение');
+        updateHistory(expression, 'Ошибка: ' + error.message);
     }
-}
-
-// Парсинг комплексного числа
-function parseNumber(str) {
-    if (!str) return new Complex(0, 0);
-    if (str === 'i') return new Complex(0, 1);
-    str = str.replace(/[()]/g, '');
-    let real = 0, imag = 0;
-    let match = str.match(/([+-]?)(\d*\.?\d*)(i?)/);
-    if (match) {
-        let sign = match[1] === '-' ? -1 : 1;
-        let num = parseFloat(match[2]) || (match[2] === '' ? 1 : 0);
-        if (match[3] === 'i') imag = sign * num;
-        else real = sign * num;
-    }
-    return new Complex(real, imag);
 }
 
 // Обновление истории
 function updateHistory(expression, result) {
     const historyDiv = document.getElementById('history');
     history.push({ expr: expression, res: result });
-    historyDiv.innerHTML = history.map(item => `<div><span class="expression">${item.expr}</span><span class="equals">=</span><span class="result">${item.res}</span></div>`).join('');
+    historyDiv.innerHTML = history.map(item => 
+        `<div><span class="expression">${item.expr}</span><span class="equals">=</span><span class="result">${item.res}</span></div>`
+    ).join('');
 }
 
 // Переключение темы
@@ -242,9 +94,6 @@ function showPanel(panel) {
     } else if (panel === 'functions') {
         document.querySelector('.functions-panel').style.display = 'grid';
         document.querySelector('.tab-button[onclick*="functions"]').classList.add('active');
-    } else if (panel === 'alpha') {
-        document.querySelector('.alpha-panel').style.display = 'grid';
-        document.querySelector('.tab-button[onclick*="alpha"]').classList.add('active');
     }
 }
 
@@ -377,70 +226,3 @@ display.addEventListener('keydown', (event) => {
         event.preventDefault();
     }
 });
-
-// Преобразование градусов в радианы
-function toRadians(degrees) {
-    return degrees * Math.PI / 180;
-}
-
-// Преобразование радиан в градусы
-function toDegrees(radians) {
-    return radians * 180 / Math.PI;
-}
-
-// Вычисление факториала
-function factorial(n) {
-    if (!Number.isInteger(n) || n < 0) throw new Error('Факториал определен только для неотрицательных целых чисел');
-    if (n === 0) return 1;
-    return n * factorial(n - 1);
-}
-
-// Класс для комплексных чисел
-class Complex {
-    constructor(real, imag) {
-        this.real = real || 0;
-        this.imag = imag || 0;
-    }
-
-    add(other) {
-        return new Complex(this.real + other.real, this.imag + other.imag);
-    }
-
-    subtract(other) {
-        return new Complex(this.real - other.real, this.imag - other.imag);
-    }
-
-    multiply(other) {
-        const real = this.real * other.real - this.imag * other.imag;
-        const imag = this.real * other.imag + this.imag * other.real;
-        return new Complex(real, imag);
-    }
-
-    divide(other) {
-        const denominator = other.real * other.real + other.imag * other.imag;
-        if (denominator === 0) throw new Error('Деление на ноль');
-        const real = (this.real * other.real + this.imag * other.imag) / denominator;
-        const imag = (this.imag * other.real - this.real * other.imag) / denominator;
-        return new Complex(real, imag);
-    }
-
-    pow(exp) {
-        if (exp.imag === 0 && Number.isInteger(exp.real)) {
-            let result = new Complex(1, 0);
-            let base = new Complex(this.real, this.imag);
-            let n = Math.abs(exp.real);
-            for (let i = 0; i < n; i++) {
-                result = result.multiply(base);
-            }
-            if (exp.real < 0) return new Complex(1, 0).divide(result);
-            return result;
-        }
-        throw new Error('Возведение в комплексную степень не поддерживается');
-    }
-
-    toString() {
-        if (this.imag === 0) return formatNumber(this.real);
-        if (this.real === 0) return this.imag === 1 ? 'i' : (this.imag === -1 ? '-i' : `${formatNumber(this.imag)}i`);
-        return `${formatNumber(this.real)}${this.imag >= 0 ? '+' : ''}${this.imag === 1 ? 'i' : (this.imag === -1 ? '-i' : `${formatNumber(this.imag)}i`)}`;
-    }
-}
