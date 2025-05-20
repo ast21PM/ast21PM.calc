@@ -428,3 +428,167 @@ body.light .navigation-tabs .nav-link:hover {
         transform: translateY(0);
     }
 }
+
+/* Медиа-запросы для адаптивной верстки */
+
+/* Большие планшеты и маленькие десктопы */
+@media screen and (max-width: 1024px) {
+    .main-container {
+        padding-top: 50px;
+    }
+
+    .left-panel {
+        width: 250px;
+    }
+
+    .graph-container {
+        height: calc(100vh - 50px);
+    }
+}
+
+/* Планшеты */
+@media screen and (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        padding-top: 40px;
+    }
+
+    .left-panel {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+        border-right: none;
+        border-bottom: 1px solid #3d3d54;
+    }
+
+    body.light .left-panel {
+        border-bottom-color: #e0e0e0;
+    }
+
+    .graph-container {
+        height: calc(100vh - 340px);
+    }
+
+    .function-panel,
+    .examples-panel {
+        padding: 10px;
+    }
+
+    .zoom-controls {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .zoom-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+}
+
+/* Мобильные устройства */
+@media screen and (max-width: 480px) {
+    .main-container {
+        padding-top: 30px;
+    }
+
+    .left-panel {
+        max-height: 250px;
+    }
+
+    .graph-container {
+        height: calc(100vh - 280px);
+    }
+
+    .function-input {
+        padding: 6px;
+    }
+
+    .function-input input[type="text"] {
+        font-size: 12px;
+    }
+
+    .examples-list button {
+        padding: 6px;
+        font-size: 12px;
+    }
+
+    .zoom-controls {
+        bottom: 5px;
+        right: 5px;
+    }
+
+    .zoom-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+    }
+
+    .navigation-tabs {
+        padding: 10px 0;
+    }
+
+    .navigation-tabs .nav-link {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+}
+
+/* Маленькие мобильные устройства */
+@media screen and (max-width: 320px) {
+    .left-panel {
+        max-height: 200px;
+    }
+
+    .graph-container {
+        height: calc(100vh - 230px);
+    }
+
+    .function-input {
+        padding: 4px;
+    }
+
+    .function-input input[type="text"] {
+        font-size: 11px;
+    }
+
+    .examples-list button {
+        padding: 4px;
+        font-size: 11px;
+    }
+
+    .navigation-tabs .nav-link {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+}
+
+/* Ориентация ландшафт для мобильных устройств */
+@media screen and (max-height: 480px) and (orientation: landscape) {
+    .main-container {
+        flex-direction: row;
+        padding-top: 40px;
+    }
+
+    .left-panel {
+        width: 250px;
+        max-height: none;
+        height: calc(100vh - 40px);
+        border-right: 1px solid #3d3d54;
+        border-bottom: none;
+    }
+
+    body.light .left-panel {
+        border-right-color: #e0e0e0;
+        border-bottom: none;
+    }
+
+    .graph-container {
+        height: calc(100vh - 40px);
+    }
+
+    .function-panel,
+    .examples-panel {
+        padding: 8px;
+    }
+}
