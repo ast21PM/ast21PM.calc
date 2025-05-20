@@ -429,7 +429,7 @@ body.light .navigation-tabs .nav-link:hover {
     }
 }
 
-/* Медиа-запросы для адаптивной верстки */
+/* Улучшенные медиа-запросы для адаптивной верстки */
 
 /* Большие планшеты и маленькие десктопы */
 @media screen and (max-width: 1024px) {
@@ -438,11 +438,29 @@ body.light .navigation-tabs .nav-link:hover {
     }
 
     .left-panel {
-        width: 250px;
+        width: 280px;
     }
 
     .graph-container {
         height: calc(100vh - 50px);
+    }
+
+    .function-panel,
+    .examples-panel {
+        padding: 12px;
+    }
+
+    .function-input {
+        padding: 10px;
+    }
+
+    .function-input input[type="text"] {
+        font-size: 15px;
+    }
+
+    .examples-list button {
+        padding: 10px;
+        font-size: 14px;
     }
 }
 
@@ -474,6 +492,19 @@ body.light .navigation-tabs .nav-link:hover {
         padding: 10px;
     }
 
+    .function-input {
+        padding: 8px;
+    }
+
+    .function-input input[type="text"] {
+        font-size: 14px;
+    }
+
+    .examples-list button {
+        padding: 8px;
+        font-size: 13px;
+    }
+
     .zoom-controls {
         bottom: 10px;
         right: 10px;
@@ -483,6 +514,15 @@ body.light .navigation-tabs .nav-link:hover {
         width: 35px;
         height: 35px;
         font-size: 18px;
+    }
+
+    .navigation-tabs {
+        padding: 8px 0;
+    }
+
+    .navigation-tabs .nav-link {
+        padding: 8px 16px;
+        font-size: 13px;
     }
 }
 
@@ -505,7 +545,7 @@ body.light .navigation-tabs .nav-link:hover {
     }
 
     .function-input input[type="text"] {
-        font-size: 12px;
+        font-size: 13px;
     }
 
     .examples-list button {
@@ -525,12 +565,19 @@ body.light .navigation-tabs .nav-link:hover {
     }
 
     .navigation-tabs {
-        padding: 10px 0;
+        padding: 6px 0;
     }
 
     .navigation-tabs .nav-link {
-        padding: 8px 15px;
+        padding: 6px 12px;
         font-size: 12px;
+    }
+
+    .theme-toggle {
+        width: 60px;
+        height: 30px;
+        top: 5px;
+        right: 5px;
     }
 }
 
@@ -549,7 +596,7 @@ body.light .navigation-tabs .nav-link:hover {
     }
 
     .function-input input[type="text"] {
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .examples-list button {
@@ -558,7 +605,7 @@ body.light .navigation-tabs .nav-link:hover {
     }
 
     .navigation-tabs .nav-link {
-        padding: 6px 12px;
+        padding: 4px 8px;
         font-size: 11px;
     }
 }
@@ -590,5 +637,39 @@ body.light .navigation-tabs .nav-link:hover {
     .function-panel,
     .examples-panel {
         padding: 8px;
+    }
+}
+
+/* Дополнительные стили для улучшения отзывчивости */
+@media (hover: hover) {
+    .function-input:hover,
+    .examples-list button:hover,
+    .zoom-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* Улучшенная поддержка тач-устройств */
+@media (hover: none) {
+    .function-input:active,
+    .examples-list button:active,
+    .zoom-btn:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Улучшенная поддержка высоких DPI экранов */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .left-panel,
+    .graph-container {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .function-input,
+    .examples-list button,
+    .zoom-btn {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 }

@@ -712,28 +712,97 @@ body.light {
     background: #d0d0d8;
 }
 
-/* Медиа-запросы для адаптивной верстки */
+/* Улучшенные медиа-запросы для адаптивной верстки */
 
 /* Большие планшеты и маленькие десктопы */
 @media screen and (max-width: 1024px) {
+    body {
+        padding: 20px;
+    }
+
     .converter {
         width: 90%;
         max-width: 700px;
         height: auto;
         min-height: 550px;
+        margin: 60px auto 20px;
     }
 
     .currency-widgets {
         max-width: 95%;
     }
+
+    .amount-buttons {
+        gap: 8px;
+    }
+
+    .amount-btn {
+        padding: 10px 16px;
+        font-size: 15px;
+    }
+
+    #amount {
+        height: 45px;
+        font-size: 16px;
+    }
+
+    .currency-selection {
+        gap: 12px;
+    }
+
+    .swap-btn {
+        padding: 12px 16px;
+        font-size: 16px;
+    }
+
+    .rate-info {
+        font-size: 14px;
+    }
+
+    .period-buttons {
+        gap: 8px;
+    }
+
+    .period-btn {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .chart-container {
+        height: 200px;
+    }
+
+    .convert-btn {
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    .result {
+        font-size: 16px;
+    }
+
+    .history {
+        max-height: 120px;
+    }
+
+    .history-header {
+        font-size: 14px;
+    }
+
+    .history-content div {
+        font-size: 14px;
+    }
 }
 
 /* Планшеты */
 @media screen and (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+
     .converter {
         width: 95%;
-        margin: 10px;
-        height: auto;
+        margin: 50px auto 15px;
         min-height: 500px;
     }
 
@@ -742,39 +811,39 @@ body.light {
     }
 
     .amount-buttons {
-        gap: 4px;
+        gap: 6px;
     }
 
     .amount-btn {
-        padding: 6px 12px;
-        font-size: 12px;
+        padding: 8px 14px;
+        font-size: 13px;
     }
 
     #amount {
         height: 40px;
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .currency-selection {
-        gap: 8px;
+        gap: 10px;
     }
 
     .swap-btn {
-        padding: 8px 12px;
+        padding: 10px 14px;
         font-size: 14px;
     }
 
     .rate-info {
-        font-size: 12px;
+        font-size: 13px;
     }
 
     .period-buttons {
-        gap: 4px;
+        gap: 6px;
     }
 
     .period-btn {
         padding: 6px;
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .chart-container {
@@ -795,11 +864,28 @@ body.light {
     }
 
     .history-header {
-        font-size: 12px;
+        font-size: 13px;
     }
 
     .history-content div {
+        font-size: 13px;
+    }
+
+    .navigation-tabs {
+        top: 8px;
+        gap: 6px;
+    }
+
+    .navigation-tabs .nav-link {
+        padding: 6px 12px;
         font-size: 12px;
+    }
+
+    .theme-toggle {
+        width: 70px;
+        height: 35px;
+        top: 8px;
+        right: 8px;
     }
 }
 
@@ -811,7 +897,7 @@ body.light {
 
     .converter {
         width: 100%;
-        margin: 0;
+        margin: 40px auto 10px;
         padding: 15px;
         min-height: 450px;
     }
@@ -823,40 +909,40 @@ body.light {
     }
 
     .amount-buttons {
-        gap: 3px;
+        gap: 4px;
     }
 
     .amount-btn {
-        padding: 5px 10px;
-        font-size: 11px;
+        padding: 6px 12px;
+        font-size: 12px;
     }
 
     #amount {
         height: 35px;
-        font-size: 13px;
+        font-size: 14px;
         padding: 8px 12px;
     }
 
     .currency-selection {
-        gap: 6px;
+        gap: 8px;
     }
 
     .swap-btn {
-        padding: 6px 10px;
+        padding: 8px 12px;
         font-size: 12px;
     }
 
     .rate-info {
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .period-buttons {
-        gap: 3px;
+        gap: 4px;
     }
 
     .period-btn {
         padding: 5px;
-        font-size: 10px;
+        font-size: 11px;
     }
 
     .chart-container {
@@ -879,31 +965,30 @@ body.light {
     }
 
     .history-header {
-        font-size: 11px;
+        font-size: 12px;
         margin-bottom: 6px;
     }
 
     .history-content div {
-        font-size: 11px;
+        font-size: 12px;
         padding: 3px 0;
+    }
+
+    .navigation-tabs {
+        top: 5px;
+        gap: 4px;
+    }
+
+    .navigation-tabs .nav-link {
+        padding: 5px 10px;
+        font-size: 11px;
     }
 
     .theme-toggle {
         width: 60px;
         height: 30px;
-        top: 10px;
-        right: 10px;
-    }
-
-    .slider:before {
-        width: 24px;
-        height: 24px;
-        top: 3px;
-        left: 3px;
-    }
-
-    .switch input:checked ~ .slider:before {
-        transform: translateX(30px);
+        top: 5px;
+        right: 5px;
     }
 
     .currency-widgets {
@@ -926,33 +1011,40 @@ body.light {
 
 /* Маленькие мобильные устройства */
 @media screen and (max-width: 320px) {
+    body {
+        padding: 5px;
+    }
+
     .converter {
         padding: 10px;
+        min-height: 400px;
     }
 
     .converter-header {
+        height: 20px;
         font-size: 12px;
+        margin-bottom: 8px;
     }
 
     .amount-btn {
-        padding: 4px 8px;
-        font-size: 10px;
+        padding: 5px 10px;
+        font-size: 11px;
     }
 
     #amount {
         height: 30px;
-        font-size: 12px;
+        font-size: 13px;
         padding: 6px 10px;
     }
 
     .swap-btn {
-        padding: 5px 8px;
+        padding: 6px 10px;
         font-size: 11px;
     }
 
     .period-btn {
         padding: 4px;
-        font-size: 9px;
+        font-size: 10px;
     }
 
     .chart-container {
@@ -975,20 +1067,29 @@ body.light {
     }
 
     .history-content div {
-        font-size: 10px;
+        font-size: 11px;
     }
 
     .widget {
         padding: 6px 10px;
         font-size: 11px;
     }
+
+    .navigation-tabs .nav-link {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
 }
 
 /* Ориентация ландшафт для мобильных устройств */
 @media screen and (max-height: 480px) and (orientation: landscape) {
+    body {
+        padding: 5px;
+    }
+
     .converter {
         height: 90vh;
-        margin: 5vh 0;
+        margin: 5vh auto;
     }
 
     .converter-body {
@@ -1011,5 +1112,44 @@ body.light {
 
     .history {
         max-height: 60px;
+    }
+}
+
+/* Дополнительные стили для улучшения отзывчивости */
+@media (hover: hover) {
+    .amount-btn:hover,
+    .swap-btn:hover,
+    .period-btn:hover,
+    .convert-btn:hover,
+    .widget:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* Улучшенная поддержка тач-устройств */
+@media (hover: none) {
+    .amount-btn:active,
+    .swap-btn:active,
+    .period-btn:active,
+    .convert-btn:active,
+    .widget:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Улучшенная поддержка высоких DPI экранов */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .converter {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .amount-btn,
+    .swap-btn,
+    .period-btn,
+    .convert-btn,
+    .widget {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 }
