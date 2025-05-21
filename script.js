@@ -226,3 +226,36 @@ display.addEventListener('keydown', (event) => {
         event.preventDefault();
     }
 });
+
+// Easter Egg functionality
+function createEasterEgg() {
+    // Create easter egg button
+    const easterEggBtn = document.createElement('button');
+    easterEggBtn.className = 'easter-egg';
+    easterEggBtn.innerHTML = '🐱';
+    easterEggBtn.title = 'Easter Egg';
+    document.body.appendChild(easterEggBtn);
+
+    // Create easter egg content
+    const easterEggContent = document.createElement('div');
+    easterEggContent.className = 'easter-egg-content';
+    easterEggContent.innerHTML = `
+        <div class="error">404</div>
+        <div class="img">
+            <img src="cat.png" alt="cat">
+            <h1 class="okak">ОКАК</h1>
+        </div>
+    `;
+    document.body.appendChild(easterEggContent);
+
+    // Add click event to show/hide easter egg
+    easterEggBtn.addEventListener('click', () => {
+        easterEggContent.style.display = 'block';
+        setTimeout(() => {
+            easterEggContent.style.display = 'none';
+        }, 5000); // Hide after 5 seconds
+    });
+}
+
+// Initialize easter egg
+window.addEventListener('load', createEasterEgg);
