@@ -4,7 +4,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(135deg, #1a1a2e, #2d2d44);
+    background: #1a1a2e;
     font-family: 'Arial', sans-serif;
     margin: 0;
     position: relative;
@@ -12,9 +12,117 @@ body {
     transition: background 0.3s ease;
 }
 
+/* Анимированный фон с кодом */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, 
+        rgba(26, 26, 46, 0.9) 0%,
+        rgba(15, 52, 96, 0.9) 100%);
+    z-index: 1;
+}
+
+/* Матричный эффект */
+body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 255, 0, 0.03) 0px,
+        rgba(0, 255, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    animation: matrix 20s linear infinite;
+    z-index: 2;
+}
+
+@keyframes matrix {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 0 100%;
+    }
+}
+
+/* Плавающие элементы кода */
+.code-element {
+    position: absolute;
+    color: rgba(0, 255, 0, 0.1);
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    white-space: pre;
+    pointer-events: none;
+    z-index: 3;
+    animation: float 15s linear infinite;
+}
+
+.code-element:nth-child(1) {
+    top: 10%;
+    left: 5%;
+    content: 'function calculate() {';
+    animation-delay: 0s;
+}
+
+.code-element:nth-child(2) {
+    top: 20%;
+    right: 10%;
+    content: 'return result;';
+    animation-delay: -5s;
+}
+
+.code-element:nth-child(3) {
+    bottom: 15%;
+    left: 15%;
+    content: 'const pi = 3.14159;';
+    animation-delay: -10s;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.3;
+    }
+    90% {
+        opacity: 0.3;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
 /* Светлая тема для тела */
 body.light {
-    background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
+    background: #f0f0f5;
+}
+
+body.light::before {
+    background: linear-gradient(180deg, 
+        rgba(240, 240, 245, 0.9) 0%,
+        rgba(224, 224, 234, 0.9) 100%);
+}
+
+body.light::after {
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.03) 0px,
+        rgba(0, 0, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+    );
 }
 
 /* Стили для контейнера переключателя темы */
@@ -91,7 +199,7 @@ body.light {
     flex-direction: column;
     position: absolute;
     transition: background 0.3s ease, box-shadow 0.3s ease;
-    z-index: 900;
+    z-index: 1000;
     min-width: 350px;
     min-height: 250px;
     margin-top: 70px;
