@@ -1,3 +1,35 @@
+// Функции для прелоадера
+const loadingTexts = [
+    'Инициализация калькулятора...',
+    'Загрузка функций...',
+    'Подготовка интерфейса...',
+    'Почти готово...'
+];
+
+function updateLoadingText(index) {
+    if (index >= loadingTexts.length) return;
+    
+    const detail = document.querySelector('.loading-details .detail');
+    detail.style.opacity = '0';
+    
+    setTimeout(() => {
+        detail.textContent = loadingTexts[index];
+        detail.style.opacity = '1';
+        
+        setTimeout(() => {
+            updateLoadingText(index + 1);
+        }, 500);
+    }, 500);
+}
+
+function hidePreloader() {
+    const preloader = document.querySelector('.preloader');
+    preloader.classList.add('fade-out');
+    setTimeout(() => {
+        preloader.style.display = 'none';
+    }, 500);
+}
+
 let display = document.getElementById('display');
 let calculator = document.getElementById('calculator');
 let themeToggle = document.getElementById('themeToggle');
@@ -97,17 +129,26 @@ function showPanel(panel) {
     }
 }
 
-// Инициализация при загрузке
+// Модифицируем функцию window.onload
 window.onload = function() {
-    showPanel('basic');
-    calculator.style.width = `${DEFAULT_WIDTH}px`;
-    calculator.style.height = `${DEFAULT_HEIGHT}px`;
+    // Запускаем анимацию загрузки
+    updateLoadingText(0);
+    
+    // Имитируем загрузку
+    setTimeout(() => {
+        hidePreloader();
+        
+        // Инициализируем калькулятор
+        showPanel('basic');
+        calculator.style.width = `${DEFAULT_WIDTH}px`;
+        calculator.style.height = `${DEFAULT_HEIGHT}px`;
 
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-        toggleTheme();
-        document.querySelector('.switch input').checked = true;
-    }
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            toggleTheme();
+            document.querySelector('.switch input').checked = true;
+        }
+    }, 2000); // Показываем прелоадер 2 секунды
 };
 
 // Перемещение курсора

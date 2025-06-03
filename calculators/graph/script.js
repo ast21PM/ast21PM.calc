@@ -1,3 +1,69 @@
+// Функции для прелоадера
+const loadingTexts = [
+    'Инициализация построителя графиков...',
+    'Подготовка математических функций...',
+    'Настройка интерфейса...',
+    'Почти готово...'
+];
+
+function updateLoadingText(index) {
+    if (index >= loadingTexts.length) return;
+    
+    const detail = document.querySelector('.loading-details .detail');
+    detail.style.opacity = '0';
+    
+    setTimeout(() => {
+        detail.textContent = loadingTexts[index];
+        detail.style.opacity = '1';
+        
+        setTimeout(() => {
+            updateLoadingText(index + 1);
+        }, 500);
+    }, 500);
+}
+
+function hidePreloader() {
+    const preloader = document.querySelector('.preloader');
+    preloader.classList.add('fade-out');
+    setTimeout(() => {
+        preloader.style.display = 'none';
+    }, 500);
+}
+
+// Функция инициализации построителя графиков
+function initializeGraphBuilder() {
+    // Инициализация всех необходимых компонентов
+    setupEventListeners();
+    setupPlotlyDefaults();
+    clearGraph();
+    
+    // Проверяем сохраненную тему
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        toggleTheme();
+        document.querySelector('.switch input').checked = true;
+    }
+}
+
+// Модифицируем window.onload
+window.onload = function() {
+    // Запускаем анимацию загрузки
+    updateLoadingText(0);
+    
+    // Имитируем загрузку
+    setTimeout(() => {
+        try {
+            // Инициализируем построитель графиков
+            initializeGraphBuilder();
+        } catch (error) {
+            console.error('Error during initialization:', error);
+        } finally {
+            // Скрываем прелоадер в любом случае
+            hidePreloader();
+        }
+    }, 2000);
+};
+
 const canvas = document.getElementById('graphCanvas');
 const ctx = canvas.getContext('2d');
 const functionList = document.getElementById('functionList');

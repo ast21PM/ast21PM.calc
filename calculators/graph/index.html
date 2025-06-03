@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Графический Калькулятор</title>
+    <title>Построение графиков</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/svg+xml" href="main.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="../../main.svg">
 </head>
 <body>
+    <div class="preloader">
+        <div class="loader">
+            <div class="loading-text">Загрузка</div>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+            <div class="loading-details">
+                <span class="detail">Инициализация построителя графиков...</span>
+            </div>
+        </div>
+    </div>
     <div class="navigation-tabs">
         <a href="../../index.html" class="nav-link">Главная</a>
         <a href="../numsys/index.html" class="nav-link">Система счисления</a>

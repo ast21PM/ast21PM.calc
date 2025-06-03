@@ -1,3 +1,35 @@
+// Функции для прелоадера
+const loadingTexts = [
+    'Загрузка курсов валют...',
+    'Получение актуальных данных...',
+    'Инициализация конвертера...',
+    'Почти готово...'
+];
+
+function updateLoadingText(index) {
+    if (index >= loadingTexts.length) return;
+    
+    const detail = document.querySelector('.loading-details .detail');
+    detail.style.opacity = '0';
+    
+    setTimeout(() => {
+        detail.textContent = loadingTexts[index];
+        detail.style.opacity = '1';
+        
+        setTimeout(() => {
+            updateLoadingText(index + 1);
+        }, 500);
+    }, 500);
+}
+
+function hidePreloader() {
+    const preloader = document.querySelector('.preloader');
+    preloader.classList.add('fade-out');
+    setTimeout(() => {
+        preloader.style.display = 'none';
+    }, 500);
+}
+
 const themeSwitch = document.getElementById('themeSwitch');
 
 function applyTheme(isLight) {
@@ -668,5 +700,47 @@ function convertCurrency() {
     historyContent.appendChild(historyEntry);
     historyContent.scrollTop = historyContent.scrollHeight;
 }
+
+// Функция инициализации конвертера
+function initializeConverter() {
+    // Устанавливаем размеры конвертера
+    converter.style.width = '700px';
+    converter.style.height = '600px';
+    
+    // Загружаем курсы валют
+    fetchCurrencies();
+    
+    // Инициализируем график
+    initializeChart();
+    
+    // Очищаем историю конвертаций
+    document.querySelector('.history-content').innerHTML = '';
+}
+
+// Модифицируем window.onload
+window.onload = function() {
+    // Запускаем анимацию загрузки
+    updateLoadingText(0);
+    
+    // Имитируем загрузку
+    setTimeout(() => {
+        try {
+            // Инициализируем конвертер
+            initializeConverter();
+            
+            // Проверяем сохраненную тему
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                toggleTheme();
+                document.querySelector('.switch input').checked = true;
+            }
+        } catch (error) {
+            console.error('Error during initialization:', error);
+        } finally {
+            // Скрываем прелоадер в любом случае
+            hidePreloader();
+        }
+    }, 2000);
+};
 
 fetchCurrencies();
