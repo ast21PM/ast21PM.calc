@@ -226,7 +226,7 @@ function getFlagPath(currencyCode) {
     };
     const file = flagMap[currencyCode];
     if (!file) return null;
-    return `../image/${file}.png`;
+    return `../../image/${file}.png`;
 }
 
 function getCurrencyName(currency) {
