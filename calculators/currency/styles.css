@@ -450,6 +450,168 @@ body.light::after {
     display: flex;
     align-items: center;
     gap: 10px;
+    position: relative;
+    margin: 10px 0;
+}
+
+.select-wrapper {
+    flex: 1;
+    position: relative;
+    z-index: 1000;
+}
+
+.select-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background: linear-gradient(90deg, #3b3b50, #4a4a66);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    text-align: left;
+    font-size: 14px;
+}
+
+.select-trigger:hover {
+    background: linear-gradient(90deg, #4a4a66, #5a5a80);
+}
+
+.select-trigger:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.select-trigger .flag {
+    width: 24px;
+    height: 18px;
+    margin-right: 10px;
+    border-radius: 2px;
+    object-fit: cover;
+}
+
+.select-trigger .currency-text {
+    flex: 1;
+    font-weight: 500;
+}
+
+.select-arrow {
+    font-size: 12px;
+    margin-left: 10px;
+    transition: transform 0.2s ease;
+}
+
+.select-wrapper.active .select-arrow {
+    transform: rotate(180deg);
+}
+
+.select-dropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    background: #2d2d44;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1001;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.select-wrapper.active .select-dropdown {
+    display: block;
+}
+
+.select-option {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 14px;
+}
+
+.select-option:last-child {
+    border-bottom: none;
+}
+
+.select-option:hover {
+    background: #4a4a66;
+}
+
+.select-option .flag {
+    width: 24px;
+    height: 18px;
+    margin-right: 10px;
+    border-radius: 2px;
+    object-fit: cover;
+}
+
+.select-option .currency-text {
+    font-weight: 500;
+}
+
+/* Стили для светлой темы */
+body.light .select-trigger {
+    background: linear-gradient(90deg, #e0e0ea, #d0d0d8);
+    color: #333333;
+}
+
+body.light .select-trigger:hover {
+    background: linear-gradient(90deg, #d0d0d8, #c0c0d0);
+}
+
+body.light .select-dropdown {
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light .select-option {
+    color: #333333;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light .select-option:hover {
+    background: #f0f0f5;
+}
+
+/* Стили для скроллбара */
+.select-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.select-dropdown::-webkit-scrollbar-track {
+    background: #1f1f2e;
+    border-radius: 3px;
+}
+
+.select-dropdown::-webkit-scrollbar-thumb {
+    background: #4a4a66;
+    border-radius: 3px;
+}
+
+body.light .select-dropdown::-webkit-scrollbar-track {
+    background: #f0f0f5;
+}
+
+body.light .select-dropdown::-webkit-scrollbar-thumb {
+    background: #d0d0d8;
+}
+
+/* Удаляем старые стили */
+.custom-select,
+.selected-option,
+.options-list,
+.option {
+    display: none !important;
 }
 
 .swap-btn {
@@ -856,112 +1018,4 @@ body.light::after {
 
 #amount {
     -moz-appearance: textfield;
-}
-
-/* Стили для кастомного выпадающего списка */
-.custom-select {
-    flex: 1;
-    position: relative;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.selected-option {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background: linear-gradient(90deg, #3b3b50, #4a4a66);
-    color: #ffffff;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.custom-select.light .selected-option {
-    background: linear-gradient(90deg, #e0e0ea, #d0d0d8);
-    color: #333333;
-}
-
-.selected-option:hover {
-    background: linear-gradient(90deg, #4a4a66, #5a5a80);
-}
-
-.custom-select.light .selected-option:hover {
-    background: linear-gradient(90deg, #d0d0d8, #c0c0d0);
-}
-
-.selected-option .flag {
-    width: 20px;
-    height: 15px;
-    margin-right: 8px;
-}
-
-.options-list {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #2d2d44;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 1000;
-    display: none; 
-}
-
-.options-list.visible {
-    display: block; 
-}
-
-.custom-select.light .options-list {
-    background: #f0f0f5;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.option {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    color: #ffffff;
-    transition: background 0.2s ease;
-}
-
-.custom-select.light .option {
-    color: #333333;
-}
-
-.option:hover {
-    background: #4a4a66;
-}
-
-.custom-select.light .option:hover {
-    background: #d0d0d8;
-}
-
-.option img {
-    width: 20px;
-    height: 15px;
-    margin-right: 8px;
-}
-
-.options-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.options-list::-webkit-scrollbar-track {
-    background: #1f1f2e;
-    border-radius: 6px;
-}
-
-.options-list::-webkit-scrollbar-thumb {
-    background: #3b3b50;
-    border-radius: 6px;
-}
-
-.custom-select.light .options-list::-webkit-scrollbar-track {
-    background: #f0f0f5;
-}
-
-.custom-select.light .options-list::-webkit-scrollbar-thumb {
-    background: #d0d0d8;
 }

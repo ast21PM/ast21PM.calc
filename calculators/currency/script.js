@@ -216,25 +216,43 @@ function generateFakeHistoricalData(baseRate, days) {
     return data;
 }
 
-function getFlagUrl(currency) {
-    const countryCodes = {
-        'USD': 'us', 'EUR': 'eu', 'RUB': 'ru', 'CNY': 'cn', 'TRY': 'tr', 'KZT': 'kz',
+// Функция для получения пути к флагу валюты
+function getFlagPath(currencyCode) {
+    const flagMap = {
+        'RUB': 'ru', 'USD': 'us', 'EUR': 'eu', 'CNY': 'cn', 'TRY': 'tr', 'KZT': 'kz',
         'GBP': 'gb', 'JPY': 'jp', 'AUD': 'au', 'CAD': 'ca', 'CHF': 'ch', 'NZD': 'nz',
         'BRL': 'br', 'INR': 'in', 'MXN': 'mx', 'ZAR': 'za', 'SGD': 'sg', 'HKD': 'hk',
         'NOK': 'no', 'SEK': 'se', 'AED': 'ae'
     };
-    return `../../image/${countryCodes[currency] || 'un'}.png`;
+    // Проверяем, есть ли такой флаг
+    const file = flagMap[currencyCode];
+    if (!file) return null;
+    return `/image/${file}.png`;
 }
 
 function getCurrencyName(currency) {
     const currencyNames = {
-        'USD': 'Доллар США', 'EUR': 'Евро', 'RUB': 'Российский рубль', 'CNY': 'Китайский юань',
-        'TRY': 'Турецкая лира', 'KZT': 'Казахстанский тенге', 'GBP': 'Британский фунт',
-        'JPY': 'Японская иена', 'AUD': 'Австралийский доллар', 'CAD': 'Канадский доллар',
-        'CHF': 'Швейцарский франк', 'NZD': 'Новозеландский доллар', 'BRL': 'Бразильский реал',
-        'INR': 'Индийская рупия', 'MXN': 'Мексиканское песо', 'ZAR': 'Южноафриканский рэнд',
-        'SGD': 'Сингапурский доллар', 'HKD': 'Гонконгский доллар', 'NOK': 'Норвежская крона',
-        'SEK': 'Шведская крона', 'AED': 'Дирхам ОАЭ'
+        'USD': 'Доллар США',
+        'EUR': 'Евро',
+        'RUB': 'Российский рубль',
+        'CNY': 'Китайский юань',
+        'TRY': 'Турецкая лира',
+        'KZT': 'Казахстанский тенге',
+        'GBP': 'Британский фунт',
+        'JPY': 'Японская йена',
+        'AUD': 'Австралийский доллар',
+        'CAD': 'Канадский доллар',
+        'CHF': 'Швейцарский франк',
+        'NZD': 'Новозеландский доллар',
+        'BRL': 'Бразильский реал',
+        'INR': 'Индийская рупия',
+        'MXN': 'Мексиканское песо',
+        'ZAR': 'Южноафриканский рэнд',
+        'SGD': 'Сингапурский доллар',
+        'HKD': 'Гонконгский доллар',
+        'NOK': 'Норвежская крона',
+        'SEK': 'Шведская крона',
+        'AED': 'Дирхам ОАЭ'
     };
     return currencyNames[currency] || currency;
 }
@@ -274,56 +292,80 @@ async function fetchCurrencies() {
 function populateCurrencies() {
     const fromCurrency = document.getElementById('fromCurrency');
     const toCurrency = document.getElementById('toCurrency');
+    const fromDropdown = document.getElementById('fromCurrencyDropdown');
+    const toDropdown = document.getElementById('toCurrencyDropdown');
 
-    function setupCustomSelect(selectElement, defaultCurrency) {
-        const selectedOption = selectElement.querySelector('.selected-option');
-        const optionsList = selectElement.querySelector('.options-list');
+    function setupSelect(trigger, dropdown, defaultCurrency) {
+        // Устанавливаем начальное значение
+        trigger.dataset.value = defaultCurrency;
+        trigger.querySelector('.flag').src = getFlagPath(defaultCurrency);
+        trigger.querySelector('.flag').alt = `Флаг ${defaultCurrency}`;
+        trigger.querySelector('.currency-text').textContent = `${defaultCurrency} - ${getCurrencyName(defaultCurrency)}`;
 
-        selectElement.dataset.value = defaultCurrency;
-        selectedOption.querySelector('.flag').src = getFlagUrl(defaultCurrency);
-        selectedOption.querySelector('.flag').alt = `Флаг ${defaultCurrency}`;
-        selectedOption.querySelector('.currency-text').textContent = `${defaultCurrency} - ${getCurrencyName(defaultCurrency)}`;
+        // Очищаем выпадающий список
+        dropdown.innerHTML = '';
 
+        // Добавляем опции
         supportedCurrencies.forEach(currency => {
             if (rates[currency] !== undefined) {
                 const option = document.createElement('div');
-                option.classList.add('option');
+                option.classList.add('select-option');
                 option.innerHTML = `
-                    <img src="${getFlagUrl(currency)}" alt="Флаг ${currency}" class="flag">
-                    <span>${currency} - ${getCurrencyName(currency)}</span>
+                    <img src="${getFlagPath(currency)}" alt="Флаг ${currency}" class="flag">
+                    <span class="currency-text">${currency} - ${getCurrencyName(currency)}</span>
                 `;
                 option.dataset.value = currency;
-                option.addEventListener('click', () => {
-                    selectElement.dataset.value = currency;
-                    selectedOption.querySelector('.flag').src = getFlagUrl(currency);
-                    selectedOption.querySelector('.flag').alt = `Флаг ${currency}`;
-                    selectedOption.querySelector('.currency-text').textContent = `${currency} - ${getCurrencyName(currency)}`;
-                    optionsList.classList.remove('visible');
-                    updateRateInfo();
-                    if (document.getElementById('chartContainer').classList.contains('visible')) {
-                        updateChart(document.querySelector('.period-btn.active').getAttribute('onclick').match(/'([^']+)'/)[1]);
-                    }
-                });
-                optionsList.appendChild(option);
+                dropdown.appendChild(option);
             }
         });
 
-        selectedOption.addEventListener('click', (e) => {
+        // Обработчик клика по триггеру
+        trigger.addEventListener('click', (e) => {
             e.stopPropagation();
-            const isOpen = optionsList.classList.contains('visible');
-            document.querySelectorAll('.options-list').forEach(list => list.classList.remove('visible'));
-            optionsList.classList.toggle('visible', !isOpen);
+            
+            const wrapper = trigger.parentElement;
+            const isActive = wrapper.classList.contains('active');
+            
+            // Закрываем все другие выпадающие списки
+            document.querySelectorAll('.select-wrapper').forEach(w => {
+                if (w !== wrapper) {
+                    w.classList.remove('active');
+                }
+            });
+            
+            // Переключаем текущий список
+            wrapper.classList.toggle('active', !isActive);
         });
 
-        document.addEventListener('click', (e) => {
-            if (!selectElement.contains(e.target)) {
-                optionsList.classList.remove('visible');
+        // Добавляем обработчик для опций
+        dropdown.addEventListener('click', (e) => {
+            const option = e.target.closest('.select-option');
+            if (option) {
+                const currency = option.dataset.value;
+                trigger.dataset.value = currency;
+                trigger.querySelector('.flag').src = getFlagPath(currency);
+                trigger.querySelector('.flag').alt = `Флаг ${currency}`;
+                trigger.querySelector('.currency-text').textContent = `${currency} - ${getCurrencyName(currency)}`;
+                trigger.parentElement.classList.remove('active');
+                updateRateInfo();
+                if (document.getElementById('chartContainer').classList.contains('visible')) {
+                    updateChart(document.querySelector('.period-btn.active').getAttribute('onclick').match(/'([^']+)'/)[1]);
+                }
             }
         });
     }
 
-    setupCustomSelect(fromCurrency, 'EUR');
-    setupCustomSelect(toCurrency, 'RUB');
+    // Закрываем выпадающие списки при клике вне них
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.select-wrapper')) {
+            document.querySelectorAll('.select-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('active');
+            });
+        }
+    });
+
+    setupSelect(fromCurrency, fromDropdown, 'EUR');
+    setupSelect(toCurrency, toDropdown, 'RUB');
 }
 
 function updateRateInfo() {
@@ -367,6 +409,7 @@ function updateRateInfo() {
 function swapCurrencies() {
     const fromCurrency = document.getElementById('fromCurrency');
     const toCurrency = document.getElementById('toCurrency');
+    
     const tempValue = fromCurrency.dataset.value;
     const tempFlagSrc = fromCurrency.querySelector('.flag').src;
     const tempFlagAlt = fromCurrency.querySelector('.flag').alt;
@@ -381,6 +424,11 @@ function swapCurrencies() {
     toCurrency.querySelector('.flag').src = tempFlagSrc;
     toCurrency.querySelector('.flag').alt = tempFlagAlt;
     toCurrency.querySelector('.currency-text').textContent = tempText;
+
+    // Закрываем выпадающие списки
+    document.querySelectorAll('.select-wrapper').forEach(wrapper => {
+        wrapper.classList.remove('active');
+    });
 
     updateRateInfo();
     const amount = parseFloat(document.getElementById('amount').value);
@@ -701,21 +749,133 @@ function convertCurrency() {
     historyContent.scrollTop = historyContent.scrollHeight;
 }
 
+// Функция для инициализации выпадающего списка валют
+function setupCurrencyDropdown(wrapperId, currencies, defaultCurrency) {
+    const wrapper = document.getElementById(wrapperId);
+    if (!wrapper) return;
+    const trigger = wrapper.querySelector('.select-trigger');
+    const dropdown = wrapper.querySelector('.select-dropdown');
+    if (!trigger || !dropdown) return;
+    dropdown.innerHTML = '';
+    currencies.forEach(currency => {
+        const flagPath = getFlagPath(currency.code);
+        if (!flagPath) return;
+        const option = document.createElement('div');
+        option.className = 'select-option';
+        option.innerHTML = `
+            <img src="${flagPath}" alt="${currency.code}" class="flag">
+            <span class="currency-text">${currency.code} - ${getCurrencyName(currency.code)}</span>
+        `;
+        option.dataset.value = currency.code;
+        option.addEventListener('click', () => {
+            const flag = trigger.querySelector('.flag');
+            const text = trigger.querySelector('.currency-text');
+            if (flag) flag.src = flagPath;
+            if (text) text.textContent = `${currency.code} - ${getCurrencyName(currency.code)}`;
+            wrapper.classList.remove('active');
+            trigger.dataset.value = currency.code;
+            const input = wrapper.querySelector('input[type="hidden"]');
+            if (input) input.value = currency.code;
+            const event = new Event('change', { bubbles: true });
+            input.dispatchEvent(event);
+        });
+        dropdown.appendChild(option);
+    });
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        wrapper.classList.toggle('active');
+    });
+    document.addEventListener('click', (e) => {
+        if (!wrapper.contains(e.target)) {
+            wrapper.classList.remove('active');
+        }
+    });
+    const defaultOption = currencies.find(c => c.code === defaultCurrency);
+    if (defaultOption) {
+        const flagPath = getFlagPath(defaultOption.code);
+        const flag = trigger.querySelector('.flag');
+        const text = trigger.querySelector('.currency-text');
+        if (flag && flagPath) flag.src = flagPath;
+        if (text) text.textContent = `${defaultOption.code} - ${getCurrencyName(defaultOption.code)}`;
+        trigger.dataset.value = defaultOption.code;
+        const input = wrapper.querySelector('input[type="hidden"]');
+        if (input) input.value = defaultOption.code;
+    }
+}
+
 // Функция инициализации конвертера
 function initializeConverter() {
-    // Устанавливаем размеры конвертера
-    converter.style.width = '700px';
-    converter.style.height = '600px';
+    // Список валют
+    const currencies = [
+        { code: 'USD', name: 'US Dollar' },
+        { code: 'EUR', name: 'Euro' },
+        { code: 'GBP', name: 'British Pound' },
+        { code: 'JPY', name: 'Japanese Yen' },
+        { code: 'AUD', name: 'Australian Dollar' },
+        { code: 'CAD', name: 'Canadian Dollar' },
+        { code: 'CHF', name: 'Swiss Franc' },
+        { code: 'CNY', name: 'Chinese Yuan' },
+        { code: 'INR', name: 'Indian Rupee' },
+        { code: 'RUB', name: 'Russian Ruble' }
+    ];
+
+    // Инициализируем выпадающие списки
+    setupCurrencyDropdown('fromCurrencyWrapper', currencies, 'USD');
+    setupCurrencyDropdown('toCurrencyWrapper', currencies, 'EUR');
+
+    // Добавляем скрытые input'ы для хранения значений
+    const fromWrapper = document.getElementById('fromCurrencyWrapper');
+    const toWrapper = document.getElementById('toCurrencyWrapper');
     
-    // Загружаем курсы валют
-    fetchCurrencies();
+    if (fromWrapper && !fromWrapper.querySelector('input[type="hidden"]')) {
+        const fromInput = document.createElement('input');
+        fromInput.type = 'hidden';
+        fromInput.name = 'fromCurrency';
+        fromInput.value = 'USD';
+        fromWrapper.appendChild(fromInput);
+    }
     
-    // Инициализируем график
-    initializeChart();
-    
-    // Очищаем историю конвертаций
-    document.querySelector('.history-content').innerHTML = '';
+    if (toWrapper && !toWrapper.querySelector('input[type="hidden"]')) {
+        const toInput = document.createElement('input');
+        toInput.type = 'hidden';
+        toInput.name = 'toCurrency';
+        toInput.value = 'EUR';
+        toWrapper.appendChild(toInput);
+    }
+
+    // Обработчик изменения валют
+    const fromInput = document.querySelector('#fromCurrencyWrapper input[type="hidden"]');
+    const toInput = document.querySelector('#toCurrencyWrapper input[type="hidden"]');
+    const amountInput = document.getElementById('amount');
+    const resultDisplay = document.getElementById('result');
+
+    if (fromInput && toInput && amountInput && resultDisplay) {
+        function updateConversion() {
+            const amount = parseFloat(amountInput.value) || 0;
+            const fromCurrency = fromInput.value;
+            const toCurrency = toInput.value;
+
+            if (amount > 0 && fromCurrency && toCurrency) {
+                // Здесь будет логика конвертации
+                // Пока просто показываем заглушку
+                resultDisplay.textContent = `${amount} ${fromCurrency} = ${amount} ${toCurrency}`;
+            }
+        }
+
+        fromInput.addEventListener('change', updateConversion);
+        toInput.addEventListener('change', updateConversion);
+        amountInput.addEventListener('input', updateConversion);
+    }
 }
+
+// Инициализируем конвертер при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        initializeConverter();
+    } catch (error) {
+        console.error('Error during initialization:', error);
+    }
+});
 
 // Модифицируем window.onload
 window.onload = function() {

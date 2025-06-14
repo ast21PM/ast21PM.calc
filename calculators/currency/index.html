@@ -20,7 +20,7 @@
             </div>
         </div>
     </div>
-    <!-- Плавающие элементы кода -->
+
     <div class="code-element">const rate = 1.2345;</div>
     <div class="code-element">function convert() {</div>
     <div class="code-element">return amount * rate;</div>
@@ -87,21 +87,28 @@
             </div>
             <input type="number" id="amount" placeholder="Введите сумму">
             <div class="currency-selection">
-
-                <div class="custom-select" id="fromCurrency">
-                    <div class="selected-option">
+                <div class="select-wrapper" id="fromCurrencyWrapper">
+                    <button type="button" class="select-trigger" id="fromCurrency">
                         <img src="../../image/eu.png" alt="Флаг EUR" class="flag">
                         <span class="currency-text">EUR - Евро</span>
+                        <span class="select-arrow">▼</span>
+                    </button>
+                    <div class="select-dropdown" id="fromCurrencyDropdown" role="listbox">
+
                     </div>
-                    <div class="options-list"></div>
                 </div>
+
                 <button class="swap-btn" onclick="swapCurrencies()">↔</button>
-                <div class="custom-select" id="toCurrency">
-                    <div class="selected-option">
+
+                <div class="select-wrapper" id="toCurrencyWrapper">
+                    <button type="button" class="select-trigger" id="toCurrency">
                         <img src="../../image/ru.png" alt="Флаг RUB" class="flag">
                         <span class="currency-text">RUB - Российский рубль</span>
+                        <span class="select-arrow">▼</span>
+                    </button>
+                    <div class="select-dropdown" id="toCurrencyDropdown" role="listbox">
+
                     </div>
-                    <div class="options-list"></div>
                 </div>
             </div>
             <div class="rate-info">
