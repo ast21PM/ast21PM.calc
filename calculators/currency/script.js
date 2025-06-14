@@ -748,129 +748,10 @@ function convertCurrency() {
     historyContent.scrollTop = historyContent.scrollHeight;
 }
 
-// Функция для инициализации выпадающего списка валют
-function setupCurrencyDropdown(wrapperId, currencies, defaultCurrency) {
-    const wrapper = document.getElementById(wrapperId);
-    if (!wrapper) return;
-    const trigger = wrapper.querySelector('.select-trigger');
-    const dropdown = wrapper.querySelector('.select-dropdown');
-    if (!trigger || !dropdown) return;
-    dropdown.innerHTML = '';
-    currencies.forEach(currency => {
-        const flagPath = getFlagPath(currency.code);
-        if (!flagPath) return;
-        const option = document.createElement('div');
-        option.className = 'select-option';
-        option.innerHTML = `
-            <img src="${flagPath}" alt="${currency.code}" class="flag">
-            <span class="currency-text">${currency.code} - ${getCurrencyName(currency.code)}</span>
-        `;
-        option.dataset.value = currency.code;
-        option.addEventListener('click', () => {
-            const flag = trigger.querySelector('.flag');
-            const text = trigger.querySelector('.currency-text');
-            if (flag) flag.src = flagPath;
-            if (text) text.textContent = `${currency.code} - ${getCurrencyName(currency.code)}`;
-            wrapper.classList.remove('active');
-            trigger.dataset.value = currency.code;
-            const input = wrapper.querySelector('input[type="hidden"]');
-            if (input) input.value = currency.code;
-            const event = new Event('change', { bubbles: true });
-            input.dispatchEvent(event);
-        });
-        dropdown.appendChild(option);
-    });
-    trigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        wrapper.classList.toggle('active');
-    });
-    document.addEventListener('click', (e) => {
-        if (!wrapper.contains(e.target)) {
-            wrapper.classList.remove('active');
-        }
-    });
-    const defaultOption = currencies.find(c => c.code === defaultCurrency);
-    if (defaultOption) {
-        const flagPath = getFlagPath(defaultOption.code);
-        const flag = trigger.querySelector('.flag');
-        const text = trigger.querySelector('.currency-text');
-        if (flag && flagPath) flag.src = flagPath;
-        if (text) text.textContent = `${defaultOption.code} - ${getCurrencyName(defaultOption.code)}`;
-        trigger.dataset.value = defaultOption.code;
-        const input = wrapper.querySelector('input[type="hidden"]');
-        if (input) input.value = defaultOption.code;
-    }
-}
-
-// Функция инициализации конвертера
-function initializeConverter() {
-    // Список валют
-    const currencies = [
-        { code: 'USD', name: 'US Dollar' },
-        { code: 'EUR', name: 'Euro' },
-        { code: 'GBP', name: 'British Pound' },
-        { code: 'JPY', name: 'Japanese Yen' },
-        { code: 'AUD', name: 'Australian Dollar' },
-        { code: 'CAD', name: 'Canadian Dollar' },
-        { code: 'CHF', name: 'Swiss Franc' },
-        { code: 'CNY', name: 'Chinese Yuan' },
-        { code: 'INR', name: 'Indian Rupee' },
-        { code: 'RUB', name: 'Russian Ruble' }
-    ];
-
-    // Инициализируем выпадающие списки
-    setupCurrencyDropdown('fromCurrencyWrapper', currencies, 'USD');
-    setupCurrencyDropdown('toCurrencyWrapper', currencies, 'EUR');
-
-    // Добавляем скрытые input'ы для хранения значений
-    const fromWrapper = document.getElementById('fromCurrencyWrapper');
-    const toWrapper = document.getElementById('toCurrencyWrapper');
-    
-    if (fromWrapper && !fromWrapper.querySelector('input[type="hidden"]')) {
-        const fromInput = document.createElement('input');
-        fromInput.type = 'hidden';
-        fromInput.name = 'fromCurrency';
-        fromInput.value = 'USD';
-        fromWrapper.appendChild(fromInput);
-    }
-    
-    if (toWrapper && !toWrapper.querySelector('input[type="hidden"]')) {
-        const toInput = document.createElement('input');
-        toInput.type = 'hidden';
-        toInput.name = 'toCurrency';
-        toInput.value = 'EUR';
-        toWrapper.appendChild(toInput);
-    }
-
-    // Обработчик изменения валют
-    const fromInput = document.querySelector('#fromCurrencyWrapper input[type="hidden"]');
-    const toInput = document.querySelector('#toCurrencyWrapper input[type="hidden"]');
-    const amountInput = document.getElementById('amount');
-    const resultDisplay = document.getElementById('result');
-
-    if (fromInput && toInput && amountInput && resultDisplay) {
-        function updateConversion() {
-            const amount = parseFloat(amountInput.value) || 0;
-            const fromCurrency = fromInput.value;
-            const toCurrency = toInput.value;
-
-            if (amount > 0 && fromCurrency && toCurrency) {
-                // Здесь будет логика конвертации
-                // Пока просто показываем заглушку
-                resultDisplay.textContent = `${amount} ${fromCurrency} = ${amount} ${toCurrency}`;
-            }
-        }
-
-        fromInput.addEventListener('change', updateConversion);
-        toInput.addEventListener('change', updateConversion);
-        amountInput.addEventListener('input', updateConversion);
-    }
-}
-
 // Инициализируем конвертер при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        initializeConverter();
+        fetchCurrencies();
     } catch (error) {
         console.error('Error during initialization:', error);
     }
@@ -884,9 +765,6 @@ window.onload = function() {
     // Имитируем загрузку
     setTimeout(() => {
         try {
-            // Инициализируем конвертер
-            initializeConverter();
-            
             // Проверяем сохраненную тему
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'light') {
@@ -901,5 +779,3 @@ window.onload = function() {
         }
     }, 2000);
 };
-
-fetchCurrencies();
