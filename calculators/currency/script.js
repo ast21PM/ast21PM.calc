@@ -224,10 +224,9 @@ function getFlagPath(currencyCode) {
         'BRL': 'br', 'INR': 'in', 'MXN': 'mx', 'ZAR': 'za', 'SGD': 'sg', 'HKD': 'hk',
         'NOK': 'no', 'SEK': 'se', 'AED': 'ae'
     };
-    // Проверяем, есть ли такой флаг
     const file = flagMap[currencyCode];
     if (!file) return null;
-    return `/image/${file}.png`;
+    return `../image/${file}.png`;
 }
 
 function getCurrencyName(currency) {
