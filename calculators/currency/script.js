@@ -174,27 +174,27 @@ const supportedCurrencies = [
 ];
 
 const staticRates = {
-    'USD': 84.64,
-    'EUR': 91.43,
+    'USD': 78.5067,
+    'EUR': 90.9438,
     'RUB': 1,
-    'CNY': 11.58,
-    'TRY': 2.23,
-    'KZT': 0.17,
-    'GBP': 110.00,
-    'JPY': 0.56,
-    'AUD': 56.00,
-    'CAD': 62.00,
-    'CHF': 98.00,
-    'NZD': 51.00,
-    'BRL': 15.00,
-    'INR': 1.01,
-    'MXN': 4.20,
-    'ZAR': 4.50,
-    'SGD': 63.00,
-    'HKD': 10.90,
-    'NOK': 7.80,
-    'SEK': 8.00,
-    'AED': 23.05
+    'CNY': 10.8979,
+    'TRY': 1.9981,
+    'KZT': 0.153357,
+    'GBP': 106.5807,
+    'JPY': 0.544429,
+    'AUD': 51.0215,
+    'CAD': 57.7340,
+    'CHF': 96.6950,
+    'NZD': 47.2375,
+    'BRL': 14.1075,
+    'INR': 0.912612,
+    'MXN': 4.45,
+    'ZAR': 4.37483,
+    'SGD': 61.1756,
+    'HKD': 10.0187,
+    'NOK': 7.89766,
+    'SEK': 8.24344,
+    'AED': 21.3769
 };
 
 function generateFakeHistoricalData(baseRate, days) {
