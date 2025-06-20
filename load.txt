@@ -1,0 +1,339 @@
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/keysym.h>
+#include <locale.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define WIDTH 600
+#define HEIGHT 400
+#define BUTTON_WIDTH 100
+#define BUTTON_HEIGHT 40
+#define BORDER_WIDTH 2
+#define TEXT_FIELD_WIDTH 400
+#define ERROR_FIELD_HEIGHT 50
+#define PADDING 20
+#define VERTICAL_PADDING 10
+#define SEPARATOR_WIDTH 1
+
+#define COLOR_BG 0xC0C0C0
+#define COLOR_TEXT 0x000000
+#define COLOR_BUTTON_BG 0x1E90FF
+#define COLOR_BUTTON_HOVER 0x4682B4
+#define COLOR_BUTTON_PRESSED 0x104E8B
+#define COLOR_TEXT_FIELD_BG 0xFFFFFF
+#define COLOR_TEXT_FIELD_BORDER 0x808080
+#define COLOR_TEXT_FIELD_FOCUS 0x1E90FF
+#define COLOR_ERROR_TEXT 0xFF0000
+
+Display *display;
+int screen;
+Window window, button, text_field, error_field;
+GC gc;
+char filename[256] = "";
+int filename_len = 0;
+char *file_content = NULL;
+char *file_content_copy = NULL;
+char error_message[256] = "";
+int button_pressed = 0;
+int button_hovered = 0;
+int text_field_focused = 0;
+int window_width = WIDTH;
+int window_height = HEIGHT;
+XFontSet fontset;
+int min_width = WIDTH;
+int ascent, descent, line_height, space_width;
+int text_y;
+
+void draw_separator() {
+    XSetForeground(display, gc, COLOR_TEXT_FIELD_BORDER);
+    XDrawLine(display, window, gc, BUTTON_WIDTH, 0, BUTTON_WIDTH, BUTTON_HEIGHT + ERROR_FIELD_HEIGHT);
+}
+
+void redraw_text_field() {
+    XClearWindow(display, text_field);
+    XSetForeground(display, gc, COLOR_TEXT_FIELD_BG);
+    XFillRectangle(display, text_field, gc, 0, 0, TEXT_FIELD_WIDTH, BUTTON_HEIGHT);
+    XSetForeground(display, gc, text_field_focused ? COLOR_TEXT_FIELD_FOCUS : COLOR_TEXT_FIELD_BORDER);
+    XDrawRectangle(display, text_field, gc, 0, 0, TEXT_FIELD_WIDTH - 1, BUTTON_HEIGHT - 1);
+    XSetForeground(display, gc, COLOR_TEXT);
+    XmbDrawString(display, text_field, fontset, gc, 5, text_y, filename, strlen(filename));
+}
+
+void redraw_error_field() {
+    XClearWindow(display, error_field);
+    XSetForeground(display, gc, COLOR_TEXT_FIELD_BG);
+    XFillRectangle(display, error_field, gc, 0, 0, TEXT_FIELD_WIDTH, ERROR_FIELD_HEIGHT);
+    XSetForeground(display, gc, COLOR_ERROR_TEXT);
+    XmbDrawString(display, error_field, fontset, gc, 5, text_y, error_message, strlen(error_message));
+}
+
+void draw_button(Display *display, Window button, GC gc, const char *text, int pressed, int hovered) {
+    XSetLineAttributes(display, gc, 1, LineSolid, CapNotLast, JoinRound);
+    if (pressed) {
+        XSetForeground(display, gc, COLOR_BUTTON_PRESSED);
+    } else if (hovered) {
+        XSetForeground(display, gc, COLOR_BUTTON_HOVER);
+    } else {
+        XSetForeground(display, gc, COLOR_BUTTON_BG);
+    }
+    XFillRectangle(display, button, gc, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+    XSetForeground(display, gc, COLOR_TEXT);
+    XmbDrawString(display, button, fontset, gc, 5, text_y, text, strlen(text));
+}
+
+void load_file(const char *fname) {
+
+    if (strlen(fname) < 4 || strcmp(fname + strlen(fname) - 4, ".txt") != 0) {
+        strcpy(error_message, "Неправильный формат файла, требуется .txt");
+        XClearArea(display, window, 0, BUTTON_HEIGHT + ERROR_FIELD_HEIGHT, window_width, window_height - BUTTON_HEIGHT - ERROR_FIELD_HEIGHT, True);
+        redraw_error_field();
+        return;
+    }
+
+    FILE *f = fopen(fname, "r");
+    if (!f) {
+        strcpy(error_message, "Файл не найден или не существует");
+        XClearArea(display, window, 0, BUTTON_HEIGHT + ERROR_FIELD_HEIGHT, window_width, window_height - BUTTON_HEIGHT - ERROR_FIELD_HEIGHT, True);
+        redraw_error_field();
+        return;
+    }
+
+    error_message[0] = '\0';
+    redraw_error_field();
+
+    fseek(f, 0, SEEK_END);
+    long size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    free(file_content);
+    free(file_content_copy);
+    file_content = malloc(size + 1);
+    file_content_copy = malloc(size + 1);
+    fread(file_content, 1, size, f);
+    file_content[size] = '\0';
+    strcpy(file_content_copy, file_content);
+    fclose(f);
+    XClearArea(display, window, 0, BUTTON_HEIGHT + ERROR_FIELD_HEIGHT, window_width, window_height - BUTTON_HEIGHT - ERROR_FIELD_HEIGHT, True);
+}
+
+void draw_text() {
+    if (!file_content) return;
+
+    int left_margin = PADDING;
+    int right_margin = window_width - PADDING;
+    int available_width = right_margin - left_margin;
+    int y = BUTTON_HEIGHT + ERROR_FIELD_HEIGHT + VERTICAL_PADDING;
+
+    XSetForeground(display, gc, COLOR_TEXT);
+    char *text = strdup(file_content);
+    char *paragraph = strtok(text, "\n");
+    while (paragraph && y + line_height <= window_height) {
+        if (strlen(paragraph) > 0) {
+            char *para_copy = strdup(paragraph);
+            char *word = strtok(para_copy, " ");
+            while (word && y + line_height <= window_height) {
+                char *line_words_array[100];
+                int line_words = 0;
+                int current_x = left_margin;
+                int total_word_width = 0;
+
+                while (word) {
+                    XRectangle ink, logical;
+                    XmbTextExtents(fontset, word, strlen(word), &ink, &logical);
+                    int word_width = logical.width;
+                    if (line_words > 0 && current_x + word_width > right_margin) break;
+                    line_words_array[line_words] = word;
+                    total_word_width += word_width;
+                    if (line_words > 0) total_word_width += space_width;
+                    current_x += word_width + (line_words > 0 ? space_width : 0);
+                    line_words++;
+                    word = strtok(NULL, " ");
+                }
+
+                if (word) {
+                    int sum_word_widths = 0;
+                    for (int i = 0; i < line_words; i++) {
+                        XRectangle ink, logical;
+                        XmbTextExtents(fontset, line_words_array[i], strlen(line_words_array[i]), &ink, &logical);
+                        sum_word_widths += logical.width;
+                    }
+                    int extra_space = available_width - sum_word_widths;
+                    int num_spaces = line_words - 1;
+                    if (num_spaces > 0 && available_width > 0) {
+                        int base_space = extra_space / num_spaces;
+                        int remainder = extra_space % num_spaces;
+                        int current_x = left_margin;
+                        for (int i = 0; i < line_words; i++) {
+                            char *w = line_words_array[i];
+                            XmbDrawString(display, window, fontset, gc, current_x, y + ascent, w, strlen(w));
+                            if (i < line_words - 1) {
+                                XRectangle ink, logical;
+                                XmbTextExtents(fontset, w, strlen(w), &ink, &logical);
+                                current_x += logical.width + base_space + (i < remainder ? 1 : 0);
+                            }
+                        }
+                    } else {
+                        XmbDrawString(display, window, fontset, gc, left_margin, y + ascent, line_words_array[0], strlen(line_words_array[0]));
+                    }
+                } else {
+                    int current_x = left_margin;
+                    for (int i = 0; i < line_words; i++) {
+                        char *w = line_words_array[i];
+                        XmbDrawString(display, window, fontset, gc, current_x, y + ascent, w, strlen(w));
+                        if (i < line_words - 1) {
+                            XRectangle ink, logical;
+                            XmbTextExtents(fontset, w, strlen(w), &ink, &logical);
+                            current_x += logical.width + space_width;
+                        }
+                    }
+                }
+                y += line_height;
+            }
+            free(para_copy);
+        }
+        paragraph = strtok(NULL, "\n");
+    }
+    free(text);
+}
+
+int main() {
+    setlocale(LC_CTYPE, "");
+
+    XEvent event;
+    display = XOpenDisplay(NULL);
+    if (!display) {
+        printf("Не удалось подключиться к X-серверу!\n");
+        return 1;
+    }
+
+    screen = DefaultScreen(display);
+    window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0, WIDTH, HEIGHT, BORDER_WIDTH,
+                                 BlackPixel(display, screen), WhitePixel(display, screen));
+
+    button = XCreateSimpleWindow(display, window, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, 1,
+                                 BlackPixel(display, screen), WhitePixel(display, screen));
+    XMapWindow(display, button);
+
+    text_field = XCreateSimpleWindow(display, window, BUTTON_WIDTH + SEPARATOR_WIDTH, 0, TEXT_FIELD_WIDTH, BUTTON_HEIGHT, 1,
+                                     BlackPixel(display, screen), WhitePixel(display, screen));
+    XMapWindow(display, text_field);
+
+    error_field = XCreateSimpleWindow(display, window, BUTTON_WIDTH + SEPARATOR_WIDTH, BUTTON_HEIGHT, TEXT_FIELD_WIDTH, ERROR_FIELD_HEIGHT, 1,
+                                      BlackPixel(display, screen), WhitePixel(display, screen));
+    XMapWindow(display, error_field);
+
+    XSelectInput(display, window, ExposureMask | ButtonPressMask | ButtonReleaseMask | StructureNotifyMask);
+    XSelectInput(display, button, ExposureMask | ButtonPressMask | ButtonReleaseMask | EnterWindowMask | LeaveWindowMask);
+    XSelectInput(display, text_field, ExposureMask | KeyPressMask | ButtonPressMask | FocusChangeMask);
+    XSelectInput(display, error_field, ExposureMask);
+    XMapWindow(display, window);
+
+    gc = XCreateGC(display, window, 0, NULL);
+
+    char **missing_list;
+    int missing_count;
+    char *def_str;
+    fontset = XCreateFontSet(display, "-*-*-medium-r-normal--14-*-*-*-*-*-*-*", &missing_list, &missing_count, &def_str);
+    filename_len = strlen(filename);
+
+    XFontSetExtents *extents = XExtentsOfFontSet(fontset);
+    ascent = -extents->max_logical_extent.y;
+    descent = extents->max_logical_extent.y + extents->max_logical_extent.height;
+    line_height = ascent + descent;
+    XRectangle ink, logical;
+    XmbTextExtents(fontset, " ", 1, &ink, &logical);
+    space_width = logical.width;
+
+    text_y = (BUTTON_HEIGHT - (ascent + descent)) / 2 + ascent;
+
+    while (1) {
+        XNextEvent(display, &event);
+        switch (event.type) {
+            case Expose:
+                if (event.xexpose.window == button) draw_button(display, button, gc, "Load", button_pressed, button_hovered);
+                if (event.xexpose.window == text_field) redraw_text_field();
+                if (event.xexpose.window == error_field) redraw_error_field();
+                if (event.xexpose.window == window) {
+                    draw_separator();
+                    draw_text();
+                }
+                break;
+            case ButtonPress:
+                if (event.xbutton.window == button) {
+                    button_pressed = 1;
+                    draw_button(display, button, gc, "Load", button_pressed, button_hovered);
+                    load_file(filename);
+                }
+                if (event.xbutton.window == text_field) {
+                    XSetInputFocus(display, text_field, RevertToParent, CurrentTime);
+                }
+                break;
+            case ButtonRelease:
+                if (event.xbutton.window == button) {
+                    button_pressed = 0;
+                    draw_button(display, button, gc, "Load", button_pressed, button_hovered);
+                }
+                break;
+            case EnterNotify:
+                if (event.xcrossing.window == button) {
+                    button_hovered = 1;
+                    draw_button(display, button, gc, "Load", button_pressed, button_hovered);
+                }
+                break;
+            case LeaveNotify:
+                if (event.xcrossing.window == button) {
+                    button_hovered = 0;
+                    draw_button(display, button, gc, "Load", button_pressed, button_hovered);
+                }
+                break;
+            case FocusIn:
+                if (event.xfocus.window == text_field) {
+                    text_field_focused = 1;
+                    redraw_text_field();
+                }
+                break;
+            case FocusOut:
+                if (event.xfocus.window == text_field) {
+                    text_field_focused = 0;
+                    redraw_text_field();
+                }
+                break;
+            case KeyPress:
+                if (event.xkey.window == text_field) {
+                    char buf[32];
+                    KeySym keysym;
+                    int len = XLookupString(&event.xkey, buf, sizeof(buf), &keysym, NULL);
+                    if (keysym == XK_BackSpace && filename_len > 0) {
+                        filename[--filename_len] = '\0';
+                    } else if (keysym == XK_Return) {
+                        button_pressed = 1;
+                        draw_button(display, button, gc, "Load", button_pressed, button_hovered);
+                        load_file(filename);
+                        button_pressed = 0;
+                        draw_button(display, button, gc, "Load", button_pressed, button_hovered);
+                    } else if (len > 0 && filename_len < sizeof(filename) - 1) {
+                        for (int i = 0; i < len && filename_len < sizeof(filename) - 1; i++) {
+                            filename[filename_len++] = buf[i];
+                        }
+                        filename[filename_len] = '\0';
+                    }
+                    redraw_text_field();
+                }
+                break;
+            case ConfigureNotify:
+                window_width = event.xconfigure.width;
+                window_height = event.xconfigure.height;
+                XMoveResizeWindow(display, text_field, BUTTON_WIDTH + SEPARATOR_WIDTH, 0, TEXT_FIELD_WIDTH, BUTTON_HEIGHT);
+                XMoveResizeWindow(display, error_field, BUTTON_WIDTH + SEPARATOR_WIDTH, BUTTON_HEIGHT, TEXT_FIELD_WIDTH, ERROR_FIELD_HEIGHT);
+                XClearWindow(display, window);
+                break;
+        }
+    }
+
+    free(file_content);
+    free(file_content_copy);
+    XFreeGC(display, gc);
+    XCloseDisplay(display);
+    return 0;
+}

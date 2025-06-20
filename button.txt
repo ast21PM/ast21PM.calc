@@ -1,0 +1,135 @@
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xos.h>
+#include <stdio.h>
+#include <string.h>
+
+#define X 0
+#define Y 0
+#define WIDTH 333
+#define HEIGHT 333
+#define BUTTON_WIDTH 90
+#define BUTTON_HEIGHT 35
+#define BORDER_WIDTH 5
+#define TITLE "button"
+#define ICON_TITLE "button"
+#define PRG_CLASS "button"
+
+#define COLOR_BG 0xC0C0C0       
+#define COLOR_LIGHT 0xFFFFFF    
+#define COLOR_DARK 0x808080     
+#define COLOR_SHADOW 0x404040   
+#define COLOR_TEXT 0xffffff    
+#define COLOR_WINDOW 0x1f1f34   
+
+void draw_button(Display *display, Window button, GC gc, const char *text, int pressed) {
+    XSetForeground(display, gc, COLOR_BG);
+    XFillRectangle(display, button, gc, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT);
+
+    XSetForeground(display, gc, pressed ? COLOR_SHADOW : COLOR_LIGHT);
+    XDrawLine(display, button, gc, 1, 1, BUTTON_WIDTH - 2, 1);
+    XDrawLine(display, button, gc, 1, 1, 1, BUTTON_HEIGHT - 2);
+
+    XSetForeground(display, gc, pressed ? COLOR_LIGHT : COLOR_DARK);
+    XDrawLine(display, button, gc, 1, BUTTON_HEIGHT - 2, BUTTON_WIDTH - 2, BUTTON_HEIGHT - 2);
+    XDrawLine(display, button, gc, BUTTON_WIDTH - 2, 1, BUTTON_WIDTH - 2, BUTTON_HEIGHT - 2);
+
+    XSetForeground(display, gc, COLOR_SHADOW);
+    XDrawLine(display, button, gc, 2, BUTTON_HEIGHT - 3, BUTTON_WIDTH - 3, BUTTON_HEIGHT - 3);
+    XDrawLine(display, button, gc, BUTTON_WIDTH - 3, 2, BUTTON_WIDTH - 3, BUTTON_HEIGHT - 3);
+
+    XSetForeground(display, gc, COLOR_TEXT);
+    XDrawString(display, button, gc, BUTTON_WIDTH / 2 - 10, BUTTON_HEIGHT / 2 + 5, text, strlen(text));
+}
+
+void draw_counter(Display *display, Window window, GC gc, int counter) {
+    char counter_text[20];
+    sprintf(counter_text, "clicks:: %d", counter);
+    XSetForeground(display, gc, COLOR_TEXT);
+    XDrawString(display, window, gc, WIDTH / 2 - 30, HEIGHT / 2 - 20, counter_text, strlen(counter_text));
+}
+
+int main(int argc, char *argv[]) {
+    Display *display;
+    int screen;
+    Window window, button;
+    XEvent event;
+    int pressed = 0;
+    int click_counter = 0;
+    GC gc;
+    const char* button_text = "click";
+    Atom WM_DELETE_WINDOW;
+
+    if ((display = XOpenDisplay(NULL)) == NULL) {
+        puts("Не удаётся подключиться к X серверу!");
+        return 1;
+    }
+
+    screen = DefaultScreen(display);
+
+    window = XCreateSimpleWindow(display, RootWindow(display, screen), X, Y, WIDTH, HEIGHT, BORDER_WIDTH,
+                                 BlackPixel(display, screen), COLOR_WINDOW); 
+
+    button = XCreateSimpleWindow(display, window, (WIDTH - BUTTON_WIDTH) / 2, (HEIGHT - BUTTON_HEIGHT) / 2,
+                                 BUTTON_WIDTH, BUTTON_HEIGHT, 0, BlackPixel(display, screen), COLOR_BG);
+
+    XSelectInput(display, window, ExposureMask | KeyPressMask | StructureNotifyMask);
+    XSelectInput(display, button, ExposureMask | ButtonPressMask | ButtonReleaseMask);
+
+    WM_DELETE_WINDOW = XInternAtom(display, "WM_DELETE_WINDOW", False);
+    XSetWMProtocols(display, window, &WM_DELETE_WINDOW, 1);
+
+    XMapWindow(display, window);
+    XMapWindow(display, button);
+
+    gc = XCreateGC(display, window, 0, NULL);
+    XSetForeground(display, gc, BlackPixel(display, screen));
+
+    while (1) {
+        XNextEvent(display, &event);
+        switch (event.type) {
+            case Expose:
+                if (event.xexpose.window == window) {
+                    XClearWindow(display, window);
+                    draw_counter(display, window, gc, click_counter);
+                }
+                if (event.xexpose.window == button) {
+                    XClearWindow(display, button);
+                    draw_button(display, button, gc, button_text, pressed);
+                }
+                break;
+            case ButtonPress:
+                if (event.xbutton.window == button) {
+                    pressed = 1;
+                    click_counter++;
+                    XClearWindow(display, window);
+                    XClearWindow(display, button);
+                    draw_counter(display, window, gc, click_counter);
+                    draw_button(display, button, gc, button_text,
+                    pressed);
+                }
+                break;
+            case ButtonRelease:
+                if (event.xbutton.window == button) {
+                    pressed = 0;
+                    XClearWindow(display, button);
+                    draw_button(display, button, gc, button_text, pressed);
+                }
+                break;
+            case KeyPress:
+                XFreeGC(display, gc);
+                XDestroyWindow(display, button);
+                XDestroyWindow(display, window);
+                XCloseDisplay(display);
+                return 0;
+            case ClientMessage:
+                if ((Atom)event.xclient.data.l[0] == WM_DELETE_WINDOW) {
+                    XDestroyWindow(display, window);
+                }
+                break;
+            case DestroyNotify:
+                XCloseDisplay(display);
+                return 0;
+        }
+    }
+}
