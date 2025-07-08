@@ -45,20 +45,15 @@ function initializeGraphBuilder() {
     }
 }
 
-// Модифицируем window.onload
 window.onload = function() {
-    // Запускаем анимацию загрузки
     updateLoadingText(0);
     
-    // Имитируем загрузку
     setTimeout(() => {
         try {
-            // Инициализируем построитель графиков
             initializeGraphBuilder();
         } catch (error) {
             console.error('Error during initialization:', error);
         } finally {
-            // Скрываем прелоадер в любом случае
             hidePreloader();
         }
     }, 2000);
@@ -80,20 +75,18 @@ let isDragging = false;
 let startX, startY;
 let animationFrame = null;
 let lastDrawTime = 0;
-const DRAW_THROTTLE = 16; // ~60fps
-let lastFunctions = []; // Сохраняем последние функции для оптимизации
-let debounceTimer = null; // Таймер для debounce
+const DRAW_THROTTLE = 16; 
+let lastFunctions = []; 
+let debounceTimer = null; 
 let lastWheelTime = 0;
-const WHEEL_THROTTLE = 16; // Уменьшаем до 16мс для более плавного масштабирования
+const WHEEL_THROTTLE = 16; 
 
-// Инициализация canvas
 function initCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     drawGraph();
 }
 
-// Обработчик изменения размера окна
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -103,7 +96,6 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('load', initCanvas);
 
-// Функция для определения шага сетки
 function getGridStep(scale) {
     const steps = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100];
     const pixelsPerUnit = scale;
@@ -117,14 +109,12 @@ function getGridStep(scale) {
     return scale > 500 ? 0.01 : 100;
 }
 
-// Отрисовка осей и сетки
 function drawAxes() {
     const xAxis = canvas.height / 2 + offsetY;
     const yAxis = canvas.width / 2 + offsetX;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Сетка
     ctx.beginPath();
     ctx.strokeStyle = document.body.classList.contains('light') ? '#e0e0e0' : '#3d3d54';
     ctx.lineWidth = 0.5;
