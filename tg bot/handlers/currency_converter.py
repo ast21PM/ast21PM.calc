@@ -3,7 +3,6 @@ from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, Mess
 import requests
 import os
 
-# Состояния для диалога конвертера
 WAITING_FOR_AMOUNT, WAITING_FOR_FROM_CURRENCY, WAITING_FOR_TO_CURRENCY = range(3)
 
 async def converter_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -88,7 +87,7 @@ async def return_to_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE
         ["Обратная связь"],
         ["Калькулятор"],
         ["Конвертер валют"],
-        ["Система счисления"],
+        ["Система счисления"]
         ["Перезапустить"]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
