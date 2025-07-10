@@ -21,13 +21,13 @@ async def calculator_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_calc(update: Update, context: ContextTypes.DEFAULT_TYPE):
     expression = update.message.text
     if expression == "Назад":
-        keyboard = [["Обратная связь"], ["Калькулятор"], ["Конвертер валют"], ["Перезапустить"]]
+        keyboard = [["Обратная связь"], ["Калькулятор"], ["Конвертер валют"], ["Система счисления"], ["Перезапустить"]]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
         await update.message.reply_text("Возвращение к главному экрану.", reply_markup=reply_markup)
         return ConversationHandler.END
     elif expression == "Перезапустить":
         context.user_data.clear()
-        keyboard = [["Обратная связь"], ["Калькулятор"], ["Конвертер валют"], ["Перезапустить"]]
+        keyboard = [["Обратная связь"], ["Калькулятор"], ["Конвертер валют"], ["Система счисления"], ["Перезапустить"]]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
         await update.message.reply_text("Бот перезапущен.", reply_markup=reply_markup)
         return ConversationHandler.END
@@ -58,7 +58,7 @@ async def handle_calc(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception:
         response = (
             f"**Выражение:** {expression}\n"
-            "Ошибка: Некорректное выражение. Попробуйте еще раз или нажмите 'Назад' для выхода, 'Перезапустить' для перезапуска."
+            "Ошибка: Некорректное выражение. \nПопробуйте еще раз или нажмите 'Назад' для выхода, 'Перезапустить' для перезапуска."
         )
         await update.message.reply_text(response, parse_mode="Markdown", reply_markup=ReplyKeyboardMarkup([["Назад", "Перезапустить"]], resize_keyboard=True))
     return WAITING_FOR_CALC

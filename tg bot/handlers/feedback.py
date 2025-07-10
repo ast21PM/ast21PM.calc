@@ -2,7 +2,6 @@ from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters
 import os
 
-# Состояния для диалога
 WAITING_FOR_TEXT, WAITING_FOR_PHOTO = range(2)
 
 async def feedback_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -28,7 +27,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return WAITING_FOR_PHOTO
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    photo = update.message.photo[-1]  # Берем фото наилучшего качества
+    photo = update.message.photo[-1]  
     context.user_data['photo'] = photo
     await process_feedback(update, context)
     return ConversationHandler.END
@@ -56,7 +55,7 @@ async def process_feedback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     username = update.effective_user.username or update.effective_user.id
     admin_chat_id = os.getenv('ADMIN_CHAT_ID')
 
-    # Объединяем текст и фото в одно сообщение
+
     try:
         if 'photo' in context.user_data:
             await context.bot.send_photo(
@@ -75,7 +74,7 @@ async def process_feedback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Спасибо! Твое сообщение отправлено.", reply_markup=ReplyKeyboardMarkup([["/start"]], resize_keyboard=True))
     context.user_data.clear()
 
-# Обработчик для команды или текста
+
 feedback_handler = ConversationHandler(
     entry_points=[CommandHandler("feedback", feedback_start), MessageHandler(filters.Regex("^(Обратная связь)$"), feedback_start)],
     states={

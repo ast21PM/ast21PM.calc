@@ -10,6 +10,7 @@ from handlers.start import start_handler
 from handlers.feedback import feedback_handler
 from handlers.calculator import calculator_handler
 from handlers.currency_converter import converter_handler
+from handlers.base_converter import base_converter_handler
 
 def main():
     application = Application.builder().token(TOKEN).build()
@@ -18,6 +19,7 @@ def main():
     application.add_handler(feedback_handler)
     application.add_handler(calculator_handler)
     application.add_handler(converter_handler)
+    application.add_handler(base_converter_handler)
 
     application.add_handler(MessageHandler(filters.Regex("^(Перезапустить)$") & ~filters.COMMAND, reset_bot))
 
@@ -29,6 +31,7 @@ async def reset_bot(update, context: ContextTypes.DEFAULT_TYPE):
         ["Обратная связь"],
         ["Калькулятор"],
         ["Конвертер валют"],
+        ["Система счисления"],
         ["Перезапустить"]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)

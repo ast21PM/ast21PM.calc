@@ -6,6 +6,7 @@ async def start(update, context: ContextTypes.DEFAULT_TYPE):
         ["Обратная связь"],
         ["Калькулятор"],
         ["Конвертер валют"],
+        ["Система счисления"],
         ["Перезапустить"]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
