@@ -21,13 +21,13 @@ async def calculator_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_calc(update: Update, context: ContextTypes.DEFAULT_TYPE):
     expression = update.message.text
     if expression == "Назад":
-        keyboard = [["Обратная связь"], ["Калькулятор"], ["Конвертер валют"], ["Система счисления"], ["Перезапустить"]]
+        keyboard = [["Обратная связь", "Калькулятор"], ["Графический калькулятор", "Конвертер валют"], ["Система счисления", "Перезапустить"]]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
         await update.message.reply_text("Возвращение к главному экрану.", reply_markup=reply_markup)
         return ConversationHandler.END
     elif expression == "Перезапустить":
         context.user_data.clear()
-        keyboard = [["Обратная связь"], ["Калькулятор"], ["Конвертер валют"], ["Система счисления"], ["Перезапустить"]]
+        keyboard = [["Обратная связь", "Калькулятор"], ["Графический калькулятор", "Конвертер валют"], ["Система счисления", "Перезапустить"]]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
         await update.message.reply_text("Бот перезапущен.", reply_markup=reply_markup)
         return ConversationHandler.END
@@ -64,7 +64,7 @@ async def handle_calc(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return WAITING_FOR_CALC
 
 calculator_handler = ConversationHandler(
-    entry_points=[CommandHandler("calc", calculator_start), MessageHandler(filters.Regex("^(Калькулятор)$"), calculator_start)],
+    entry_points=[CommandHandler("calc", calculator_start), MessageHandler(filters.Regex("Калькулятор"), calculator_start)],
     states={
         WAITING_FOR_CALC: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_calc)]
     },

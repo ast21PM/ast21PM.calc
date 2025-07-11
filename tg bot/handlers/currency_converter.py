@@ -83,18 +83,12 @@ async def handle_to_currency(update: Update, context: ContextTypes.DEFAULT_TYPE)
     return ConversationHandler.END
 
 async def return_to_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        ["Обратная связь"],
-        ["Калькулятор"],
-        ["Конвертер валют"],
-        ["Система счисления"]
-        ["Перезапустить"]
-    ]
+    keyboard = [["Обратная связь", "Калькулятор"], ["Графический калькулятор", "Конвертер валют"], ["Система счисления", "Перезапустить"]]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
     await update.message.reply_text("Возвращение к главному экрану.", reply_markup=reply_markup)
 
 converter_handler = ConversationHandler(
-    entry_points=[CommandHandler("convert", converter_start), MessageHandler(filters.Regex("^(Конвертер валют)$"), converter_start)],
+    entry_points=[CommandHandler("convert", converter_start), MessageHandler(filters.Regex("Конвертер валют"), converter_start)],
     states={
         WAITING_FOR_AMOUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_amount)],
         WAITING_FOR_FROM_CURRENCY: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_from_currency)],

@@ -11,6 +11,7 @@ from handlers.feedback import feedback_handler
 from handlers.calculator import calculator_handler
 from handlers.currency_converter import converter_handler
 from handlers.base_converter import base_converter_handler
+from handlers.plotter import plotter_handler
 
 def main():
     application = Application.builder().token(TOKEN).build()
@@ -20,19 +21,18 @@ def main():
     application.add_handler(calculator_handler)
     application.add_handler(converter_handler)
     application.add_handler(base_converter_handler)
+    application.add_handler(plotter_handler)
 
-    application.add_handler(MessageHandler(filters.Regex("^(Перезапустить)$") & ~filters.COMMAND, reset_bot))
+    application.add_handler(MessageHandler(filters.Regex("Перезапустить"), reset_bot))
 
     application.run_polling()
 
 async def reset_bot(update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
     keyboard = [
-        ["Обратная связь"],
-        ["Калькулятор"],
-        ["Конвертер валют"],
-        ["Система счисления"],
-        ["Перезапустить"]
+        ["Обратная связь", "Калькулятор"],
+        ["Графический калькулятор", "Конвертер валют"],
+        ["Система счисления", "Перезапустить"]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
     await update.message.reply_text("Бот перезапущен.", reply_markup=reply_markup)

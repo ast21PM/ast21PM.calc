@@ -35,7 +35,7 @@ async def base_converter_start(update: Update, context: ContextTypes.DEFAULT_TYP
 async def handle_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
     if text.lower() == "назад":
-        keyboard = [["Обратная связь"], ["Калькулятор"], ["Конвертер валют"], ["Система счисления"], ["Перезапустить"]]
+        keyboard = [["Обратная связь", "Калькулятор"], ["Графический калькулятор", "Конвертер валют"], ["Система счисления", "Перезапустить"]]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
         await update.message.reply_text("🏠 Возвращение к главному экрану.", reply_markup=reply_markup)
         return ConversationHandler.END
@@ -197,13 +197,13 @@ async def handle_to_base(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_back_or_restart(update: Update, context: ContextTypes.DEFAULT_TYPE, text: str):
     if text.lower() == "назад":
-        keyboard = [["Обратная связь"], ["Калькулятор"], ["Конвертер валют"], ["Система счисления"], ["Перезапустить"]]
+        keyboard = [["Обратная связь", "Калькулятор"], ["Графический калькулятор", "Конвертер валют"], ["Система счисления", "Перезапустить"]]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
         await update.message.reply_text("🏠 Возвращение к главному экрану.", reply_markup=reply_markup)
         return ConversationHandler.END
     elif text.lower() == "перезапустить":
         context.user_data.clear()
-        keyboard = [["Обратная связь"], ["Калькулятор"], ["Конвертер валют"], ["Система счисления"], ["Перезапустить"]]
+        keyboard = [["Обратная связь", "Калькулятор"], ["Графический калькулятор", "Конвертер валют"], ["Система счисления", "Перезапустить"]]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
         await update.message.reply_text("🔄 Бот перезапущен.", reply_markup=reply_markup)
         return ConversationHandler.END
