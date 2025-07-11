@@ -71,6 +71,7 @@ body {
     font-weight: bold;
     background: linear-gradient(45deg, #00ff00, #4CAF50);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: gradient 2s ease infinite;
 }
@@ -331,9 +332,6 @@ body.light::after {
 }
 
 /* Расширенное состояние калькулятора */
-.calculator.expanded {
-    /* Ширина будет установлена динамически через JS */
-}
 
 /* Светлая тема для калькулятора */
 .calculator.light {
@@ -812,4 +810,26 @@ td.light {
 
 .navigation-tabs .nav-link.light:hover {
     background: linear-gradient(135deg, #d0d0d8, #c0c0c8);
+}
+
+.telegram-link {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.telegram-link:hover {
+    opacity: 1;
 }
