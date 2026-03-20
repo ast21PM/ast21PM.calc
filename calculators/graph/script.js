@@ -33,9 +33,9 @@ function hidePreloader() {
 // Функция инициализации построителя графиков
 function initializeGraphBuilder() {
     // Инициализация всех необходимых компонентов
-    setupEventListeners();
-    setupPlotlyDefaults();
-    clearGraph();
+    if (typeof setupEventListeners === 'function') setupEventListeners();
+    if (typeof setupPlotlyDefaults === 'function') setupPlotlyDefaults();
+    if (typeof clearGraph === 'function') clearGraph();
     
     // Проверяем сохраненную тему
     const savedTheme = localStorage.getItem('theme');
@@ -253,21 +253,21 @@ function processExpr(expr) {
     // Обрабатываем e^x корректно
     expr = expr.replace(/e\^x/g, 'Math.exp(x)')
                .replace(/e\^(\([^)]+\))/g, 'Math.exp$1')
-               .replace(/pi/g, 'Math.PI')
-               .replace(/e\b/g, 'Math.E') // Обрабатываем e как константу
-               .replace(/sin/g, 'Math.sin')
-               .replace(/cos/g, 'Math.cos')
-               .replace(/tan/g, 'Math.tan')
-               .replace(/cot/g, '(1/Math.tan)')
-               .replace(/sec/g, '(1/Math.cos)')
-               .replace(/csc/g, '(1/Math.sin)')
-               .replace(/ln/g, 'Math.log')
-               .replace(/log/g, 'Math.log10')
-               .replace(/abs/g, 'Math.abs')
-               .replace(/sqrt/g, 'Math.sqrt')
-               .replace(/arcsin/g, 'Math.asin')
-               .replace(/arccos/g, 'Math.acos')
-               .replace(/arctan/g, 'Math.atan')
+               .replace(/\bpi\b/g, 'Math.PI')
+               .replace(/\be\b/g, 'Math.E') // Обрабатываем e как константу
+               .replace(/\barcsin\b/g, 'Math.asin')
+               .replace(/\barccos\b/g, 'Math.acos')
+               .replace(/\barctan\b/g, 'Math.atan')
+               .replace(/\bsin\b/g, 'Math.sin')
+               .replace(/\bcos\b/g, 'Math.cos')
+               .replace(/\btan\b/g, 'Math.tan')
+               .replace(/\bcot\b/g, '(1/Math.tan)')
+               .replace(/\bsec\b/g, '(1/Math.cos)')
+               .replace(/\bcsc\b/g, '(1/Math.sin)')
+               .replace(/\bln\b/g, 'Math.log')
+               .replace(/\blog\b/g, 'Math.log10')
+               .replace(/\babs\b/g, 'Math.abs')
+               .replace(/\bsqrt\b/g, 'Math.sqrt')
                .replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)))
                .replace(/\^/g, '**');
     return expr;
