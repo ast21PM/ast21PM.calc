@@ -1,35 +1,3 @@
-// Функции для прелоадера
-const loadingTexts = [
-    'Инициализация построителя графиков...',
-    'Подготовка математических функций...',
-    'Настройка интерфейса...',
-    'Почти готово...'
-];
-
-function updateLoadingText(index) {
-    if (index >= loadingTexts.length) return;
-    
-    const detail = document.querySelector('.loading-details .detail');
-    detail.style.opacity = '0';
-    
-    setTimeout(() => {
-        detail.textContent = loadingTexts[index];
-        detail.style.opacity = '1';
-        
-        setTimeout(() => {
-            updateLoadingText(index + 1);
-        }, 500);
-    }, 500);
-}
-
-function hidePreloader() {
-    const preloader = document.querySelector('.preloader');
-    preloader.classList.add('fade-out');
-    setTimeout(() => {
-        preloader.style.display = 'none';
-    }, 500);
-}
-
 // Функция инициализации построителя графиков
 function initializeGraphBuilder() {
     // Инициализация всех необходимых компонентов
@@ -40,7 +8,7 @@ function initializeGraphBuilder() {
     // Проверяем сохраненную тему
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'light') {
-        toggleTheme();
+        toggleThemeWrapper();
         document.querySelector('.switch input').checked = true;
     }
 }
@@ -555,14 +523,13 @@ function hideFunctionButtons() {
 }
 
 // Функция для переключения темы
-function toggleTheme() {
-    document.body.classList.toggle('light');
+function toggleThemeSpecific() {
     drawGraph();
-    
-    // Сохраняем выбранную тему в localStorage
-    const isLightTheme = document.body.classList.contains('light');
-    localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
 }
+function toggleThemeWrapper() {
+    toggleTheme(toggleThemeSpecific);
+}
+window.toggleTheme = toggleThemeWrapper;
 
 // Функция для анимации масштаба c оптимизацией
 function animateScale() {

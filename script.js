@@ -1,35 +1,3 @@
-// Функции для прелоадера
-const loadingTexts = [
-    'Инициализация калькулятора...',
-    'Загрузка функций...',
-    'Подготовка интерфейса...',
-    'Почти готово...'
-];
-
-function updateLoadingText(index) {
-    if (index >= loadingTexts.length) return;
-    
-    const detail = document.querySelector('.loading-details .detail');
-    detail.style.opacity = '0';
-    
-    setTimeout(() => {
-        detail.textContent = loadingTexts[index];
-        detail.style.opacity = '1';
-        
-        setTimeout(() => {
-            updateLoadingText(index + 1);
-        }, 500);
-    }, 500);
-}
-
-function hidePreloader() {
-    const preloader = document.querySelector('.preloader');
-    preloader.classList.add('fade-out');
-    setTimeout(() => {
-        preloader.style.display = 'none';
-    }, 500);
-}
-
 let display = document.getElementById('display');
 let calculator = document.getElementById('calculator');
 let themeToggle = document.getElementById('themeToggle');
@@ -58,7 +26,9 @@ function backspace() {
 // Форматирование числа
 function formatNumber(number) {
     if (typeof number === 'number') {
-        return math.format(number, { precision: 14 });
+        let formatted = math.format(number, { precision: 14, notation: 'auto' });
+        // Убираем лишние нули после запятой, если они есть
+        return formatted.replace(/(?:\.0+|(\.\d+?)0+)$/, '$1');
     }
     return number.toString();
 }
@@ -95,22 +65,23 @@ function updateHistory(expression, result) {
 }
 
 // Переключение темы
-function toggleTheme() {
-    let body = document.body;
+function toggleThemeSpecific() {
     let calc = document.querySelector('.calculator');
     let displayInput = document.getElementById('display');
     let buttons = document.querySelectorAll('button');
     let navLinks = document.querySelectorAll('.nav-link');
 
-    body.classList.toggle('light');
     calc.classList.toggle('light');
     displayInput.classList.toggle('light');
     buttons.forEach(button => button.classList.toggle('light'));
     navLinks.forEach(link => link.classList.toggle('light'));
-
-    const isLightTheme = body.classList.contains('light');
-    localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
 }
+
+function toggleThemeWrapper() {
+    toggleTheme(toggleThemeSpecific);
+}
+// Override window.toggleTheme for inline onclick attribute
+window.toggleTheme = toggleThemeWrapper;
 
 // Показ панели
 function showPanel(panel) {
@@ -129,28 +100,6 @@ function showPanel(panel) {
     }
 }
 
-// Модифицируем функцию window.onload
-window.onload = function() {
-    // Запускаем анимацию загрузки
-    updateLoadingText(0);
-    
-    // Имитируем загрузку
-    setTimeout(() => {
-        hidePreloader();
-        
-        // Инициализируем калькулятор
-        showPanel('basic');
-        calculator.style.width = `${DEFAULT_WIDTH}px`;
-        calculator.style.height = `${DEFAULT_HEIGHT}px`;
-
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
-            toggleTheme();
-            document.querySelector('.switch input').checked = true;
-        }
-    }, 2000); // Показываем прелоадер 2 секунды
-};
-
 // Перемещение курсора
 function moveCursor(direction) {
     const input = display;
@@ -164,108 +113,27 @@ function moveCursor(direction) {
     input.focus();
 }
 
-// Перетаскивание калькулятора
-let isDragging = false;
-let currentX;
-let currentY;
-let xOffset = 0;
-let yOffset = 0;
-let initialX;
-let initialY;
-
-calculator.querySelector('.calculator-header').addEventListener('mousedown', startDragging);
-calculator.querySelector('.calculator-header').addEventListener('dblclick', resetSize);
-document.addEventListener('mousemove', drag);
-document.addEventListener('mouseup', stopDragging);
-
-function startDragging(e) {
-    initialX = e.clientX - xOffset;
-    initialY = e.clientY - yOffset;
-    isDragging = true;
-}
-
-function drag(e) {
-    if (isDragging) {
-        e.preventDefault();
-        currentX = e.clientX - initialX;
-        currentY = e.clientY - initialY;
-        xOffset = currentX;
-        yOffset = currentY;
-        setTranslate(currentX, currentY, calculator);
-    }
-}
-
-function setTranslate(xPos, yPos, el) {
-    el.style.transform = `translate(${xPos}px, ${yPos}px)`;
-}
-
-function stopDragging() {
-    if (isDragging) {
-        isDragging = false;
-    }
-}
-
-// Изменение размера калькулятора
-let isResizing = false;
-let initialXResize;
-let initialYResize;
-let initialWidth = DEFAULT_WIDTH;
-let initialHeight = DEFAULT_HEIGHT;
-
-resizeHandle.addEventListener('mousedown', startResizing);
-resizeHandle.addEventListener('dblclick', resetSize);
-document.addEventListener('mousemove', resize);
-document.addEventListener('mouseup', stopResizing);
-
-function startResizing(e) {
-    initialXResize = e.clientX;
-    initialYResize = e.clientY;
-    isResizing = true;
-}
-
-function resize(e) {
-    if (isResizing) {
-        let dx = e.clientX - initialXResize;
-        let dy = e.clientY - initialYResize;
-        let newWidth = Math.max(initialWidth + dx, 300);
-        let newHeight = Math.max(initialHeight + dy, 200);
-        calculator.style.width = `${newWidth}px`;
-        calculator.style.height = `${newHeight}px`;
-    }
-}
-
-function stopResizing() {
-    if (isResizing) {
-        isResizing = false;
-        initialWidth = parseInt(calculator.style.width, 10);
-        initialHeight = parseInt(calculator.style.height, 10);
-    }
-}
-
-// Сброс размера
-function resetSize() {
-    calculator.style.width = `${DEFAULT_WIDTH}px`;
-    calculator.style.height = `${DEFAULT_HEIGHT}px`;
-    initialWidth = DEFAULT_WIDTH;
-    initialHeight = DEFAULT_HEIGHT;
-    xOffset = 0;
-    yOffset = 0;
-    setTranslate(0, 0, calculator);
-}
-
 // Обработка клавиш
 display.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         event.preventDefault();
         calculate('=');
     } else if (event.key === 'Backspace') {
-        display.value = display.value.slice(0, -1);
-        event.preventDefault();
+        // backspace natively handled if we don't preventDefault
+        return;
     } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
         return;
-    } else if (!/[0-9+\-*/.()πie%!]/.test(event.key)) {
+    } else if (event.key.length === 1 && !/[0-9+\-*/.()πie%!]/.test(event.key)) {
         event.preventDefault();
     }
+});
+
+// Защита от вставки некорректного текста
+display.addEventListener('paste', (event) => {
+    event.preventDefault();
+    let paste = (event.clipboardData || window.clipboardData).getData('text');
+    let filtered = paste.replace(/[^0-9+\-*/.()πie%! ]/g, '');
+    append(filtered);
 });
 
 // Easter Egg functionality
@@ -297,6 +165,36 @@ function createEasterEgg() {
         }, 5000); // Hide after 5 seconds
     });
 }
+
+// Модифицируем функцию window.onload
+window.onload = function() {
+    // Запускаем анимацию загрузки
+    updateLoadingText(0);
+
+    // Имитируем загрузку
+    setTimeout(() => {
+        hidePreloader();
+
+        // Инициализируем калькулятор
+        showPanel('basic');
+        calculator.style.width = `${DEFAULT_WIDTH}px`;
+        calculator.style.height = `${DEFAULT_HEIGHT}px`;
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            toggleThemeWrapper();
+            document.querySelector('.switch input').checked = true;
+        }
+
+        setupWindowDraggable(
+            calculator,
+            calculator.querySelector('.calculator-header'),
+            resizeHandle,
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
+        );
+    }, 2000); // Показываем прелоадер 2 секунды
+};
 
 // Initialize easter egg
 window.addEventListener('load', createEasterEgg);
