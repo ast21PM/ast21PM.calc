@@ -1,35 +1,3 @@
-// Функции для прелоадера
-const loadingTexts = [
-    'Загрузка курсов валют...',
-    'Получение актуальных данных...',
-    'Инициализация конвертера...',
-    'Почти готово...'
-];
-
-function updateLoadingText(index) {
-    if (index >= loadingTexts.length) return;
-    
-    const detail = document.querySelector('.loading-details .detail');
-    detail.style.opacity = '0';
-    
-    setTimeout(() => {
-        detail.textContent = loadingTexts[index];
-        detail.style.opacity = '1';
-        
-        setTimeout(() => {
-            updateLoadingText(index + 1);
-        }, 500);
-    }, 500);
-}
-
-function hidePreloader() {
-    const preloader = document.querySelector('.preloader');
-    preloader.classList.add('fade-out');
-    setTimeout(() => {
-        preloader.style.display = 'none';
-    }, 500);
-}
-
 const themeSwitch = document.getElementById('themeSwitch');
 
 function applyTheme(isLight) {
@@ -80,78 +48,24 @@ themeSwitch.addEventListener('change', () => {
 
 const converter = document.getElementById('converter');
 const header = document.querySelector('.converter-header');
-let isDragging = false;
-let startX, startY;
-
-function setInitialPosition() {
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    const converterWidth = converter.offsetWidth;
-    const converterHeight = converter.offsetHeight;
-    converter.style.left = `${(windowWidth - converterWidth) / 2}px`;
-    converter.style.top = `${(windowHeight - converterHeight) / 2}px`;
-}
-
-setInitialPosition();
-
-header.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startX = e.clientX - parseInt(converter.style.left || 0);
-    startY = e.clientY - parseInt(converter.style.top || 0);
-    converter.style.transition = 'none';
-    e.preventDefault();
-});
-
-document.addEventListener('mousemove', (e) => {
-    if (isDragging) {
-        let newX = e.clientX - startX;
-        let newY = e.clientY - startY;
-        newX = Math.max(0, Math.min(newX, window.innerWidth - converter.offsetWidth));
-        newY = Math.max(0, Math.min(newY, window.innerHeight - converter.offsetHeight));
-        converter.style.left = newX + 'px';
-        converter.style.top = newY + 'px';
-    }
-});
-
-document.addEventListener('mouseup', () => {
-    if (isDragging) {
-        isDragging = false;
-        converter.style.transition = 'background 0.3s ease, box-shadow 0.3s ease';
-    }
-});
-
-header.addEventListener('dblclick', () => {
-    setInitialPosition();
-});
-
 const resizeHandle = document.querySelector('.resize-handle');
-let isResizing = false;
-
-resizeHandle.addEventListener('mousedown', (e) => {
-    isResizing = true;
-    e.preventDefault();
-});
-
-document.addEventListener('mousemove', (e) => {
-    if (isResizing) {
-        const newWidth = e.clientX - converter.offsetLeft;
-        const newHeight = e.clientY - converter.offsetTop;
-        if (newWidth >= 600) converter.style.width = newWidth + 'px';
-        if (newHeight >= 500) converter.style.height = newHeight + 'px';
-    }
-});
-
-document.addEventListener('mouseup', () => {
-    isResizing = false;
-});
 
 document.getElementById('amount').addEventListener('input', (e) => {
-    const value = e.target.value;
+    let value = e.target.value;
+
+    // Удаляем все минусы
+    if (value.includes('-')) {
+        value = value.replace(/-/g, '');
+        e.target.value = value;
+    }
+
     if (!/^\d*\.?\d*$/.test(value)) {
         e.target.value = value.slice(0, -1);
     }
-    if (value.startsWith('-')) {
-        e.target.value = value.replace('-', '');
+
+    // Если поле очистили, очищаем и результат
+    if (e.target.value === '') {
+        document.getElementById('result').textContent = '';
     }
 });
 
@@ -710,7 +624,13 @@ function updateChartColors() {
 }
 
 function convertCurrency() {
-    const amount = parseFloat(document.getElementById('amount').value);
+    const amountInput = document.getElementById('amount').value;
+    if (amountInput === '') {
+        document.getElementById('result').textContent = '';
+        return;
+    }
+
+    const amount = parseFloat(amountInput);
     const fromCurrency = document.getElementById('fromCurrency').dataset.value;
     const toCurrency = document.getElementById('toCurrency').dataset.value;
 
@@ -748,33 +668,33 @@ function convertCurrency() {
     historyContent.scrollTop = historyContent.scrollHeight;
 }
 
-// Инициализируем конвертер при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-        fetchCurrencies();
-    } catch (error) {
-        console.error('Error during initialization:', error);
-    }
-});
-
 // Модифицируем window.onload
 window.onload = function() {
-    // Запускаем анимацию загрузки
     updateLoadingText(0);
     
-    // Имитируем загрузку
     setTimeout(() => {
         try {
-            // Проверяем сохраненную тему
+            fetchCurrencies();
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'light') {
-                toggleTheme();
+                applyTheme(true);
                 document.querySelector('.switch input').checked = true;
             }
+
+            // Set initial inline styles for dragging
+            converter.style.width = '600px';
+            converter.style.height = '600px';
+
+            setupWindowDraggable(
+                converter,
+                header,
+                resizeHandle,
+                600,
+                600
+            );
         } catch (error) {
             console.error('Error during initialization:', error);
         } finally {
-            // Скрываем прелоадер в любом случае
             hidePreloader();
         }
     }, 2000);

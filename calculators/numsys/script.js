@@ -14,47 +14,14 @@ let loadingSpinner = document.getElementById('loadingSpinner');
 const DEFAULT_WIDTH = 400;
 const DEFAULT_HEIGHT = 650;
 
-// Функции для прелоадера
-const loadingTexts = [
-    'Инициализация конвертера...',
-    'Подготовка систем счисления...',
-    'Настройка интерфейса...',
-    'Почти готово...'
-];
-
-function updateLoadingText(index) {
-    if (index >= loadingTexts.length) return;
-    
-    const detail = document.querySelector('.loading-details .detail');
-    detail.style.opacity = '0';
-    
-    setTimeout(() => {
-        detail.textContent = loadingTexts[index];
-        detail.style.opacity = '1';
-        
-        setTimeout(() => {
-            updateLoadingText(index + 1);
-        }, 500);
-    }, 500);
-}
-
-function hidePreloader() {
-    const preloader = document.querySelector('.preloader');
-    preloader.classList.add('fade-out');
-    setTimeout(() => {
-        preloader.style.display = 'none';
-    }, 500);
-}
-
 function validateInput(value, base) {
-    const validChars = {
-        2: '01',
-        8: '01234567',
-        10: '0123456789',
-        16: '0123456789ABCDEF'
-    };
+    if (value.includes('.') || value.includes(',')) {
+        return { isValid: false, isFloat: true };
+    }
 
-    const allowedChars = validChars[base];
+    const allChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const allowedChars = allChars.substring(0, base);
+
     if (!allowedChars) return { isValid: false, invalidChar: null };
 
     for (let char of value.toUpperCase()) {
@@ -62,7 +29,7 @@ function validateInput(value, base) {
             return { isValid: false, invalidChar: char };
         }
     }
-    return { isValid: true, invalidChar: null };
+    return { isValid: true, invalidChar: null, isFloat: false };
 }
 
 function convertNumber() {
@@ -91,7 +58,11 @@ function convertNumber() {
     if (!validation.isValid) {
         setTimeout(() => {
             loadingSpinner.classList.remove('active');
-            resultValue.textContent = `Ошибка: символ ${validation.invalidChar} недопустим для системы с основанием ${from}`;
+            if (validation.isFloat) {
+                resultValue.textContent = 'Ошибка: дробные числа не поддерживаются';
+            } else {
+                resultValue.textContent = `Ошибка: символ ${validation.invalidChar} недопустим для системы с основанием ${from}`;
+            }
             resultSection.classList.add('visible');
             expandCalculator();
         }, 1000);
@@ -248,32 +219,32 @@ function swapBases() {
     toBase.value = fromValue;
 }
 
-function toggleTheme() {
-    let body = document.body;
+function toggleThemeSpecific() {
     let calc = document.querySelector('.calculator');
     let buttons = document.querySelectorAll('button');
     let navLinks = document.querySelectorAll('.nav-link');
     let inputs = document.querySelectorAll('input');
     let selects = document.querySelectorAll('select');
-    let resultSection = document.querySelector('.result-section');
+    let resultSectionEl = document.querySelector('.result-section');
     let table = document.querySelector('table');
     let th = document.querySelectorAll('th');
     let td = document.querySelectorAll('td');
 
-    body.classList.toggle('light');
     calc.classList.toggle('light');
     buttons.forEach(button => button.classList.toggle('light'));
     navLinks.forEach(link => link.classList.toggle('light'));
     inputs.forEach(input => input.classList.toggle('light'));
     selects.forEach(select => select.classList.toggle('light'));
-    if (resultSection) resultSection.classList.toggle('light');
+    if (resultSectionEl) resultSectionEl.classList.toggle('light');
     if (table) table.classList.toggle('light');
     th.forEach(header => header.classList.toggle('light'));
     td.forEach(cell => cell.classList.toggle('light'));
-
-    const isLightTheme = body.classList.contains('light');
-    localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
 }
+
+function toggleThemeWrapper() {
+    toggleTheme(toggleThemeSpecific);
+}
+window.toggleTheme = toggleThemeWrapper;
 
 // Функция инициализации конвертера
 function initializeConverter() {
@@ -295,133 +266,41 @@ function initializeConverter() {
     stepTableBody.innerHTML = '';
 }
 
+window.resetSpecificLayout = function() {
+    calculator.classList.remove('expanded');
+    resultPanel.style.width = '0';
+    resultValue.textContent = '';
+    explanation.textContent = '';
+    stepTableBody.innerHTML = '';
+    resultSection.classList.remove('visible');
+    document.querySelector('.number-panel').style.width = '100%';
+};
+
 // Модифицируем window.onload
 window.onload = function() {
-    // Запускаем анимацию загрузки
     updateLoadingText(0);
     
-    // Имитируем загрузку
     setTimeout(() => {
         try {
-            // Инициализируем конвертер
             initializeConverter();
             
-            // Проверяем сохраненную тему
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'light') {
-                toggleTheme();
+                toggleThemeWrapper();
                 document.querySelector('.switch input').checked = true;
             }
+
+            setupWindowDraggable(
+                calculator,
+                calculator.querySelector('.calculator-header'),
+                resizeHandle,
+                DEFAULT_WIDTH,
+                DEFAULT_HEIGHT
+            );
         } catch (error) {
             console.error('Error during initialization:', error);
         } finally {
-            // Скрываем прелоадер в любом случае
             hidePreloader();
         }
     }, 2000);
 };
-
-let isDragging = false;
-let currentX;
-let currentY;
-let xOffset = 0;
-let yOffset = 0;
-
-calculator.querySelector('.calculator-header').addEventListener('mousedown', startDragging);
-calculator.querySelector('.calculator-header').addEventListener('dblclick', resetSize);
-document.addEventListener('mousemove', drag);
-document.addEventListener('mouseup', stopDragging);
-
-function startDragging(e) {
-    initialX = e.clientX - xOffset;
-    initialY = e.clientY - yOffset;
-    isDragging = true;
-}
-
-function drag(e) {
-    if (isDragging) {
-        e.preventDefault();
-        currentX = e.clientX - initialX;
-        currentY = e.clientY - initialY;
-        xOffset = currentX;
-        yOffset = currentY;
-        setTranslate(currentX, currentY, calculator);
-    }
-}
-
-function setTranslate(xPos, yPos, el) {
-    el.style.transform = `translate(${xPos}px, ${yPos}px)`;
-}
-
-function stopDragging() {
-    if (isDragging) {
-        isDragging = false;
-    }
-}
-
-let isResizing = false;
-let initialXResize;
-let initialYResize;
-let initialWidth;
-let initialHeight;
-
-resizeHandle.addEventListener('mousedown', startResizing);
-resizeHandle.addEventListener('dblclick', resetSize);
-document.addEventListener('mousemove', resize);
-document.addEventListener('mouseup', stopResizing);
-
-function startResizing(e) {
-    e.preventDefault();
-    const rect = calculator.getBoundingClientRect();
-    initialWidth = rect.width;
-    initialHeight = rect.height;
-    initialXResize = e.clientX;
-    initialYResize = e.clientY;
-    isResizing = true;
-}
-
-function resize(e) {
-    if (isResizing) {
-        e.preventDefault();
-        const dx = e.clientX - initialXResize;
-        const dy = e.clientY - initialYResize;
-
-        const newWidth = Math.max(initialWidth + dx, 350);
-        const newHeight = Math.max(initialHeight + dy, 300);
-
-        calculator.style.width = `${newWidth}px`;
-        calculator.style.height = `${newHeight}px`;
-    }
-}
-
-function stopResizing() {
-    if (isResizing) {
-        isResizing = false;
-        const rect = calculator.getBoundingClientRect();
-        initialWidth = rect.width;
-        initialHeight = rect.height;
-    }
-}
-
-function resetSize() {
-    calculator.style.width = `${DEFAULT_WIDTH}px`;
-    calculator.style.height = `${DEFAULT_HEIGHT}px`;
-    
-    calculator.classList.remove('expanded');
-    
-    resultPanel.style.width = '0';
-    
-    resultValue.textContent = '';
-    explanation.textContent = '';
-    stepTableBody.innerHTML = '';
-    
-    resultSection.classList.remove('visible');
-    
-    document.querySelector('.number-panel').style.width = '100%';
-    
-    initialWidth = DEFAULT_WIDTH;
-    initialHeight = DEFAULT_HEIGHT;
-    xOffset = 0;
-    yOffset = 0;
-    setTranslate(0, 0, calculator);
-}
