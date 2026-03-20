@@ -67,45 +67,21 @@ function formatNumber(number) {
 function calculate(operation) {
     let expression = display.value.trim();
     
-    if (expression === '') {
-        return;
-    }
-
     try {
         if (operation === '=') {
             // Заменяем специальные символы на их эквиваленты в Math.js
-            let parseExpr = expression
+            expression = expression
                 .replace(/π/g, 'pi')
                 .replace(/\^2/g, '^2')
                 .replace(/%/g, '/100');
 
-            // Проверка на деление на ноль (Math.js иногда возвращает Infinity)
-            if (/\/0(?!\.)/.test(parseExpr)) {
-                throw new Error("Деление на ноль");
-            }
-
             // Вычисляем выражение
-            let result = math.evaluate(parseExpr);
-
-            if (!isFinite(result) || isNaN(result)) {
-                throw new Error("Некорректный результат");
-            }
-
+            const result = math.evaluate(expression);
             display.value = formatNumber(result);
             updateHistory(expression, display.value);
         }
     } catch (error) {
-        let errorMsg = error.message;
-        if (errorMsg.includes("Unexpected end of expression") || errorMsg.includes("SyntaxError")) {
-            errorMsg = "Синтаксическая ошибка";
-        }
-        updateHistory(expression, 'Ошибка: ' + errorMsg);
-        display.value = "Ошибка";
-        setTimeout(() => {
-            if (display.value === "Ошибка") {
-                display.value = expression;
-            }
-        }, 1500);
+        updateHistory(expression, 'Ошибка: ' + error.message);
     }
 }
 
